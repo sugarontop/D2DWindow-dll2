@@ -4,11 +4,11 @@
 *Project1,,,ProjectNはDLLの使い方のサンプル(exe)  
 
 # DLLの内容  
-D2D1UI_1.hの通り
-com型のDLLではないのでレジストリは不要
+D2D1UI_1.hの通り  
+com型のDLLではないのでレジストリは不要  
 
-#Project1
+# Project1
 
-#Project2
+# Project2
 
-#Project3
+# Project3
