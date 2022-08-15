@@ -11,7 +11,6 @@ using namespace V6;
 #undef THR
 static void THR( HRESULT x){ if (x!= S_OK) throw x; }
 
-//int D2DWindow::MessageBox(const FRectF& rc, LPCWSTR text, LPCWSTR title) <-- D2Dbutton.cpp
 
 D2DWindow::D2DWindow()
 {
@@ -56,8 +55,10 @@ bool D2DWindow::TSFInit(HWND hWnd)
 
 		return true;
 	}
-	catch( HRESULT  )
+	catch( HRESULT hr  )
 	{
+		//Log::Error( L"D2DWindow::TSFInit  %d", hr );
+		
 		return false;
 	}
 }

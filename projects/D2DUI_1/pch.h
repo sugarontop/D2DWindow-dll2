@@ -92,6 +92,9 @@ typedef _bstr_t BS;
 
 #define LOCALE	L"ja-jp"
 
+
+
+
 //
 //inline void ThrowIfFailed( LRESULT hr, LPCWSTR msg, UINT line, LPCSTR fnm )
 //{

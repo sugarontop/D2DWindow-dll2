@@ -1,5 +1,15 @@
 #pragma once
 
+
+
+#ifdef _WINDLL
+#define CLASSEXPORT __declspec(dllexport)
+#else
+#define CLASSEXPORT __declspec(dllimport)
+#endif
+
+
+
 struct AppBase
 {
 	AppBase():hWnd(0),card(0),bRedraw(false){}

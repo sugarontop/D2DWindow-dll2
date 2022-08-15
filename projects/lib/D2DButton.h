@@ -62,7 +62,7 @@ namespace V6
 
 
 		FRectF rc_;
-		wstring msg_,title_;
+		std::wstring msg_,title_;
 		int mode_;
 
 	};

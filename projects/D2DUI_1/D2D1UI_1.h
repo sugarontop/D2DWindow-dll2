@@ -14,6 +14,15 @@ namespace V6 {
 class D2DWindow;
 class D2DControls;
 
+
+DLLEXPORT  void WINAPI D2DDestroyControl(UIHandle hcs  );
+DLLEXPORT  void WINAPI D2DDestroyWindow(UIHandleWin main  );
+DLLEXPORT LRESULT WINAPI D2DDefWndProc(UIHandleWin main ,AppBase& app, UINT message, WPARAM wParam, LPARAM lParam);
+DLLEXPORT void WINAPI D2DForceWndProc(UIHandleWin main, AppBase& app, UINT message, WPARAM wParam, LPARAM lParam);
+DLLEXPORT LRESULT WINAPI D2DDefControlProc(UIHandle ctrls ,AppBase& app, UINT message, WPARAM wParam, LPARAM lParam);
+
+
+
 DLLEXPORT bool WINAPI D2DResource(D2DWindow* win,  D2D1_RECT_F& rc );
 DLLEXPORT HANDLE WINAPI D2DInstanceInitail(INT_PTR p );
 
@@ -50,6 +59,7 @@ DLLEXPORT UIHandle WINAPI D2DGetControlFromIdx(UIHandle hctrls, USHORT idx);
 DLLEXPORT bool WINAPI D2DIsControls(UIHandle h);
 
 DLLEXPORT void WINAPI D2DInnerDraw(UIHandle h, LPVOID cxt);
+DLLEXPORT void WINAPI D2DDefaultDraw(UIHandle h);
 DLLEXPORT UIHandle WINAPI D2DCreateSqlDataGrid(UIHandle hctrls, const D2D1_RECT_F& rc, DWORD stat, LPCWSTR name, int id );
 
 
@@ -96,13 +106,9 @@ DLLEXPORT void WINAPI D2DSwapChain(UIHandleWin main, HWND hWnd  );
 DLLEXPORT void WINAPI D2DDraw(UIHandleWin main, void* option  );
 
 
-DLLEXPORT  void WINAPI D2DDestroyControl(UIHandle hcs  );
-DLLEXPORT  void WINAPI D2DDestroyWindow(UIHandleWin main  );
 
 
-DLLEXPORT LRESULT WINAPI D2DDefWndProc(UIHandleWin main ,AppBase& app, UINT message, WPARAM wParam, LPARAM lParam);
-DLLEXPORT void WINAPI D2DForceWndProc(UIHandleWin main, AppBase& app, UINT message, WPARAM wParam, LPARAM lParam);
-DLLEXPORT LRESULT WINAPI D2DDefControlProc(UIHandle ctrls ,AppBase& app, UINT message, WPARAM wParam, LPARAM lParam);
+
 
 
 DLLEXPORT D2D1_RECT_F WINAPI D2DGetRect(UIHandle h );

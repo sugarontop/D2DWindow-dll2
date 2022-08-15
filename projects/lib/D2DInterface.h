@@ -5,7 +5,7 @@ namespace V6
 	class D2DContext;
 
 
-	typedef  bool (*DelegateDrawFunc)(LPVOID captureobj, D2DContext& cxt);
+	typedef  bool (*DelegateDrawFunc)(LPVOID captureobj, ID2D1DeviceContext* cxt);
 	typedef LRESULT(*DelegateProcFunc)(LPVOID captureobj, AppBase& b, UINT message, WPARAM wParam, LPARAM lParam);
 	typedef DWORD(*DelegateClick)(void* sender,LPCWSTR funcnm, void* p );
 

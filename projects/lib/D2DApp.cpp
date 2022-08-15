@@ -5,21 +5,33 @@
 using namespace V6;
 
 
-// instanceÇ™DLLë§Ç∆Exeë§ÇÃ2éÌóﬁÅAã§í ÇÃílÇ…Ç∑ÇÈ
-D2DApp* D2DApp::globalapp_ = nullptr;
+class D2DApp2 : public D2DApp
+{
+	public :
+		D2DApp2();
+	public :
+		virtual void SetCapture(D2DCaptureObject* target);
+		virtual D2DCaptureObject* ReleaseCapture();
+		virtual bool IsCapture(D2DCaptureObject* target);
+		virtual D2DCaptureObject* GetCapture();
+		virtual D2DCaptureObject* GetCapture2();
+
+		virtual int IsCaptureEx(D2DCaptureObject* target);
+		virtual int Count() { return (int)capture_.size(); }
+
+	protected :
+		 std::stack<D2DCaptureObject*> capture_;
+		 D2DCaptureObject* modal_dialog_;
+		
+};
 
 
-D2DApp::D2DApp()
+D2DApp2::D2DApp2()
 {
 	modal_dialog_ = nullptr;
 }
-void D2DApp::SetD2DAppForDLL(D2DApp* p)
-{
-	_ASSERT(globalapp_==nullptr);
-	_ASSERT(p);
-	globalapp_ = p;
-}
-void D2DApp::SetCapture(D2DCaptureObject* new_target)
+
+void D2DApp2::SetCapture(D2DCaptureObject* new_target)
 {	
     _ASSERT(new_target);
 
@@ -59,7 +71,7 @@ void D2DApp::SetCapture(D2DCaptureObject* new_target)
 
 
 }
-D2DCaptureObject* D2DApp::ReleaseCapture()
+D2DCaptureObject* D2DApp2::ReleaseCapture()
 {
 	D2DCaptureObject* ret = nullptr;
 	if (!capture_.empty())
@@ -81,7 +93,7 @@ D2DCaptureObject* D2DApp::ReleaseCapture()
     return ret;
 }
 
-int D2DApp::IsCaptureEx(D2DCaptureObject* target)
+int D2DApp2::IsCaptureEx(D2DCaptureObject* target)
 {
 	// 0:captureÇµÇƒÇ»Ç¢ 1:captureÇ≥ÇÍÇƒÇÈ 2..:secondà»ç~Ç≈captureÇ≥ÇÍÇƒÇÈ
     std::stack<D2DCaptureObject*> cap = capture_;
@@ -99,7 +111,7 @@ int D2DApp::IsCaptureEx(D2DCaptureObject* target)
 	return 0;
 }
 
-bool D2DApp::IsCapture(D2DCaptureObject* target)
+bool D2DApp2::IsCapture(D2DCaptureObject* target)
 {
 	while( !capture_.empty())
 	{
@@ -114,7 +126,7 @@ bool D2DApp::IsCapture(D2DCaptureObject* target)
 }
 
 
-D2DCaptureObject* D2DApp::GetCapture()
+D2DCaptureObject* D2DApp2::GetCapture()
 {
     if (capture_.empty())
         return nullptr;
@@ -139,7 +151,7 @@ D2DCaptureObject* D2DApp::GetCapture()
 //}
 
 
-D2DCaptureObject* D2DApp::GetCapture2()
+D2DCaptureObject* D2DApp2::GetCapture2()
 {
 	return modal_dialog_;
 
@@ -152,9 +164,8 @@ D2DCaptureObject* D2DApp::GetCapture2()
 
 D2DApp& D2DApp::GetInstance()
 {
-	_ASSERT(globalapp_);
+	static D2DApp2 app;
 
-	D2DApp& app = *globalapp_;
 	return app;
 }
 

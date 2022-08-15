@@ -155,9 +155,6 @@
     <ClCompile Include="..\lib\D2DControls_with_Scrollbar.cpp">
       <Filter>ソース ファイル\D2D</Filter>
     </ClCompile>
-    <ClCompile Include="..\lib\D2DTabControls.cpp">
-      <Filter>ソース ファイル\D2D</Filter>
-    </ClCompile>
     <ClCompile Include="..\lib\D2DScrollbar.cpp">
       <Filter>ソース ファイル\D2D</Filter>
     </ClCompile>
@@ -189,6 +186,21 @@
       <Filter>ソース ファイル\D2D</Filter>
     </ClCompile>
     <ClCompile Include="..\lib\D2DSqlDataGrid.cpp">
+      <Filter>ソース ファイル\D2D</Filter>
+    </ClCompile>
+    <ClCompile Include="test.cpp">
+      <Filter>ソース ファイル\D2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\D2DApp.cpp">
+      <Filter>ソース ファイル\D2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\D2DContext.cpp">
+      <Filter>ソース ファイル\D2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\D2DWindowControl.cpp">
+      <Filter>ソース ファイル\D2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\FilePackTool.cpp">
       <Filter>ソース ファイル\D2D</Filter>
     </ClCompile>
   </ItemGroup>

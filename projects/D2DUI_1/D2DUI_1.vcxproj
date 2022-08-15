@@ -199,10 +199,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\lib\D2DAccordionbar.cpp" />
+    <ClCompile Include="..\lib\D2DApp.cpp" />
     <ClCompile Include="..\lib\D2DButon.cpp" />
     <ClCompile Include="..\lib\D2DChildWindow.cpp" />
     <ClCompile Include="..\lib\D2DClientControl.cpp" />
     <ClCompile Include="..\lib\D2DColor.cpp" />
+    <ClCompile Include="..\lib\D2DContext.cpp" />
     <ClCompile Include="..\lib\D2DControls_with_Scrollbar.cpp" />
     <ClCompile Include="..\lib\D2DDropdownListbox.cpp" />
     <ClCompile Include="..\lib\D2DFileManage.cpp" />
@@ -216,7 +218,6 @@
     <ClCompile Include="..\lib\D2DSqlDataGrid.cpp" />
     <ClCompile Include="..\lib\D2DSquarePaper.cpp" />
     <ClCompile Include="..\lib\D2DStatic.cpp" />
-    <ClCompile Include="..\lib\D2DTabControls.cpp" />
     <ClCompile Include="..\lib\D2DTextbox.cpp" />
     <ClCompile Include="..\lib\D2DTextboxScrollbar.cpp" />
     <ClCompile Include="..\lib\D2DTreeList.cpp" />
@@ -225,7 +226,9 @@
     <ClCompile Include="..\lib\D2DWhiteWindowControl.cpp" />
     <ClCompile Include="..\lib\D2DWindow.cpp" />
     <ClCompile Include="..\lib\D2DWindow2.cpp" />
+    <ClCompile Include="..\lib\D2DWindowControl.cpp" />
     <ClCompile Include="..\lib\D2DXXXControls.cpp" />
+    <ClCompile Include="..\lib\FilePackTool.cpp" />
     <ClCompile Include="..\lib\TextMemory.cpp" />
     <ClCompile Include="..\lib\tsf\D2DCharRect.cpp" />
     <ClCompile Include="..\lib\tsf\DisplayAttribute.cpp" />
@@ -242,11 +245,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\D2DUI_lib\D2DUI_lib.vcxproj">
-      <Project>{ea284aea-847f-47f6-b023-02337afac4d8}</Project>
-    </ProjectReference>
+    <ClCompile Include="test.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

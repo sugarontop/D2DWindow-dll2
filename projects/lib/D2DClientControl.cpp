@@ -81,7 +81,7 @@ void D2DClientControls::Draw(D2DContext& cxt)
 		
 
 		auto old = cxt.temp_;
-		DrawFunc_(captureobj_, cxt);
+		DrawFunc_(captureobj_, *cxt);
 		cxt.temp_ = old;
 
 

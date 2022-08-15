@@ -86,7 +86,7 @@ namespace V6
 		virtual void SetRect(const FRectF& rc)  override { rctext_ = rc; }
 		virtual std::wstring GetTreeTyp(USHORT* typ) override;
 	public :
-		static void* CreateInputControl(D2DWindow* parent);
+		//static void* CreateInputControl(D2DWindow* parent);
 		static void DestroyInputControl(){};
 		void StatActive(bool bActive);		
 		void SetTypPassword();

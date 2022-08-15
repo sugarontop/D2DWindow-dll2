@@ -8,7 +8,7 @@ class D2DClientControls : public D2DControls
 {
 public:	
 
-	typedef std::function<void(LPVOID, D2DContext& cxt)> DrawFunc;
+	typedef std::function<void(LPVOID, ID2D1DeviceContext* cxt)> DrawFunc;
 	typedef std::function<LRESULT(LPVOID,AppBase& b, UINT message, WPARAM wParam, LPARAM lParam)> ProcFunc;
 
 	D2DClientControls(LPVOID captureobj,  DelegateDrawFunc func1, DelegateProcFunc func2);

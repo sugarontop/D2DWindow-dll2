@@ -716,22 +716,22 @@ FRectF D2DTextbox::GetVsrollbarRect() const
 
 
 //static
-void* D2DTextbox::CreateInputControl(D2DWindow* parent)
-{ 
-	if ( parent->tsf_.ctrl == nullptr)
-	{
-		auto ctrl = new TSF::CTextEditorCtrl();
-		
-		auto tmgr = parent->tsf_.pThreadMgr;
-		auto id = parent->tsf_.TfClientId;
-		auto hWnd = parent->tsf_.hWnd;
-
-		ctrl->Create( hWnd, tmgr, id );	
-
-		parent->tsf_.ctrl = ctrl;
-	}
-	return parent->tsf_.ctrl;
-}
+//void* D2DTextbox::CreateInputControl(D2DWindow* parent)
+//{ 
+//	if ( parent->tsf_.ctrl == nullptr)
+//	{
+//		auto ctrl = new TSF::CTextEditorCtrl();
+//		
+//		auto tmgr = parent->tsf_.pThreadMgr;
+//		auto id = parent->tsf_.TfClientId;
+//		auto hWnd = parent->tsf_.hWnd;
+//
+//		ctrl->Create( hWnd, tmgr, id );	
+//
+//		parent->tsf_.ctrl = ctrl;
+//	}
+//	return parent->tsf_.ctrl;
+//}
 
 // IBridgeTSFInterface
 FRectF D2DTextbox::GetClientRect() const

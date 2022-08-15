@@ -45,7 +45,7 @@ public:
 	
 
 	D2DMat Matrix() const { return mat_; }
-	wstring GetName() const { return name_; }
+	std::wstring GetName() const { return name_; }
 	int GetID() const { return id_; }
 	void SetName(LPCWSTR nm) { name_ = nm; }
 
@@ -66,7 +66,7 @@ protected:
 
 protected:
 	D2DMat mat_;
-	wstring name_;
+	std::wstring name_;
 	int id_;
 };
 

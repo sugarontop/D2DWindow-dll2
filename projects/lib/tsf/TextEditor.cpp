@@ -669,6 +669,8 @@ void CTextEditor::ClearCompositionRenderInfo()
 //----------------------------------------------------------------
 void CTextEditor::OnComposition( int msg, int len )
 {
+	TRACE( L"void CTextEditor::OnComposition( %d, %d )\n", msg,len);
+
     switch( msg ) 
     {
         case 1:

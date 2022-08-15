@@ -71,7 +71,7 @@ void D2DWhiteControl::Draw(D2DContext& cxt)
 		if (DrawFunc_)
 		{
 			auto old = cxt.temp_;
-			bl = DrawFunc_(captureobj_, cxt);
+			bl = DrawFunc_(captureobj_, *cxt);
 			cxt.temp_ = old;
 		}
 	

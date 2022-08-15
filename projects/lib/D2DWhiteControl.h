@@ -8,7 +8,7 @@ class D2DWhiteControl : public D2DControls
 {
 public:	
 
-	typedef std::function<bool(LPVOID, D2DContext& cxt)> DrawFunc;
+	typedef std::function<bool(LPVOID, ID2D1DeviceContext* cxt)> DrawFunc;
 	typedef std::function<LRESULT(LPVOID,AppBase& b, UINT message, WPARAM wParam, LPARAM lParam)> ProcFunc;
 
 	D2DWhiteControl(LPVOID captureobj,  DelegateDrawFunc func1, DelegateProcFunc func2);
