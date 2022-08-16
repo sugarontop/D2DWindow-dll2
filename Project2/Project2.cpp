@@ -2,7 +2,7 @@
 #include "Project2.h"
 #include "AppBase.h"
 #include "d2d1UI_1.h"
-#include "D2DApp.h"
+
 
 using namespace V6;
 

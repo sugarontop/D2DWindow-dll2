@@ -2,7 +2,7 @@
 #include "Project1.h"
 #include "AppBase.h"
 #include "d2d1UI_1.h"
-#include "D2DApp.h"
+
 
 using namespace V6;
 
@@ -108,18 +108,20 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 static UIHandleWin CreateTopControl(HWND hWnd)
 {
-	auto uihwin = D2DCreateMainHWnd(hWnd, 14);
-    
+	auto uihwin = D2DCreateMainHWnd(hWnd, 14);    
 	auto root = D2DGetRootControls(uihwin);
 
-	FRectF rctextbox(100, 40, FSizeF(200, 170));
+	
+	
+	// Textbox controlを作成
+	FRectF rctextbox(100, 40, FSizeF(600, 300));
 	UIHandle tx = D2DCreateTextbox(root, rctextbox, true, STAT_DEFAULT, L"textbox1");
+		
+	D2DSetText(tx, L"Hello world");
 
-	//D2DCreateButton(root, rctextbox, STAT_DEFAULT, L"b1");
+
+
 	return uihwin;
-
-
-
 }
 
 

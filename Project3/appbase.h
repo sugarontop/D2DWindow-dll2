@@ -1,5 +1,5 @@
 #pragma once
-#include "D2DApp.h"
+
 #include "D2DMessage.h"
 
 namespace V6
