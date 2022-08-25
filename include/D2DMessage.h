@@ -72,6 +72,7 @@ typedef DWORD (*D2DEventHandlerDelegate)(void* sender,LPCWSTR eventName, void* p
 #define TYP_GRIDVIEW 18
 #define TYP_LOGIN 19
 #define TYP_SQLDATAGRID 21
+#define TYP_TAB_CONTROLS_ITEM 22
 
 #define theWhite D2RGB(255,255,255)
 #define theBlack D2RGB(0,0,0)
@@ -129,6 +130,9 @@ typedef DWORD (*D2DEventHandlerDelegate)(void* sender,LPCWSTR eventName, void* p
 #define WM_D2D_SET_EVENTHANDLER					(WM_APP+29)
 #define WM_D2D_SET_SCROLL_SIZE					(WM_APP+30) // LPARAM is FSizeF
 #define WM_D2D_TOOLTIP							(WM_APP+31)
+
+#define WM_D2D_SET_BKMODE						(WM_APP+32) // w=0:transparent, w=1:default, ..
+
 
 #define WM_D2D_USER_FIRST						(WM_APP+4000) // for your application
 

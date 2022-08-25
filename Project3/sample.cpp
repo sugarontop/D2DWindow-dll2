@@ -86,7 +86,7 @@ LRESULT D2DSampleControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPAR
 	return r;
 }
 
-void test(UIHandle parent, LPCWSTR name, FRectF rc, int id)
+void Sample1(UIHandle parent, LPCWSTR name, FRectF rc, int id)
 {
 	auto obj =  new D2DSampleControls();
 	

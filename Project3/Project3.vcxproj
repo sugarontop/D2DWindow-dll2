@@ -149,6 +149,7 @@
     <ClCompile Include="Project3.cpp" />
     <ClCompile Include="appbase.cpp" />
     <ClCompile Include="sample.cpp" />
+    <ClCompile Include="sample2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Project3.rc" />

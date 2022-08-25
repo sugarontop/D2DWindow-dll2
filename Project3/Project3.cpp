@@ -107,7 +107,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 }
 
 
-void test(UIHandle parent, LPCWSTR name, FRectF rc, int id);
+void Sample1(UIHandle parent, LPCWSTR name, FRectF rc, int id);
+void Sample2(UIHandle parent, LPCWSTR name, FRectF rc, int id);
 
 static UIHandleWin CreateTopControl(HWND hWnd)
 {
@@ -116,9 +117,9 @@ static UIHandleWin CreateTopControl(HWND hWnd)
     auto root = D2DGetRootControls(hwin);
 
 	
-	test(root, L"test", FRectF(20,10, FSizeF(300,200)), 1);
+	//Sample1(root, L"test", FRectF(20,10, FSizeF(300,200)), 1);
 	
-
+	Sample2(root, L"test", FRectF(20,10, FSizeF(300,200)), 1);
 
 
 

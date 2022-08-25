@@ -179,10 +179,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\D2D1UI_1.h" />
     <ClInclude Include="..\lib\AppBase.h" />
     <ClInclude Include="..\lib\D2DButton.h" />
     <ClInclude Include="..\lib\D2DColor.h" />
     <ClInclude Include="..\lib\D2DDropdownListbox.h" />
+    <ClInclude Include="..\lib\D2DEmptyControls.h" />
     <ClInclude Include="..\lib\D2DImageControl.h" />
     <ClInclude Include="..\lib\D2DInstance.h" />
     <ClInclude Include="..\lib\D2DInterface.h" />
@@ -193,7 +195,6 @@
     <ClInclude Include="..\lib\D2DWhiteControl.h" />
     <ClInclude Include="..\lib\D2DWhiteWindow.h" />
     <ClInclude Include="..\lib\D2DXXXControls.h" />
-    <ClInclude Include="D2D1UI_1.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
@@ -207,6 +208,7 @@
     <ClCompile Include="..\lib\D2DContext.cpp" />
     <ClCompile Include="..\lib\D2DControls_with_Scrollbar.cpp" />
     <ClCompile Include="..\lib\D2DDropdownListbox.cpp" />
+    <ClCompile Include="..\lib\D2DEmptyControls.cpp" />
     <ClCompile Include="..\lib\D2DFileManage.cpp" />
     <ClCompile Include="..\lib\D2DImageControl.cpp" />
     <ClCompile Include="..\lib\D2DLogin.cpp" />
@@ -218,6 +220,7 @@
     <ClCompile Include="..\lib\D2DSqlDataGrid.cpp" />
     <ClCompile Include="..\lib\D2DSquarePaper.cpp" />
     <ClCompile Include="..\lib\D2DStatic.cpp" />
+    <ClCompile Include="..\lib\D2DTabControls.cpp" />
     <ClCompile Include="..\lib\D2DTextbox.cpp" />
     <ClCompile Include="..\lib\D2DTextboxScrollbar.cpp" />
     <ClCompile Include="..\lib\D2DTreeList.cpp" />

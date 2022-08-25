@@ -15,7 +15,7 @@
 #include "D2DImageControl.h"
 #include "D2DXXXControls.h"
 #include "D2DScrollbar.h"
-//#include "D2DTabControls.h"
+#include "D2DTabControls.h"
 #include "D2DMDIControls.h"
 #include "D2DMDISplitControls.h"
 #include "D2DChildWindow.h"
@@ -24,6 +24,7 @@
 #include "D2DLogin.h"
 #include "D2DInstance.h"
 #include "D2DSqlDataGrid.h"
+#include "D2DEmptyControls.h"
 
 using namespace V6;
 #define  APP (D2DApp::GetInstance())
@@ -368,73 +369,73 @@ DLLEXPORT UIHandle WINAPI D2DCreateControlsWithMove(UIHandle hctrls, const D2D1_
 }
 
 
-//DLLEXPORT UIHandle WINAPI D2DCreateTabControls(UIHandle hctrls, const D2D1_RECT_F& rc, DWORD stat, LPCWSTR name, int id )
-//{
-//	_ASSERT(hctrls.p);
-//
-//	auto pgtx = new D2DTabControls(); 
-//
-//	auto ctrls = (D2DControls*)hctrls.p;
-//	auto win = ctrls->GetParent();
-//
-//	pgtx->CreateControl(win,ctrls, rc, stat, name, id );
-//	ctrls->Add( std::shared_ptr<D2DTabControls>(pgtx));	
-//
-//	UIHandle r;
-//	r.p = pgtx;
-//	r.typ = TYP_TAB_CONTROLS;
-//	return r;
-//}
-//
-//DLLEXPORT UIHandle WINAPI D2DGetTab(UIHandle hctrls, USHORT idx)
-//{
-//	_ASSERT(hctrls.p && hctrls.typ == TYP_TAB_CONTROLS);
-//	auto ctrls = (D2DTabControls*)hctrls.p;
-//
-//	UIHandle r = {};
-//	
-//	auto p = ctrls->GetControlFromIdx(idx);
-//
-//	if ( p )
-//	{
-//		r.p = p;
-//		r.typ = TYP_CONTROLS;
-//	}
-//	return r;
-//
-//}
+DLLEXPORT UIHandle WINAPI D2DCreateTabControls(UIHandle hctrls, const D2D1_RECT_F& rc, DWORD stat, LPCWSTR name, int id )
+{
+	_ASSERT(hctrls.p);
+
+	auto pgtx = new D2DTabControls(); 
+
+	auto ctrls = (D2DControls*)hctrls.p;
+	auto win = ctrls->GetParent();
+
+	pgtx->CreateControl(win,ctrls, rc, stat, name, id );
+	ctrls->Add( std::shared_ptr<D2DTabControls>(pgtx));	
+
+	UIHandle r;
+	r.p = pgtx;
+	r.typ = TYP_TAB_CONTROLS;
+	return r;
+}
+
+DLLEXPORT UIHandle WINAPI D2DGetTab(UIHandle hctrls, USHORT idx)
+{
+	_ASSERT(hctrls.p && hctrls.typ == TYP_TAB_CONTROLS);
+	auto ctrls = (D2DTabControls*)hctrls.p;
+
+	UIHandle r = {};
+	
+	auto p = ctrls->GetControlFromIdx(idx);
+
+	if ( p )
+	{
+		r.p = p;
+		r.typ = TYP_CONTROLS;
+	}
+	return r;
+
+}
 
 
-//DLLEXPORT UIHandle WINAPI D2DAddNewTab(UIHandle hctrls, LPCWSTR nm)
-//{	
-//	_ASSERT(hctrls.p && hctrls.typ == TYP_TAB_CONTROLS);
-//
-//	auto ctrls = (D2DTabControls*)hctrls.p;
-//
-//	UIHandle r;
-//	r.p = ctrls->AddNewTab(nm);
-//	r.typ = TYP_CONTROLS;
-//	return r;
-//}
-//
-//DLLEXPORT UIHandle WINAPI D2DGetControlFromIdx(UIHandle hctrls, USHORT idx)
-//{
-//	_ASSERT(hctrls.p && hctrls.typ == TYP_TAB_CONTROLS);
-//
-//	auto ctrls = (D2DTabControls*)hctrls.p;
-//
-//	UIHandle r;
-//	r.p = ctrls->GetControlFromIdx(idx);
-//	r.typ = TYP_CONTROLS;
-//	return r;
-//}
+DLLEXPORT UIHandle WINAPI D2DAddNewTab(UIHandle hctrls, LPCWSTR nm)
+{	
+	_ASSERT(hctrls.p && hctrls.typ == TYP_TAB_CONTROLS);
+
+	auto ctrls = (D2DTabControls*)hctrls.p;
+
+	UIHandle r;
+	r.p = ctrls->AddNewTab(nm);
+	r.typ = TYP_TAB_CONTROLS_ITEM;
+	return r;
+}
+
+DLLEXPORT UIHandle WINAPI D2DGetControlFromIdx(UIHandle hctrls, USHORT idx)
+{
+	_ASSERT(hctrls.p && hctrls.typ == TYP_TAB_CONTROLS);
+
+	auto ctrls = (D2DTabControls*)hctrls.p;
+
+	UIHandle r;
+	r.p = ctrls->GetControlFromIdx(idx);
+	r.typ = TYP_CONTROLS;
+	return r;
+}
 
 
 DLLEXPORT UIHandle WINAPI D2DCreateEmptyControls(UIHandle hctrls, const D2D1_RECT_F& rc, DWORD stat, LPCWSTR name, int id )
 {
 	_ASSERT(hctrls.p);
 
-	auto pgtx = std::make_shared<D2DControls>(); 
+	auto pgtx = std::make_shared<D2DEmptyControls>(); 
 
 	auto ctrls = (D2DControls*)hctrls.p;
 	auto win = ctrls->GetParent();
@@ -736,6 +737,8 @@ DLLEXPORT UIHandle WINAPI D2DCreateControls(UIHandle hctrls, const D2D1_RECT_F& 
 	r.typ = TYP_CONTROLS;
 	return r;
 }
+
+
 DLLEXPORT UIHandle WINAPI D2DCreateWhiteControls(LPVOID captureobj, DelegateDrawFunc func1, DelegateProcFunc func2, UIHandle hctrls, const D2D1_RECT_F& rc, DWORD stat, LPCWSTR name, int id)
 {
 	auto cs1 = new D2DWhiteControl(captureobj, func1, func2);
@@ -981,7 +984,7 @@ DLLEXPORT void WINAPI D2DSetText( UIHandle h, LPCWSTR str )
 		auto btn = (D2DButton*)h.p;
 		btn->SetText(str);
 	}
-	else if ( h.typ == TYP_CONTROLS )
+	else if ( h.typ == TYP_CONTROLS || h.typ == TYP_TAB_CONTROLS)
 	{
 		auto ctrl = (D2DControls*)h.p;
 		ctrl->SetText(str);
@@ -1612,4 +1615,16 @@ DLLEXPORT bool WINAPI D2DStream2Bitmap( IStream* bmpstream, ID2D1RenderTarget* t
 	hr = target->CreateBitmapFromWicBitmap(d2dConverter, NULL, bmp);
 
 	return (hr == S_OK);
+}
+
+DLLEXPORT void WINAPI D2DDrawText(UIHandle h, D2D1_POINT_2F pt,  LPCWSTR str )
+{
+	D2DControl* pc = static_cast<D2DControl*>( h.p);
+
+	auto& cxt = pc->GetParent()->GetContext();
+
+	FRectF rc(pt, FSizeF(1000,1000));
+	(*cxt)->DrawText(str, wcslen(str), cxt.textformat_, rc, cxt.black_ );
+
+
 }

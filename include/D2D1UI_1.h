@@ -105,6 +105,7 @@ DLLEXPORT void WINAPI D2DReleaseCapture();
 DLLEXPORT void WINAPI D2DSwapChain(UIHandleWin main, HWND hWnd  );
 DLLEXPORT void WINAPI D2DDraw(UIHandleWin main, void* option  );
 
+DLLEXPORT void WINAPI D2DDrawText(UIHandle h, D2D1_POINT_2F pt,  LPCWSTR str );
 
 
 

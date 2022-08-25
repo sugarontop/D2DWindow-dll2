@@ -6,6 +6,8 @@
 using namespace V6;
 
 #define  APP (D2DApp::GetInstance())
+#define range(first,x, last)	((int)first <= (int)x && x < last)
+
 
 #define TAB_HEIGHT	26.0f
 #define TAB_WIDTH	200.0f
@@ -216,10 +218,6 @@ LRESULT D2DTabControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM 
 	return r;
 }
 
-#include "..\D2DUI_1\D2D1UI_1.h"
-#include "D2DMDISplitControls.h"
-#include "..\Project4\yahoo.h"
-
 void D2DTabControls::CreateControl(D2DWindow* parent, D2DControls* pacontrol, const FRectF& rc, DWORD stat, LPCWSTR name, int local_id)
 {
 	InnerCreateWindow(parent,pacontrol,stat,name,local_id);
@@ -270,25 +268,54 @@ void D2DTabControls::CreateControl(D2DWindow* parent, D2DControls* pacontrol, co
 	}
 }
 
-D2DControls* D2DTabControls::AddNewTab(LPCWSTR tabnm)
+static int ParseText1(LPCWSTR str, std::wstring* title)
+{
+	auto ar = SplitW(str, L":" );
+	int ret = -1;
+	if ( ar.size() == 2 )
+	{
+		ret = _wtoi(ar[0].c_str());
+		*title = ar[1];
+	}
+	return ret;
+}
+
+
+
+void D2DTabControls::SetText(LPCWSTR str)
+{
+	std::wstring title;
+	int idx = ParseText1(str, &title);
+	
+	if ( range(0, idx, controls_.size()))
+	{
+		std::wstring tabnm = name_;
+		tabnm += L"@";
+		tabnm += title;
+
+		this->controls_[idx]->SetName(tabnm.c_str());
+	}
+}
+
+D2DControls* D2DTabControls::AddNewTab(LPCWSTR tabName)
 {
 	D2DControls* ret = nullptr;
 
-	std::wstring _tabnm = name_;
-	_tabnm += L"@";
-	_tabnm += tabnm;
+	std::wstring tabnm = name_;
+	tabnm += L"@";
+	tabnm += tabName;
 
 	if (BITFLG(STAT_SIMPLE))
 	{
 		auto page1 = std::make_shared<D2DControls>();
-		page1->CreateControl(parent_window_,this, FRectF(0,0,rc_.Size()), STAT_DEFAULT, _tabnm.c_str() );
+		page1->CreateControl(parent_window_,this, FRectF(0,0,rc_.Size()), STAT_DEFAULT, tabnm.c_str() );
 		Add(page1);
 		ret = page1.get();
 	}
 	else
 	{
 		auto page1 = std::make_shared<D2DControls_with_Scrollbar>();
-		page1->CreateControl(parent_window_,this, FRectF(0,0,rc_.Size()), STAT_DEFAULT, _tabnm.c_str() );
+		page1->CreateControl(parent_window_,this, FRectF(0,0,rc_.Size()), STAT_DEFAULT, tabnm.c_str() );
 		Add(page1);
 		ret = page1.get();
 

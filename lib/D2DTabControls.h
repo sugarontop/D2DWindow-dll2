@@ -16,6 +16,7 @@ class D2DTabControls : public D2DControls
 		virtual LRESULT WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam) override;
 		virtual void CreateControl(D2DWindow* parent, D2DControls* pacontrol, const FRectF& rc, DWORD stat, LPCWSTR name, int local_id = -1) override;
 		virtual std::wstring GetTreeTyp(USHORT* typ) override;
+		virtual void SetText(LPCWSTR str) override;
 
 		float DrawTab(D2DContext& cxt, USHORT tabidx);
 		D2DControl* GetControlFromIdx(USHORT idx);
