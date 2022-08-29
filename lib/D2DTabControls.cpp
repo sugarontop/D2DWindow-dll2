@@ -12,6 +12,9 @@ using namespace V6;
 #define TAB_HEIGHT	26.0f
 #define TAB_WIDTH	200.0f
 
+#define TAB_TOP_BAR			0
+#define TAB_BOTTOM_BAR		1
+
 
 void D2DTabControls::Draw(D2DContext& cxt)
 {
@@ -19,13 +22,39 @@ void D2DTabControls::Draw(D2DContext& cxt)
 
 	mat2_ = mat.PushTransform();
 
+	
+
 	mat_ = mat.Offset(rc_);
 
-	auto tab_height = DrawTab(cxt,tab_idx_);
+	if ( tab_typ_ == TAB_TOP_BAR )
+	{
+		auto tab_height = DrawTab(cxt,tab_idx_);
 
-	mat.Offset(0,tab_height);
+		mat.Offset(0,tab_height);
 
-	controls_[tab_idx_]->Draw(cxt);
+		FSizeF sz(rc_.Size().width,rc_.Size().height-tab_height);
+
+		controls_[tab_idx_]->Draw(cxt);
+	}
+	else if ( tab_typ_ == TAB_BOTTOM_BAR)
+	{
+		FSizeF sz(rc_.Size().width,rc_.Size().height-TAB_HEIGHT);
+
+		mat.PushTransform();
+		{
+			D2DRectFilter f(cxt, FRectF(0,0,sz));
+
+			controls_[tab_idx_]->Draw(cxt);
+
+		}
+		mat.PopTransform();
+
+		mat_ = mat.Offset(0, sz.height);
+
+		auto tab_height = DrawTab(cxt,tab_idx_);
+
+		_ASSERT(TAB_HEIGHT == tab_height);
+	}
 
 	mat.PopTransform();
 
@@ -109,7 +138,7 @@ LRESULT D2DTabControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM 
 						if ( old !=tab_idx_ )
 							parent_window_->SendMessage(WM_D2D_TAB_CHANGE, (WPARAM)this, (LPARAM)tab_idx_);
 							
-						APP.SetCapture(this);
+						//APP.SetCapture(this);
 						break;
 					}
 					k++;
@@ -118,13 +147,34 @@ LRESULT D2DTabControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM 
 
 		}
 		break;
-		case WM_MOUSEMOVE:
 		case WM_LBUTTONUP:
 		{
 			if ( APP.IsCapture(this))
 			{
 				APP.ReleaseCapture();
 				r = 1;
+			}
+		}
+		break;
+		case WM_D2D_SET_TAB_POSITION:
+		{
+			tab_typ_ = (lParam == 0 ? TAB_TOP_BAR : TAB_BOTTOM_BAR );
+
+			r = 1;
+		}
+		break;
+		case WM_D2D_SET_ACTIVE_CONTROL:
+		{
+			auto idx = (USHORT)lParam;
+
+			if ( idx < controls_.size() )
+			{
+				tab_idx_ = idx;
+				r = 1;
+			}
+			else
+			{
+				r = LRESULT_FAIL;
 			}
 		}
 		break;
@@ -235,6 +285,7 @@ void D2DTabControls::CreateControl(D2DWindow* parent, D2DControls* pacontrol, co
 
 	tab_idx_ = 0;
 	size_fix_ = false;
+	tab_typ_ = TAB_TOP_BAR;
 
 	back_ = ColorF::White;
 	fore_ = ColorF::Black;
@@ -333,7 +384,10 @@ D2DControls* D2DTabControls::AddNewTab(LPCWSTR tabName)
 void D2DTabControls::DelTab(USHORT idx)
 {
 	
-	
+	auto p = GetControlFromIdx(idx);
+
+	if ( p )
+		p->DestroyControl();
 
 }
 std::wstring D2DTabControls::GetTreeTyp(USHORT* typ)

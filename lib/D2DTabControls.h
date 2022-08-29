@@ -33,7 +33,7 @@ class D2DTabControls : public D2DControls
 		D2DColor back_,fore_;
 
 		D2DMat mat2_;
-
+		USHORT tab_typ_;
 
 };
 

@@ -1628,3 +1628,11 @@ DLLEXPORT void WINAPI D2DDrawText(UIHandle h, D2D1_POINT_2F pt,  LPCWSTR str )
 
 
 }
+DLLEXPORT void D2DRedraw(UIHandle h)
+{
+	D2DWindow* pwin = (D2DWindow*)V6::D2DGetWindow(h).p;
+
+	//pwin->GetContext().bRedraw_ = true;
+
+	InvalidateRect(pwin->GetHwnd(),NULL,FALSE);
+}

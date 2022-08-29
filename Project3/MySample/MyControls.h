@@ -1,9 +1,4 @@
 #pragma once
-#include "D2DAppBaseControls.h"
-
-
-
-
 namespace V6
 {
 	class D2DSampleControls: public D2DAppBaseControls
@@ -17,9 +12,11 @@ namespace V6
 			FRectF rc_;
 			std::wstring str_;
 
+
 			std::vector<FPointF> ar_;
+			D2DMat mat_;
+
 	};
 
 
 };
-
