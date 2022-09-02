@@ -192,7 +192,7 @@ void D2DAccordionbar::OpenCloseBar(bool bOpen)
 		FRectF rcs(FPointF(),FSizeF(0,rc_.Height()));
 		FRectF rce(FPointF(),FSizeF(BAR_WIDTH,rc_.Height()));
 
-		RectAnimation(rcs,rce, rcmove_.get(), STEP_CNT, 0);
+		D2DRectAnimation(rcs,rce, rcmove_.get(), STEP_CNT, 0);
 
 		mode_ = 1;
 		gj_ = 0;
@@ -202,7 +202,7 @@ void D2DAccordionbar::OpenCloseBar(bool bOpen)
 		FRectF rcs(FPointF(),FSizeF(BAR_WIDTH,rc_.Height()));
 		FRectF rce(FPointF(),FSizeF(0,rc_.Height()));
 					
-		RectAnimation(rcs,rce, rcmove_.get(), STEP_CNT, 0);
+		D2DRectAnimation(rcs,rce, rcmove_.get(), STEP_CNT, 0);
 
 		mode_ = 2;
 		gj_ = 0;

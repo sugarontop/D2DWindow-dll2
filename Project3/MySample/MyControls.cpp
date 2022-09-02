@@ -7,26 +7,8 @@
 
 using namespace V6;
 
-#define  APP (D2DApp::GetInstance())
 
 #pragma comment (lib, "D2DUI_1")
-
-static bool gef1(LPVOID captureobj, ID2D1DeviceContext* cxt)
-{
-	D2DAppBaseControls* p = (D2DAppBaseControls*)captureobj;
-	return p->Draw(cxt);
-}
-static LRESULT gef2(LPVOID captureobj, AppBase& b, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	D2DAppBaseControls* p = (D2DAppBaseControls*)captureobj;
-	return p->WndProc(b, message, wParam, lParam);
-}
-
-void D2DAppBaseControls::Create(UIHandle parent, LPCWSTR name, FRectF rc, int id)
-{
-	hndl_ = D2DCreateWhiteControls((LPVOID)this, gef1,gef2, parent, rc, STAT_DEFAULT, name, id);
-}
-
 
 bool D2DSampleControls::Draw(ID2D1DeviceContext* cxt)
 {
@@ -38,40 +20,49 @@ bool D2DSampleControls::Draw(ID2D1DeviceContext* cxt)
 		mat_ = mat.Offset(rc_);
 		{
 			FPointF ptold;
-			ComPTR<ID2D1SolidColorBrush> br, brpink;
+			ComPTR<ID2D1SolidColorBrush> br, brgray;
 			auto clr = ColorF(ColorF::Black);
 
 			cxt->CreateSolidColorBrush(clr, &br);
 
-			int k=0;
-			for(auto& pt : ar_)
+			int k=0, last_idx=0;
+			for(auto& d : ar_)
 			{
+				if ( last_idx != d.idx )
+				{
+					ptold = d.pt;
+					last_idx = d.idx;
+					k=0;
+				}
+
 				if ( 0 < k++ )
-					cxt->DrawLine( pt, ptold, br );
-				ptold = pt;
+				{
+					cxt->DrawLine( d.pt, ptold, br );
+
+					last_idx = d.idx;
+				}
+
+
+
+				ptold = d.pt;
+			}
+
+
+
+			
+			ComPTR<IDWriteTextFormat> pfmt;
+			
+			if (CreateTextFormat( 80.0f, L"Arial", 800,  &pfmt ))
+			{
+				auto s = L"FreePaint";
+				FRectF rctext(50,100,FSizeF(500,500));
+				clr = D2RGBA(100,100,100,100); 
+				cxt->CreateSolidColorBrush(clr, &brgray);
+				cxt->DrawText(s, wcslen(s), pfmt, rctext, brgray );
 			}
 
 			cxt->DrawRectangle(rc_.ZeroRect(), br );
 
-			/*ComPTR<ID2D1SolidColorBrush> br, brpink;
-			auto clr = ColorF(ColorF::Black);
-
-			cxt->CreateSolidColorBrush(clr, &br);
-
-			cxt->DrawRectangle(rc_.ZeroRect(), br);
-
-			clr = ColorF(ColorF::LightPink);
-			cxt->CreateSolidColorBrush(clr, &brpink);
-			cxt->FillRectangle(rc_.ZeroRect(), brpink);
-
-
-			ComPTR<IDWriteTextFormat> format;
-
-			CreateTextFormat( 20, L"MS–¾’©", 0, &format);
-
-			cxt->DrawText( str_.c_str(), str_.length(), format, rc_.ZeroRect(), br );
-
-			D2DDefaultDraw(hndl_);*/
 		}
 
 		mat.PopTransform();
@@ -99,7 +90,7 @@ LRESULT D2DSampleControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPAR
 
 			rc_ = rc.ZeroRect();
 
-
+			dot_idx_ = 0;
 			
 
 			r =1;
@@ -120,12 +111,12 @@ LRESULT D2DSampleControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPAR
 			{
 				D2DSetCapture(hndl_);
 
-				ar_.clear();
+				
+				dot d;
+				d.idx = ++dot_idx_;
+				d.pt = pt;
 
-				//pt.x -= rc_.left;
-				//pt.y -= rc_.top;
-
-				ar_.push_back(pt);
+				ar_.push_back(d);
 
 				r = 1;
 			}
@@ -140,10 +131,11 @@ LRESULT D2DSampleControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPAR
 				MouseParam* mp = (MouseParam*)lParam;
 				auto pt = mat_.DPtoLP(mp->pt);
 
-				//pt.x -= rc_.left;
-				//pt.y -= rc_.top;
+				dot d;
+				d.idx = dot_idx_;
+				d.pt = pt;
 
-				ar_.push_back(pt);
+				ar_.push_back(d);
 
 
 				D2DRedraw(hndl_);
@@ -163,6 +155,20 @@ LRESULT D2DSampleControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPAR
 				r = 1;
 			}
 
+		}
+		break;
+		case WM_RBUTTONDOWN:
+		{
+			MouseParam* mp = (MouseParam*)lParam;
+			auto pt = mat_.DPtoLP(mp->pt);
+
+			if ( rc_.ZeroPtInRect(pt))
+			{			
+				ar_.clear();
+				dot_idx_ = 0;
+				D2DReleaseCapture();
+				r = 1;
+			}
 		}
 		break;
 

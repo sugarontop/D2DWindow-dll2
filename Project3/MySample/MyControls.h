@@ -13,8 +13,17 @@ namespace V6
 			std::wstring str_;
 
 
-			std::vector<FPointF> ar_;
+			struct dot
+			{
+				FPointF pt;
+				USHORT idx;
+			};
+
+
+			std::vector<dot> ar_;
 			D2DMat mat_;
+			USHORT dot_idx_;
+
 
 	};
 

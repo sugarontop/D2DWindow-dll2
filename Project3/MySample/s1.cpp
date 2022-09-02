@@ -6,23 +6,13 @@
 
 using namespace V6;
 
-DLLEXPORT HANDLE CreateFreePainter( UIHandle parent )
+DLLEXPORT HANDLE MySample_CreateFreePainter( UIHandle parent )
 {
-	
-	auto obj =  new D2DSampleControls();
-	
+	auto obj =  new D2DSampleControls(); // auto delete : WM_D2D_DESTROY
 
-	FRectF rc(0,0,0,0);
-
-	obj->Create(parent, L"hoi",  rc, 0);
-
-
-
-
-
+	obj->Create(parent, L"hoi",  FRectF(0,0,0,0), 0);
 
 	return nullptr;
-
 }
 
 

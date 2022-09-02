@@ -138,8 +138,6 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="Project3.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="D2DAppBaseControls.h" />
-    <ClInclude Include="sample.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
@@ -148,8 +146,6 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="Project3.cpp" />
-    <ClCompile Include="D2DAppBaseControls.cpp" />
-    <ClCompile Include="sample.cpp" />
     <ClCompile Include="sample2.cpp" />
   </ItemGroup>
   <ItemGroup>

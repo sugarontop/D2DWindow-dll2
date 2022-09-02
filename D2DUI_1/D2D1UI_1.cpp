@@ -1409,7 +1409,7 @@ DLLEXPORT int WINAPI D2DSendMessage(UIHandle h, UINT msg, WPARAM wp, LPARAM lp)
 	return (int)ctrl->WndProc(b,msg,wp,lp);
 }
 
-DLLEXPORT D2D1_RECT_F* WINAPI RectAnimation(const D2D1_RECT_F& rcStart, const D2D1_RECT_F& rcEnd, D2D1_RECT_F* p, int p_size, int style)
+DLLEXPORT D2D1_RECT_F* WINAPI D2DRectAnimation(const D2D1_RECT_F& rcStart, const D2D1_RECT_F& rcEnd, D2D1_RECT_F* p, int p_size, int style)
 {
 	_ASSERT( 0 < p_size && p );
 	float xstep_left = (rcEnd.left - rcStart.left) / p_size;
@@ -1479,7 +1479,7 @@ DLLEXPORT void WINAPI D2DSmoothRect(int typ, int id, UIHandle h, D2D1_RECT_F* ta
 		FRectF srect = target[0];
 		int atyp = typ - 1;
 	
-		RectAnimation(srect, dstRect, prc, cnt, atyp);
+		D2DRectAnimation(srect, dstRect, prc, cnt, atyp);
 
 		D2DWindow* pwin = (D2DWindow*)V6::D2DGetWindow(h).p;
 		auto df = [prc, cnt,target,pwin,id,h](D2DWindow* win, SmoothCar* car)->int

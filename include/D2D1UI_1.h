@@ -136,7 +136,7 @@ DLLEXPORT void WINAPI D2DEventHandler( UIHandle h, D2DEventHandlerDelegate handl
 DLLEXPORT XDropdownListBox* WINAPI D2DConvert(UIHandle r);
 
 
-DLLEXPORT D2D1_RECT_F* WINAPI RectAnimation(const D2D1_RECT_F&  rcS, const D2D1_RECT_F& rcE, D2D1_RECT_F* p, int p_size, int style);
+DLLEXPORT D2D1_RECT_F* WINAPI D2DRectAnimation(const D2D1_RECT_F&  rcS, const D2D1_RECT_F& rcE, D2D1_RECT_F* p, int p_size, int style);
 DLLEXPORT void WINAPI D2DSmoothRect(int typ, int id, UIHandle h, D2D1_RECT_F* target, D2D1_RECT_F dstRect);
 DLLEXPORT bool WINAPI D2DStream2Bitmap( IStream* bmpstream, ID2D1RenderTarget* target, ID2D1Bitmap** bmp);
 

@@ -71,7 +71,7 @@ class FSizeF : public D2D1_SIZE_F
 		{
 			width = (FLOAT)LOWORD(lParam); height = (FLOAT)HIWORD(lParam);
 		}	
-		SIZE GetSIZE()
+		SIZE GetSIZE()  const
 		{
 			SIZE sz;
 			sz.cx = ROUND(width);
@@ -81,6 +81,10 @@ class FSizeF : public D2D1_SIZE_F
 		void SetSize( float w, float h )
 		{
 			width = w; height = h;
+		}
+		FSizeF Inflate( float ww, float hh ) const
+		{
+			return FSizeF(ww+width, hh+height);
 		}
 		
 };

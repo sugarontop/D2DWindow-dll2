@@ -3,6 +3,21 @@
  #include "D2D1UI_1.h"
  using namespace V6;
 
+ bool CreateTextFormat( float height, LPCWSTR fontnm, int bold,  IDWriteTextFormat** pfmt )
+{
+	ComPTR<IDWriteFactory> wfactory;	
+
+	auto weight = (bold==0 ? DWRITE_FONT_WEIGHT_REGULAR : (DWRITE_FONT_WEIGHT)bold);
+	
+	if ( S_OK == DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), (IUnknown**) &wfactory))
+		if ( S_OK == wfactory->CreateTextFormat(fontnm, NULL, weight,
+			DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, height, LOCALE, pfmt))
+			return true;
+
+	return false;
+}
+
+
 void D2DEmptyControls::CreateControl(D2DWindow* parent, D2DControls* pacontrol, const FRectF& rc, DWORD stat, LPCWSTR name, int local_id)
 {
 	InnerCreateWindow(parent,pacontrol,stat,name,local_id);
@@ -45,7 +60,7 @@ void D2DEmptyControls::Draw(D2DContext& cxt)
 {
 	D2DRectFilter f(cxt, rc_);
 
-	cxt.DFillRect(rc_, ColorF::White);
+	
 
 	D2DMatrix mat(*cxt);
 	mat.PushTransform();
@@ -53,8 +68,11 @@ void D2DEmptyControls::Draw(D2DContext& cxt)
 
 	if ( bk_mode_ != 0 )
 	{
-		if (0 < bk_mode_ )
+		if (0 < bk_mode_ && bk_mode_ < 3 )
+		{
+			cxt.DFillRect(rc_, ColorF::White);
 			DrawLattice(cxt, rc_.Size(), 25 );
+		}
 		if (bk_mode_ == 2)
 		{
 			WCHAR cb[256];
@@ -64,10 +82,45 @@ void D2DEmptyControls::Draw(D2DContext& cxt)
 			h.p = this;
 
 			D2DDrawText(h, FPointF(10,10), cb );
-
-
 		}
+		else if ( bk_mode_ == 3 )
+		{
+			ComPTR<IDWriteTextFormat> textformat;
+			ComPTR<ID2D1SolidColorBrush> brgray;
 
+			if ( CreateTextFormat( 11.0f, L"Arial", 800,  &textformat ))
+			{
+				auto s = text_.c_str(); 
+				FRectF rctext(0,1,FSizeF(50,20));
+				auto clr = D2RGBA(100,100,100,100); 
+				(*cxt)->CreateSolidColorBrush(clr, &brgray);
+				
+				// this is joke
+				static int xoff1=-rc_.Width()*2;
+				static DWORD last=0;
+
+				if ( last + 80 < ::GetTickCount() )
+				{
+					xoff1 = ( rc_.Width() < xoff1 ? -rc_.Width()*2 : xoff1+10 );
+					last = ::GetTickCount();
+				}
+
+
+				int xoff = xoff1;
+
+				for(int y= 0; y < rc_.Height(); y+=24)
+				{
+					for(int x= xoff; x < rc_.Width(); x+=50)
+						(*cxt)->DrawText(s, wcslen(s), textformat, FRectF(x,y,FSizeF(100,20)), brgray );
+					xoff+=2;
+				}
+				
+				cxt.Redraw();
+			}
+
+			auto rc = rc_.ZeroRect().Inflate(-2,-2);
+			(*cxt)->DrawRectangle(rc, brgray );
+		}
 		
 	}
 
@@ -84,8 +137,12 @@ LRESULT D2DEmptyControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 		case WM_D2D_SET_BKMODE:
 		{
 			bk_mode_ = (int)wParam;
+		}
+		break;
+		case WM_D2D_SET_TEXT:
+		{
+			text_ = (LPCWSTR)lParam;
 
-			
 		}
 		break;
 

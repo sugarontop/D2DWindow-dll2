@@ -18,6 +18,7 @@ namespace V6
 
 		private :
 			int bk_mode_;
+			std::wstring text_;
 
 	};
 };
