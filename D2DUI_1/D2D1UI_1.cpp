@@ -970,7 +970,7 @@ DLLEXPORT void WINAPI D2DSetText( UIHandle h, LPCWSTR str )
 	if ( h.typ == TYP_TEXTBOX )
 	{
 		auto tx = static_cast<D2DTextbox*>( D2DCastControl(h));
-		tx->Clear();
+		tx->Clear(1);
 		tx->SetText(str, wcslen(str) );
 	}
 	else if ( h.typ == TYP_SQLDATAGRID )
@@ -990,12 +990,12 @@ DLLEXPORT void WINAPI D2DSetText( UIHandle h, LPCWSTR str )
 		ctrl->SetText(str);
 	}
 }
-DLLEXPORT bool WINAPI D2DSetFont(UIHandle h, LPCWSTR fontnm, float height, bool bold)
+DLLEXPORT bool WINAPI D2DSetFont(UIHandle h, LPCWSTR fontnm, float height, bool bold, int align)
 {
 	if ( h.typ == TYP_TEXTBOX )
 	{
 		auto tx = static_cast<D2DTextbox*>( D2DCastControl(h));
-		return tx->SetFont(fontnm, height, bold );
+		return tx->SetFont(fontnm, height, align, bold );
 
 	}
 	return false;

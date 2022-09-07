@@ -34,6 +34,7 @@ void D2DTextbox::CreateControl(D2DWindow* parent, D2DControls* pacontrol, TYP ty
 	ct_.bSingleLine_ = true;
 	isImeOn_ = false;
 	font_weight_ = DWRITE_FONT_WEIGHT_NORMAL;
+	fmt_ = parent->GetContext().textformat_;
 	
 	if (IsMultiline())
 	{
@@ -89,13 +90,14 @@ void D2DTextbox::Draw(D2DContext& cxt)
 
 		if (APP.IsCaptureEx(this)==1)
 		{
+			// Editor‚ ‚è
 			mat.Offset(rctext_);
 			mat.Offset(-ct_.offpt_.x, -vscrollbar_.Scroll());
 		
 			mat_sc_ = mat.Copy();
 		
 			if (ctrl()->ct_)
-			{
+			{				
 				ctrl()->Render(cxt, &tm_, fore, fmt_);
 
 				
@@ -136,18 +138,20 @@ void D2DTextbox::Draw(D2DContext& cxt)
 		}
 		else
 		{			
+			// Editor‚È‚µ
 			mat.Offset(rctext_);
 			mat.Offset(0, -vscrollbar_.Scroll());
 			mat_sc_ = mat.Copy();
 
-			if ( text_layout_ == nullptr && fmt_ != nullptr)
+			if ( text_layout_ == nullptr ) //&& fmt_ != nullptr)
 			{
 				ctrl()->CalcRender( cxt, fmt_ );	
 				ctrl()->GetLayout()->GetTextLayout( &text_layout_ );
 			}
-
-			if ( text_layout_ != nullptr)
-				(*cxt)->DrawTextLayout(FPointF(), text_layout_, fore );			
+		
+			
+			(*cxt)->DrawTextLayout(FPointF(0,0), text_layout_, fore);			
+		
 		}
 
 		mat.PopTransform();
@@ -182,9 +186,9 @@ void D2DTextbox::ActiveSw(bool bActive)
 	ctrl()->SetContainer( &ct_, this ); 
 	_ASSERT(ctrl()->ct_);
 
-	ctrl()->CalcRender( cxt, fmt_ );
+	ctrl()->CalcRender( cxt, fmt_);
 	
-	text_layout_.Release();
+	text_layout_ = nullptr;
 	ctrl()->GetLayout()->GetTextLayout( &text_layout_ );
 }
 
@@ -199,7 +203,7 @@ void D2DTextbox::StatActive(bool bActive)
 		ctrl()->SetFocus(&mat_sc_);
 
 
-		ctrl()->bri_->GetClientRect();
+		//ctrl()->bri_->GetClientRect();
 
 		//TRACE( L"D2DTextbox::StatActive(TRUE)   %x\n", this );
 
@@ -409,6 +413,13 @@ LRESULT D2DTextbox::WndProc(AppBase& b, UINT msg, WPARAM wp, LPARAM lp)
 						{
 							font_weight_ = DWRITE_FONT_WEIGHT_BOLD; 
 						}
+						else if (ar2[0] == L"type")
+						{
+							std::wstring ss = ar2[1].c_str();
+
+							
+
+						}
 					}
 				}
 				ret = 1;
@@ -544,6 +555,10 @@ void D2DTextbox::AutoScroll()
 			if (ctrl()->GetLayout()->RectFromCharPosEx(pos-1, &rc, &blf))
 				ct_.offpt_.x = min(9000.0f, max(0.0f,  rc.right - 0.93f*rctext_.Width()));
 
+
+			if ( fmt_->GetTextAlignment() == DWRITE_TEXT_ALIGNMENT_TRAILING )
+				ct_.offpt_.x = 0;
+
 		}
 		vscrollbar_.pos_ = pos;
 
@@ -555,20 +570,22 @@ int D2DTextbox::CurrentPos() const
 {
 	return ct_.SelStart();
 }
-bool D2DTextbox::SetFont(LPCWSTR fontnm, float fontheight, bool bold)
+bool D2DTextbox::SetFont(LPCWSTR fontnm, float fontheight, int align, bool bold)
 {
-	ComPTR<IDWriteTextFormat> textformat;
+	if ( fmt_ != parent_window_->GetContext().textformat_ )
+		fmt_->Release();		
+
+	fmt_ = nullptr;
 
 	DWRITE_FONT_WEIGHT weight = (bold ? DWRITE_FONT_WEIGHT_BOLD : DWRITE_FONT_WEIGHT_REGULAR);
 
 	if ( S_OK == parent_window_->GetContext().tsf_wfactory_->CreateTextFormat(fontnm, NULL, 
 		weight,DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL,
-		fontheight, LOCALE, & textformat))
+		fontheight, LOCALE, & fmt_))
 	{
 		font_weight_ = weight;
 
-		fmt_ = nullptr;
-		fmt_ = textformat;
+		D2DContext::SetTextAlign(fmt_, align);
 
 		text_layout_ = nullptr;
 
@@ -622,7 +639,6 @@ void D2DTextbox::SetSinglelineText(LPCWSTR str, int str_len, int insert_pos )
 
 void D2DTextbox::SetMultilineText(LPCWSTR str, int str_len, int insert_pos )
 {
-
 	std::wstringstream sm;
 	for(int i = 0; i < str_len; i++ )
 	{
@@ -693,13 +709,21 @@ bool D2DTextbox::GetSelectText(std::wstringstream* out, bool crlf )
 	return false;
 }
 
-void D2DTextbox::Clear()
+void D2DTextbox::Clear(int md)
 {
 	ct_.Reset();
 	text_layout_.Release();
 	vscrollbar_.SetTotalHeight(0);
 	tm_ = {};
 
+	if ( md == 0 )
+	{
+		// textformat‚àclear
+		if ( fmt_ != parent_window_->GetContext().textformat_ )
+			fmt_->Release();
+	
+		fmt_ = nullptr;
+	}
 	auto ctrl = (TSF::CTextEditorCtrl*)this->parent_window_->tsf_.ctrl;
 
 	if (ctrl)
@@ -713,25 +737,6 @@ FRectF D2DTextbox::GetVsrollbarRect() const
 	rc.left = rc.right - vscrollbar_.Width();
 	return rc;
 }
-
-
-//static
-//void* D2DTextbox::CreateInputControl(D2DWindow* parent)
-//{ 
-//	if ( parent->tsf_.ctrl == nullptr)
-//	{
-//		auto ctrl = new TSF::CTextEditorCtrl();
-//		
-//		auto tmgr = parent->tsf_.pThreadMgr;
-//		auto id = parent->tsf_.TfClientId;
-//		auto hWnd = parent->tsf_.hWnd;
-//
-//		ctrl->Create( hWnd, tmgr, id );	
-//
-//		parent->tsf_.ctrl = ctrl;
-//	}
-//	return parent->tsf_.ctrl;
-//}
 
 // IBridgeTSFInterface
 FRectF D2DTextbox::GetClientRect() const
@@ -762,6 +767,9 @@ FRectF D2DTextbox::GetClientRect() const
 
 		rc.Offset( 0, m.height);
 
+		if ( rc.Height() == 0 )
+			rc.SetHeight( rctext_.Height());
+
 		return rc;   // Œó•â‚Ì•\Ž¦ˆÊ’u, candidate
 	}
 	return rctext_;
@@ -790,8 +798,6 @@ float D2DTextbox::sc_dataHeight(bool bHbar)
 }
 void D2DTextbox::Undo()
 { 
-	// not implement
-
 	ctrl()->Undo();
 }
 std::wstring D2DTextbox::GetTreeTyp(USHORT* typ)

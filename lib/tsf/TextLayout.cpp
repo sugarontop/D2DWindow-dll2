@@ -220,6 +220,12 @@ BOOL CTextLayout::RectFromCharPosEx(int nPos, FRectF *prc, bool* blf)
 		prc->bottom = nLineHeight_; 
 		prc->right=TSF_FIRST_POS;
 
+
+		if ( !CharPosMap_.empty())
+		{
+			*prc = CharPosMap_[0].rc;
+			prc->right=prc->left + TSF_FIRST_POS;
+		}
 		return TRUE;
 	}
 
@@ -310,6 +316,16 @@ int CTextLayout::CharPosFromPoint(const FPointF& pt)
 
 				return j;
 			}
+			else if ( j== 0 )
+			{
+				if ( pt.x < rc.left )
+				{
+					return 0;
+				}
+			}
+
+
+
 		}
 		else if ( lastone != -1 )
 			break;

@@ -128,14 +128,14 @@ int CreateTextLayout::CreateMultiTextLayout( int zStartPos, int zCaretPos, IDWri
 int CreateTextLayout::CreateSingleTextLayout( int zStartPos, int zCaretPos, IDWriteTextLayout** playout)
 {
 	int viewlen = 0;
-	float width9999 = 9999;
+	
 	int off = 0;
 
 	// 表示可能文字数を算出する。
 	if ( len_ && (int)len_ - zStartPos >= 0)
 	{
 		ComPTR<IDWriteTextLayout> temp;
-		auto hr = fc_->CreateTextLayout( psz_+zStartPos, len_-zStartPos, fmt_, width9999, sz_.height, &temp );
+		auto hr = fc_->CreateTextLayout( psz_+zStartPos, len_-zStartPos, fmt_, sz_.width, sz_.height, &temp );
 
 		float wd = 0;
 		const float triming = 21.0f;	// ???
@@ -179,7 +179,7 @@ int CreateTextLayout::CreateSingleTextLayout( int zStartPos, int zCaretPos, IDWr
 		if ( psz_ == nullptr )
 			psz_ = karamoji;
 
-		auto hr = fc_->CreateTextLayout( psz_+off, len, fmt_, width9999, sz_.height, playout );
+		auto hr = fc_->CreateTextLayout( psz_+off, len, fmt_, sz_.width, sz_.height, playout );
 		
 		_ASSERT(hr == S_OK);
 	}

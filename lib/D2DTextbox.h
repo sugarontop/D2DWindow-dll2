@@ -66,9 +66,9 @@ namespace V6
 		void SetText(LPCWSTR str, int len, int insert_pos=0 );
 		void GetText( std::wstringstream* out,  bool crlf = true );
 		bool GetSelectText(std::wstringstream* out, bool crlf = true);
-		void Clear();
+		void Clear(int md=0);
 		void SetReadonly(bool bReadonly);
-		bool SetFont(LPCWSTR fontnm, float height, bool bold=false);
+		bool SetFont(LPCWSTR fontnm, float height, int align, bool bold=false);
 
 		virtual bool OnChangeFocus(bool bActive, D2DCaptureObject* pnew) ;
 		bool IsMultiline() const;
@@ -122,7 +122,7 @@ namespace V6
 	protected :		
 		FRectF rctext_;
 		IBridgeTSFInterface::TYP typ_;		
-		ComPTR<IDWriteTextFormat> fmt_;
+		IDWriteTextFormat* fmt_;
 		ComPTR<IDWriteTextLayout> text_layout_;		
 		TSF::CTextContainer ct_;
 		D2DMat mat_sc_;

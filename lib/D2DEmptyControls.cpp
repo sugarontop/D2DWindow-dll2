@@ -55,6 +55,7 @@ static void DrawLattice(D2DContext& cxt, FSizeF sz, float box)
 
 	mat.PopTransform();
 }
+void test(D2DContext& cxt);
 
 void D2DEmptyControls::Draw(D2DContext& cxt)
 {
@@ -68,12 +69,12 @@ void D2DEmptyControls::Draw(D2DContext& cxt)
 
 	if ( bk_mode_ != 0 )
 	{
-		if (0 < bk_mode_ && bk_mode_ < 3 )
+		if (0 < bk_mode_ && bk_mode_ != 3 )
 		{
 			cxt.DFillRect(rc_, ColorF::White);
 			DrawLattice(cxt, rc_.Size(), 25 );
 		}
-		if (bk_mode_ == 2)
+		if (bk_mode_ == 2 || bk_mode_ == 4 )
 		{
 			WCHAR cb[256];
 			StringCbPrintf(cb, (size_t)_countof(cb), L"D2DEmptyControls this=%x\n w=%0.2f,h=%0.2f", this, rc_.Width(), rc_.Height() );
@@ -82,6 +83,12 @@ void D2DEmptyControls::Draw(D2DContext& cxt)
 			h.p = this;
 
 			D2DDrawText(h, FPointF(10,10), cb );
+
+
+			if ( bk_mode_ == 4 )
+			{
+				test(cxt);
+			}
 		}
 		else if ( bk_mode_ == 3 )
 		{
@@ -120,6 +127,11 @@ void D2DEmptyControls::Draw(D2DContext& cxt)
 
 			auto rc = rc_.ZeroRect().Inflate(-2,-2);
 			(*cxt)->DrawRectangle(rc, brgray );
+
+
+			
+
+
 		}
 		
 	}
@@ -153,3 +165,25 @@ LRESULT D2DEmptyControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 }
 
 
+static void test(D2DContext& cxt)
+{
+	auto money = L"1,000,000";
+
+	ComPTR<IDWriteTextFormat> textformat;
+
+	DWRITE_FONT_WEIGHT weight = DWRITE_FONT_WEIGHT_REGULAR;
+
+	cxt.tsf_wfactory_->CreateTextFormat(L"Arial", NULL, 
+		weight,DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL,20, LOCALE, & textformat);
+
+	cxt.SetTextAlign(textformat, 2);
+
+	ComPTR<IDWriteTextLayout> layout;				
+	cxt.CreateTextLayout2(money, wcslen(money), FSizeF(500,20),  textformat, &layout);
+
+	(*cxt)->DrawTextLayout(FPointF(0,200), layout, cxt.black_, D2D1_DRAW_TEXT_OPTIONS_NONE);
+
+	(*cxt)->DrawRectangle(FRectF(0,200,FSizeF(500,20)), cxt.black_ );
+
+
+}

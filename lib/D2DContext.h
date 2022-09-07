@@ -40,7 +40,10 @@ class D2DContext
 		void DText(const D2D_POINT_2F& pt, const std::wstring& str,ID2D1SolidColorBrush* br );
 
 		bool CreateTextLayout(LPCWSTR str, D2D1_SIZE_F sz, IDWriteTextLayout** ret );
+		bool CreateTextLayout2(LPCWSTR str, size_t strlen,  D2D1_SIZE_F sz, IDWriteTextFormat* fromat, IDWriteTextLayout** ret );
 		bool CreateBrush(ColorF clr,  ID2D1SolidColorBrush** pbr);
+
+		static void SetTextAlign(IDWriteTextFormat* fromat, int mode);
 
 		ComPTR<ID2D1SolidColorBrush> black_;
 		ComPTR<ID2D1SolidColorBrush> white_;

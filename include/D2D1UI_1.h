@@ -71,7 +71,7 @@ DLLEXPORT UIHandle WINAPI D2DCast(void* target);
 
 DLLEXPORT void WINAPI D2DSetFocus(UIHandle h);
 DLLEXPORT void WINAPI D2DSetText(UIHandle h, LPCWSTR str);
-DLLEXPORT bool WINAPI D2DSetFont(UIHandle h, LPCWSTR fontnm, float height, bool bold=false);
+DLLEXPORT bool WINAPI D2DSetFont(UIHandle h, LPCWSTR fontnm, float height, bool bold=false, int align =0);
 DLLEXPORT DWORD WINAPI D2DSetStat(UIHandle h, DWORD stat);
 DLLEXPORT void WINAPI D2DSetColor(UIHandle h, ColorF back, ColorF front, ColorF border );
 DLLEXPORT void WINAPI D2DReadOnly(UIHandle h, bool readonly);

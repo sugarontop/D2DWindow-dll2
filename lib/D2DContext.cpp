@@ -300,3 +300,22 @@ bool D2DContext::CreateTextLayout(LPCWSTR str, D2D1_SIZE_F sz, IDWriteTextLayout
 {
 	return (0== tsf_wfactory_->CreateTextLayout(str, (UINT32)wcslen(str), this->textformat_, sz.width, sz.height, ret ));
 }
+
+
+bool D2DContext::CreateTextLayout2(LPCWSTR str, size_t strlen,  D2D1_SIZE_F sz, IDWriteTextFormat* fromat, IDWriteTextLayout** ret )
+{
+	return (0== tsf_wfactory_->CreateTextLayout(str, (UINT32)strlen, fromat, sz.width, sz.height, ret ));
+}
+
+
+void D2DContext::SetTextAlign(IDWriteTextFormat* fromat, int mode)
+{
+	if ( mode == 0 )
+		fromat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+	else if ( mode == 1 )
+		fromat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+	else if ( mode == 2 )
+		fromat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
+
+
+}

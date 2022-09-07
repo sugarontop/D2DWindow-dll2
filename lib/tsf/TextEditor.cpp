@@ -636,10 +636,10 @@ void CTextEditor::Reset( IBridgeTSFInterface* bi )
 	
 	if ( bi )
 	{
-        FRectF rc = bi->GetClientRect();
+        FRectF rc =  bi->GetClientRect();
 
 		ct_->rc_ = rc;		
-        ct_->view_size_.cx = 99999;
+        ct_->view_size_.cx = (LONG)rc.Width();
 		ct_->view_size_.cy =(LONG)(rc.bottom - rc.top);
 
         if ( bi->GetType() == IBridgeTSFInterface::MULTILINE )
