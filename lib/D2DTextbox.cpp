@@ -28,7 +28,8 @@ void D2DTextbox::CreateControl(D2DWindow* parent, D2DControls* pacontrol, TYP ty
 {
 	InnerCreateWindow(parent,pacontrol,stat,name,local_id);
 
-	rctext_ =  rc;
+	rc_ =  rc;
+	
 	typ_ = typ;
 	tm_ = {0};	
 	ct_.bSingleLine_ = true;
@@ -38,7 +39,7 @@ void D2DTextbox::CreateControl(D2DWindow* parent, D2DControls* pacontrol, TYP ty
 	
 	if (IsMultiline())
 	{
-		vscrollbar_.Create(this, FRectF(rctext_.right, rctext_.top, rctext_.right + BARW, rctext_.bottom));
+		vscrollbar_.Create(this, FRectF(rc_.right, rc_.top, rc_.right + BARW, rc_.bottom));
 		ct_.bSingleLine_ = false;
 	}
 }
@@ -77,21 +78,22 @@ void D2DTextbox::Draw(D2DContext& cxt)
 		D2DMatrix mat(*cxt);
 		mat_ = mat.PushTransform();
 
-		(*cxt)->DrawRectangle(rctext_, border);
-		(*cxt)->FillRectangle(rctext_, back);
+		(*cxt)->DrawRectangle(rc_, border);
+		(*cxt)->FillRectangle(rc_, back);
 
 
-		auto rc = rctext_;
+		auto rc = rc_;
 		auto bMultiline = IsMultiline();
 		rc.InflateRect(1,1);
 
 		D2DRectFilter fil(cxt, rc, vscrollbar_.Width());
 		
+		FRectF rctext= RectText();
 
 		if (APP.IsCaptureEx(this)==1)
 		{
 			// Editorあり
-			mat.Offset(rctext_);
+			mat.Offset(rctext);
 			mat.Offset(-ct_.offpt_.x, -vscrollbar_.Scroll());
 		
 			mat_sc_ = mat.Copy();
@@ -128,7 +130,7 @@ void D2DTextbox::Draw(D2DContext& cxt)
 						if (bMultiline)
 						{
 							(*cxt)->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
-							(*cxt)->DrawLine(FPointF(0,rc.bottom), FPointF(rctext_.Width(),rc.bottom),cxt.black_ );
+							(*cxt)->DrawLine(FPointF(0,rc.bottom), FPointF(rctext.Width(),rc.bottom),cxt.black_ );
 							(*cxt)->SetAntialiasMode(D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
 						}
 					}
@@ -139,7 +141,7 @@ void D2DTextbox::Draw(D2DContext& cxt)
 		else
 		{			
 			// Editorなし
-			mat.Offset(rctext_);
+			mat.Offset(rctext);
 			mat.Offset(0, -vscrollbar_.Scroll());
 			mat_sc_ = mat.Copy();
 
@@ -161,7 +163,7 @@ void D2DTextbox::Draw(D2DContext& cxt)
 			float h = ctrl()->GetLineHeight();
 			int cnt = tm_.lineCount;
 
-			if ( h*cnt > rctext_.Height())
+			if ( h*cnt > rctext.Height())
 				vscrollbar_.OnDraw(cxt);
 		}
 	}
@@ -240,6 +242,7 @@ LRESULT D2DTextbox::WndProc(AppBase& b, UINT msg, WPARAM wp, LPARAM lp)
 	TSF::TSFApp app(b.hWnd,  cxt);
 	bool bl = false;
 	static int mouse_mode = 0;
+	FRectF rctext = RectText();
 
 	switch( msg )
 	{
@@ -258,7 +261,7 @@ LRESULT D2DTextbox::WndProc(AppBase& b, UINT msg, WPARAM wp, LPARAM lp)
 				bl = false;
 				mouse_mode = 1;
 			}
-			else if ( rctext_.PtInRect(pt) )
+			else if ( rctext.PtInRect(pt) )
 			{
 				APP.SetCapture(this);
 				mouse_mode = 0;
@@ -286,7 +289,7 @@ LRESULT D2DTextbox::WndProc(AppBase& b, UINT msg, WPARAM wp, LPARAM lp)
 				if (mouse_mode == 0 )
 				{
 					auto pt = mat_.DPtoLP(mp->pt);
-					if ( !rctext_.PtInRect(pt) )
+					if ( !rctext.PtInRect(pt) )
 					{
 						ImeActive(false);
 						//APP.ReleaseCapture();	ここでリリースしない				
@@ -353,7 +356,7 @@ LRESULT D2DTextbox::WndProc(AppBase& b, UINT msg, WPARAM wp, LPARAM lp)
 			MouseParam* mp = (MouseParam*)lp;
 
 			auto pt = mat_.DPtoLP(mp->pt);
-			if (IsMultiline() && rctext_.PtInRect(pt) && APP.IsCapture(this) && ctrl()->ct_)
+			if (IsMultiline() && rctext.PtInRect(pt) && APP.IsCapture(this) && ctrl()->ct_)
 			{
 				_ASSERT(ctrl());
 
@@ -527,7 +530,8 @@ void D2DTextbox::AutoScroll()
 				if ( pos < len )
 				{
 					auto drc = mat_sc_.LPtoDP(rcs[pos]);
-					auto drctext2 = mat_.LPtoDP(rctext_);
+					
+					auto drctext2 = mat_.LPtoDP(rc_); // rctext_?
 
 					float rowheight = tm_.height / tm_.lineCount;
 
@@ -550,10 +554,11 @@ void D2DTextbox::AutoScroll()
 		int pos = ctrl()->CurrentCaretPos();
 		if (vscrollbar_.pos_ != pos) // 面倒なのでvscrollbar_.pos_を使用
 		{
+			FRectF rctext = RectText();
 			FRectF rc;
 			bool blf;
 			if (ctrl()->GetLayout()->RectFromCharPosEx(pos-1, &rc, &blf))
-				ct_.offpt_.x = min(9000.0f, max(0.0f,  rc.right - 0.93f*rctext_.Width()));
+				ct_.offpt_.x = min(9000.0f, max(0.0f,  rc.right - 0.93f*rctext.Width()));
 
 
 			if ( fmt_->GetTextAlignment() == DWRITE_TEXT_ALIGNMENT_TRAILING )
@@ -732,7 +737,7 @@ void D2DTextbox::Clear(int md)
 }
 FRectF D2DTextbox::GetVsrollbarRect() const
 {
-	FRectF rc(rctext_);
+	FRectF rc(rc_); //rctext_);
 	rc.right += vscrollbar_.Width();
 	rc.left = rc.right - vscrollbar_.Width();
 	return rc;
@@ -743,11 +748,13 @@ FRectF D2DTextbox::GetClientRect() const
 { 
 	DWRITE_TEXT_METRICS m;
 
+	auto rctext = RectText();
+
 	if (ctrl()->GetLayout() )
 	{ 
 		m = ctrl()->GetLayout()->GetTextMetrics();
 
-		FRectF rc = rctext_.ZeroRect();
+		FRectF rc = rctext.ZeroRect();
 		rc.bottom = rc.top + m.height;
 
 		int pos = ctrl()->CurrentCaretPos();
@@ -768,19 +775,26 @@ FRectF D2DTextbox::GetClientRect() const
 		rc.Offset( 0, m.height);
 
 		if ( rc.Height() == 0 )
-			rc.SetHeight( rctext_.Height());
+			rc.SetHeight( rctext.Height());
 
 		return rc;   // 候補の表示位置, candidate
 	}
-	return rctext_;
+	return rctext;
 }
 
 
+// 文字の表示領域を返す
+// rc_はtextboxの外枠であり、表示領域ではない
+
+FRectF D2DTextbox::RectText() const
+{
+	return rc_.InflateRect(-5,-2);
+}
 
 float D2DTextbox::sc_barTotalHeight(bool bHbar)
 {
 	if ( bHbar )
-		return rctext_.Height();
+		return rc_.Height();
 
 	return 0;
 

@@ -81,9 +81,9 @@ namespace V6
 	public :
 		void CreateControl(D2DWindow* parent, D2DControls* pacontrol, TYP typ, const FRectF& rc, DWORD stat, LPCWSTR name, int local_id = -1);
 		virtual void Draw(D2DContext& cxt) override;
-		virtual FRectF GetRect() const override { return rctext_; }
-		virtual FRectF& GetRectSmooth() override { return rctext_; }
-		virtual void SetRect(const FRectF& rc)  override { rctext_ = rc; }
+		virtual FRectF GetRect() const override { return rc_; }
+		virtual FRectF& GetRectSmooth() override { return rc_; }
+		virtual void SetRect(const FRectF& rc)  override { rc_ = rc; }
 		virtual std::wstring GetTreeTyp(USHORT* typ) override;
 	public :
 		//static void* CreateInputControl(D2DWindow* parent);
@@ -118,9 +118,9 @@ namespace V6
 		// ScrollbarParent interface
 		virtual float sc_barTotalHeight(bool bHbar) override;
 		virtual float sc_dataHeight(bool bHbar) override;
-
+		FRectF RectText() const;
 	protected :		
-		FRectF rctext_;
+		FRectF rc_;
 		IBridgeTSFInterface::TYP typ_;		
 		IDWriteTextFormat* fmt_;
 		ComPTR<IDWriteTextLayout> text_layout_;		

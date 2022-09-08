@@ -116,23 +116,23 @@ static UIHandleWin CreateTopControl(HWND hWnd)
 	// Textbox controlを作成
 	FRectF rctextbox(100, 40, FSizeF(600, 30));
 	UIHandle tx1 = D2DCreateTextbox(root, rctextbox, false, STAT_DEFAULT, L"textbox1");		
-	D2DSetFont(tx1, L"Arial", 20, true, 0 );
+	D2DSetFont(tx1, L"メイリオ", 20, true, 0 );
 	D2DSetText(tx1, L"Left alignment"); 
 
 
 	rctextbox.Offset(0,40);
 	UIHandle tx2 = D2DCreateTextbox(root, rctextbox, false, STAT_DEFAULT, L"textbox2");		
-	D2DSetFont(tx2, L"Arial", 20, true,1 );
+	D2DSetFont(tx2, L"メイリオ", 20, true,1 );
 	D2DSetText(tx2, L"Center"); 
 
 	rctextbox.Offset(0,40);
 	UIHandle tx3 = D2DCreateTextbox(root, rctextbox, false, STAT_DEFAULT, L"textbox3");		
-	D2DSetFont(tx3, L"Arial", 20, true,2 );
+	D2DSetFont(tx3, L"メイリオ", 20, true,2 );
 	D2DSetText(tx3, L"Right"); 
 
-
-	//UIHandle h = D2DCreateEmptyControls( root, FRectF(0,0,1000,1000), STAT_DEFAULT, L"textbox1");
-	//D2DSendMessage(h, WM_D2D_SET_BKMODE, 4, 0);
+	UIHandle tx4 = D2DCreateTextbox(root, FRectF(100,400,1000,1000), true, STAT_DEFAULT, L"textbox4");		
+	D2DSetFont(tx4, L"メイリオ", 20, true,0 );
+	D2DSetText(tx4, L"MultiLine"); 
 
 	//----------------------------------------------
 	return uihwin;

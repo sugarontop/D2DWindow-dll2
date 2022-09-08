@@ -277,10 +277,12 @@ class FRectF : public D2D1_RECT_F
 			bottom = b;
 
 		}
-		void InflateRect( float cx, float cy )
+		FRectF InflateRect( float cx, float cy ) const
 		{
-			left -= cx; top -= cy;
-			right += cx; bottom += cy;
+			FRectF rc(*this);
+			rc.left -= cx; rc.top -= cy;
+			rc.right += cx; rc.bottom += cy;
+			return rc;
 		}
 		FRectF& Inflate( float cx, float cy )
 		{
@@ -424,10 +426,8 @@ class FRectF : public D2D1_RECT_F
 		}
 
 		static FRectF InflateRect( const FRectF& rc, float cx, float cy )
-		{
-			FRectF rc1(rc);
-			rc1.InflateRect( cx, cy );
-			return rc1;
+		{			
+			return rc.InflateRect( cx, cy );			
 		}
 
 		void MoveCenter( const FRectF& rc )
