@@ -133,6 +133,7 @@ namespace V6
 		ColorF border_;
 		DWRITE_FONT_WEIGHT font_weight_;
 		bool isImeOn_;
+		int alignment_;
 		
 	};
 };

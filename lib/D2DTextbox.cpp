@@ -36,6 +36,7 @@ void D2DTextbox::CreateControl(D2DWindow* parent, D2DControls* pacontrol, TYP ty
 	isImeOn_ = false;
 	font_weight_ = DWRITE_FONT_WEIGHT_NORMAL;
 	fmt_ = parent->GetContext().textformat_;
+	alignment_ = 0;
 	
 	if (IsMultiline())
 	{
@@ -120,9 +121,9 @@ void D2DTextbox::Draw(D2DContext& cxt)
 				// draw caret
 				{
 					int xpos = ctrl()->CurrentCaretPos();
-					FRectF rc;
+					FRectF rc = RectText().ZeroRect();
 					bool blf;
-					if(  ctrl()->GetLayout()->RectFromCharPosEx(xpos-1, &rc, &blf) )
+					if(  ctrl()->GetLayout()->RectFromCharPosEx(xpos-1,alignment_, &rc, &blf) )
 					{
 						if ((::GetTickCount64() / 500)%2 == 0)							
 							(*cxt)->FillRectangle( FRectF(rc.right, rc.top, FSizeF(CARET_W, rc.Height())), fore );
@@ -557,7 +558,7 @@ void D2DTextbox::AutoScroll()
 			FRectF rctext = RectText();
 			FRectF rc;
 			bool blf;
-			if (ctrl()->GetLayout()->RectFromCharPosEx(pos-1, &rc, &blf))
+			if (ctrl()->GetLayout()->RectFromCharPosEx(pos-1,alignment_, &rc, &blf))
 				ct_.offpt_.x = min(9000.0f, max(0.0f,  rc.right - 0.93f*rctext.Width()));
 
 
@@ -593,6 +594,7 @@ bool D2DTextbox::SetFont(LPCWSTR fontnm, float fontheight, int align, bool bold)
 		D2DContext::SetTextAlign(fmt_, align);
 
 		text_layout_ = nullptr;
+		alignment_ = align;
 
 		return true;
 	}	

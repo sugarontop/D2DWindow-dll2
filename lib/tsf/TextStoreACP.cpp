@@ -582,7 +582,7 @@ STDAPI CTextStore::GetTextExt(TsViewCookie vcView, LONG acpStart, LONG acpEnd, R
     FRectF rcEnd;
     bool blf1,blf=false;
 
-    bool b1 = _pEditor->GetLayout()->RectFromCharPosEx(acpStart, &rcStart,&blf1) ;
+    bool b1 = _pEditor->GetLayout()->RectFromCharPosEx(acpStart,-1, &rcStart,&blf1) ;
     bool b2 = _pEditor->GetLayout()->RectFromCharPos(acpEnd, &rcEnd);
     
    *prc={0};
@@ -603,7 +603,7 @@ STDAPI CTextStore::GetTextExt(TsViewCookie vcView, LONG acpStart, LONG acpEnd, R
         {
             FRectF rcPrv;
      
-            _pEditor->GetLayout()->RectFromCharPosEx(acpStart-1, &rcPrv, &blf);
+            _pEditor->GetLayout()->RectFromCharPosEx(acpStart-1,-1, &rcPrv, &blf);
 
             prc->left = Round(rcPrv.right);
             prc->right =prc->left;

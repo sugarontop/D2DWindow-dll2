@@ -55,7 +55,7 @@ class CTextLayout
 	public :
 		int CharPosFromPoint(const FPointF& pt);
 		BOOL RectFromCharPos(UINT nPos, FRectF *prc);
-		BOOL RectFromCharPosEx(int nPos, FRectF *prc, bool* blf);
+		BOOL RectFromCharPosEx(int nPos,int alignment, FRectF *prc, bool* blf);
 
 		UINT FineFirstEndCharPosInLine(UINT uCurPos, BOOL bFirst);
 

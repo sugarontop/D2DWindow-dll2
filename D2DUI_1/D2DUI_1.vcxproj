@@ -195,6 +195,7 @@
     <ClInclude Include="..\lib\D2DWhiteControl.h" />
     <ClInclude Include="..\lib\D2DWhiteWindow.h" />
     <ClInclude Include="..\lib\D2DXXXControls.h" />
+    <ClInclude Include="D2DConsole.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
@@ -241,6 +242,7 @@
     <ClCompile Include="..\lib\tsf\TextStoreACP.cpp" />
     <ClCompile Include="..\lib\tsf\undo.cpp" />
     <ClCompile Include="D2D1UI_1.cpp" />
+    <ClCompile Include="D2DConsole.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

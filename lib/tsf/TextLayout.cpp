@@ -209,22 +209,34 @@ BOOL CTextLayout::Render(D2DContext& cxt, ID2D1SolidColorBrush* brtxt, const FRe
 
 BOOL CTextLayout::RectFromCharPos(UINT nPos, FRectF *prc)
 {
-	return RectFromCharPosEx( (int)nPos, prc, nullptr );
+	return RectFromCharPosEx( (int)nPos, -1, prc, nullptr );
  }
 
-BOOL CTextLayout::RectFromCharPosEx(int nPos, FRectF *prc, bool* blf)
+BOOL CTextLayout::RectFromCharPosEx(int nPos,int alignment, FRectF *prc, bool* blf)
 {
 	if ( nPos < 0 )
 	{		
-		prc->left = prc->top = 0;
-		prc->bottom = nLineHeight_; 
-		prc->right=TSF_FIRST_POS;
-
-
 		if ( !CharPosMap_.empty())
 		{
 			*prc = CharPosMap_[0].rc;
 			prc->right=prc->left + TSF_FIRST_POS;
+		}
+		else if (alignment == 0 || alignment == -1) // left
+		{
+			prc->left = 0;
+			prc->bottom = prc->top + nLineHeight_; 
+			prc->right=TSF_FIRST_POS;
+		}
+		else if (alignment == 1) // center
+		{
+			prc->left = (prc->left+prc->right)/2;
+			prc->bottom = prc->top + nLineHeight_; 
+			prc->right = prc->left+ TSF_FIRST_POS;
+		}
+		else if ( alignment == 2) // right
+		{
+			prc->left = prc->right - TSF_FIRST_POS;
+			prc->bottom = prc->top + nLineHeight_; 		
 		}
 		return TRUE;
 	}

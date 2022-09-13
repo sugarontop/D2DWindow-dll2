@@ -75,6 +75,9 @@
     <ClInclude Include="..\lib\D2DEmptyControls.h">
       <Filter>ソース ファイル\D2D</Filter>
     </ClInclude>
+    <ClInclude Include="D2DConsole.h">
+      <Filter>ソース ファイル\D2D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -210,6 +213,9 @@
       <Filter>ソース ファイル\D2D</Filter>
     </ClCompile>
     <ClCompile Include="..\lib\D2DEmptyControls.cpp">
+      <Filter>ソース ファイル\D2D</Filter>
+    </ClCompile>
+    <ClCompile Include="D2DConsole.cpp">
       <Filter>ソース ファイル\D2D</Filter>
     </ClCompile>
   </ItemGroup>
