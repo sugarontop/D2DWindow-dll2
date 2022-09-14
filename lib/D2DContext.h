@@ -25,7 +25,7 @@ class D2DContext
 		void SwapChain();
 		void Redraw(){	bRedraw_=true;}
 
-		void CreateDeviceIndependentResources( float fontheight);
+		bool CreateDeviceIndependentResources( float fontheight);
 		void CreateDeviceResources(ID2D1DeviceContext* target);
 
 		ID2D1DeviceContext* operator *(){ return target_; }
@@ -56,7 +56,7 @@ class D2DContext
 		bool bRedraw_;
 		void* temp_;
 
-		ComPTR<IDWriteTextFormat> tsf_text_format_;
+		//ComPTR<IDWriteTextFormat> tsf_text_format_;
 		ComPTR<IDWriteFactory> tsf_wfactory_;
 
 	protected :

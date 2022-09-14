@@ -549,6 +549,8 @@ void CTextEditor::Render(D2DContext& cxt, DWRITE_TEXT_METRICS*ptm, ID2D1SolidCol
 //----------------------------------------------------------------
 void CTextEditor::CalcRender(D2DContext& cxt,IDWriteTextFormat* tf )
 {
+	_ASSERT(bri_);
+	
 	int x = 0;
 	
 	if ( tf == nullptr )

@@ -29,6 +29,7 @@ DLLEXPORT HANDLE WINAPI D2DInstanceInitail(INT_PTR p );
 DLLEXPORT UIHandle WINAPI D2DCreateWhiteWindow( UIHandle hctrls, const D2D1_RECT_F& rc, DWORD stat, LPCWSTR name, int id=-1 );
 DLLEXPORT UIHandle WINAPI D2DCreateSquarePaper(UIHandle hctrls, const D2D1_RECT_F& rc, DWORD stat, LPCWSTR name, int id=-1 );
 DLLEXPORT UIHandle WINAPI D2DCreateTextbox(UIHandle ctrls, const D2D1_RECT_F& rc, bool multiline, DWORD stat, LPCWSTR name, int id=-1, int ext=-1 );
+DLLEXPORT UIHandle WINAPI D2DCreateConsole(UIHandle hctrls, const D2D1_RECT_F& rc, DWORD stat, LPCWSTR name, int id, int ext=-1 );
 DLLEXPORT UIHandle WINAPI D2DCreateButton(UIHandle ctrls , const D2D1_RECT_F& rc, DWORD stat, LPCWSTR name, int id=-1);
 DLLEXPORT UIHandle WINAPI D2DCreateDropdownListbox(UIHandle ctrls , const D2D1_RECT_F& rc, DWORD stat, LPCWSTR name, int id=-1);
 DLLEXPORT UIHandle WINAPI D2DCreateControls(UIHandle ctrls, const D2D1_RECT_F& rc, DWORD stat, LPCWSTR name, int id=-1);

@@ -43,6 +43,9 @@ void D2DTextbox::CreateControl(D2DWindow* parent, D2DControls* pacontrol, TYP ty
 		vscrollbar_.Create(this, FRectF(rc_.right, rc_.top, rc_.right + BARW, rc_.bottom));
 		ct_.bSingleLine_ = false;
 	}
+
+	_ASSERT(ctrl());
+	ctrl()->SetContainer( &ct_, this ); 
 }
 D2DTextbox::~D2DTextbox()
 {
@@ -146,12 +149,12 @@ void D2DTextbox::Draw(D2DContext& cxt)
 			mat.Offset(0, -vscrollbar_.Scroll());
 			mat_sc_ = mat.Copy();
 
+			
 			if ( text_layout_ == nullptr ) //&& fmt_ != nullptr)
 			{
 				ctrl()->CalcRender( cxt, fmt_ );	
 				ctrl()->GetLayout()->GetTextLayout( &text_layout_ );
 			}
-		
 			
 			(*cxt)->DrawTextLayout(FPointF(0,0), text_layout_, fore);			
 		
@@ -483,6 +486,7 @@ LRESULT D2DTextbox::WndProc(AppBase& b, UINT msg, WPARAM wp, LPARAM lp)
 		break;
 		case WM_LBUTTONDBLCLK:
 			bl = true;
+			SetFont(L"Arial Black", 40, 0, false);
 		break;
 
 	}
@@ -726,10 +730,10 @@ void D2DTextbox::Clear(int md)
 	if ( md == 0 )
 	{
 		// textformat‚àclear
-		if ( fmt_ != parent_window_->GetContext().textformat_ )
-			fmt_->Release();
-	
-		fmt_ = nullptr;
+		//if ( fmt_ != parent_window_->GetContext().textformat_ )
+		//	fmt_->Release();
+		//else	
+			fmt_ = nullptr;
 	}
 	auto ctrl = (TSF::CTextEditorCtrl*)this->parent_window_->tsf_.ctrl;
 

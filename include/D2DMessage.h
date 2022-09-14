@@ -74,6 +74,7 @@ typedef DWORD (*D2DEventHandlerDelegate)(void* sender,LPCWSTR eventName, void* p
 #define TYP_LOGIN 19
 #define TYP_SQLDATAGRID 21
 #define TYP_TAB_CONTROLS_ITEM 22
+#define TYP_CONSOLE 23
 
 #define theWhite D2RGB(255,255,255)
 #define theBlack D2RGB(0,0,0)

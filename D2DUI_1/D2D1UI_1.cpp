@@ -25,6 +25,7 @@
 #include "D2DInstance.h"
 #include "D2DSqlDataGrid.h"
 #include "D2DEmptyControls.h"
+#include "D2DConsole.h"
 
 using namespace V6;
 #define  APP (D2DApp::GetInstance())
@@ -574,6 +575,33 @@ DLLEXPORT UIHandle WINAPI D2DCreateTextbox(UIHandle hctrls, const D2D1_RECT_F& r
 	return r;
 }
 
+
+DLLEXPORT UIHandle WINAPI D2DCreateConsole(UIHandle hctrls, const D2D1_RECT_F& rc, DWORD stat, LPCWSTR name, int id, int ext )
+{
+	_ASSERT(hctrls.p);
+	
+	auto pgtx = new D2DConsole(); 	
+
+	auto ctrls = (D2DControls*)hctrls.p;
+	auto win = ctrls->GetParent();
+
+	pgtx->CreateControl(win,ctrls, rc, stat, name, id );
+	ctrls->Add( std::shared_ptr<D2DConsole>(pgtx));	
+
+
+	//int xx = pgtx->GetStat();
+
+	//if ( ext == 1 )
+	//	pgtx->SetTypPassword();
+	//else if ( ext == 2 )
+	//	pgtx->SetReadonly(true);
+
+	UIHandle r;
+	r.p = static_cast<D2DControl*>(pgtx);
+	r.typ = TYP_CONSOLE;
+	return r;
+}
+
 D2DControl* D2DCastControl(UIHandle h )
 {
 	D2DControl* p2 = (D2DControl*)h.p;
@@ -996,7 +1024,11 @@ DLLEXPORT bool WINAPI D2DSetFont(UIHandle h, LPCWSTR fontnm, float height, bool 
 	{
 		auto tx = static_cast<D2DTextbox*>( D2DCastControl(h));
 		return tx->SetFont(fontnm, height, align, bold );
-
+	}
+	else if ( h.typ == TYP_CONSOLE )
+	{
+		auto tx = static_cast<D2DConsole*>( D2DCastControl(h));
+		tx->SetFont(fontnm, height, align, bold );
 	}
 	return false;
 }

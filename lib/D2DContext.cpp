@@ -9,26 +9,25 @@ using namespace V6;
 #undef THR
 static void THR( HRESULT x){ if (x!= S_OK) throw x; }
 
-void D2DContext::CreateDeviceIndependentResources( float fontheight)
+bool D2DContext::CreateDeviceIndependentResources( float fontheight)
 {
 	ComPTR<IDWriteFactory> dwriteFactory;	
 	textformat_.Release();
 	default_font_height_ = fontheight;
 
-
-
 	if ( SOK(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), (IUnknown**) &dwriteFactory)))
 	{
 		wfactory_ = dwriteFactory;
-		if (SOK(dwriteFactory->CreateTextFormat(L"MS–¾’©", NULL, DWRITE_FONT_WEIGHT_REGULAR,
-			DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL,fontheight, LOCALE, & textformat_)))
+		if (SOK(dwriteFactory->CreateTextFormat(L"MS –¾’©", NULL, DWRITE_FONT_WEIGHT_REGULAR,
+			DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL,fontheight, LOCALE, &textformat_)))
 			{
-				tsf_text_format_ = textformat_;
 				tsf_wfactory_ = dwriteFactory;
+				return true;
 			}
 			
 	}
 
+	return false;
 	
 
 }

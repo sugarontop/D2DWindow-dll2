@@ -67,7 +67,7 @@
 #define GET_X_LPARAM(lp)                        ((int)(short)LOWORD(lp))
 #define GET_Y_LPARAM(lp)                        ((int)(short)HIWORD(lp))
 
-
+ 
 using namespace std::placeholders;
 
 #include "D2DMisc.h"
@@ -82,7 +82,7 @@ typedef _bstr_t BS;
 #pragma warning( disable : 26812 )
 #pragma warning( disable : 26495 )
 
-#define LOCALE	L"ja-jp"
+#define LOCALE	L"ja-JP"
 
 
 #endif //PCH_H
