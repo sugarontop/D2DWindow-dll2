@@ -90,6 +90,8 @@ namespace V6
 		static void DestroyInputControl(){};
 		void StatActive(bool bActive);		
 		void SetTypPassword();
+		void SetLink(LPVOID p){ link_=p; }
+		LPVOID GetLink(){ return link_; }
 
 		static std::wstring Ascii2W( LPCSTR s );
 		static std::string W2Ascii( LPCWSTR s );
@@ -106,6 +108,9 @@ namespace V6
 		void SetSinglelineText(LPCWSTR str, int len, int insert_pos );
 		void ImeActive(bool bActive);
 		void Undo();
+
+		
+
 	public:
 		// D2DCaptureObject interface
 		virtual LRESULT WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam) override;
@@ -134,6 +139,7 @@ namespace V6
 		DWRITE_FONT_WEIGHT font_weight_;
 		bool isImeOn_;
 		int alignment_;
+		LPVOID link_;
 		
 	};
 };

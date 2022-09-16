@@ -37,6 +37,7 @@ void D2DTextbox::CreateControl(D2DWindow* parent, D2DControls* pacontrol, TYP ty
 	font_weight_ = DWRITE_FONT_WEIGHT_NORMAL;
 	fmt_ = parent->GetContext().textformat_;
 	alignment_ = 0;
+	link_ = nullptr;
 	
 	if (IsMultiline())
 	{

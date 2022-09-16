@@ -1025,11 +1025,11 @@ DLLEXPORT bool WINAPI D2DSetFont(UIHandle h, LPCWSTR fontnm, float height, bool 
 		auto tx = static_cast<D2DTextbox*>( D2DCastControl(h));
 		return tx->SetFont(fontnm, height, align, bold );
 	}
-	else if ( h.typ == TYP_CONSOLE )
+	/*else if ( h.typ == TYP_CONSOLE )
 	{
 		auto tx = static_cast<D2DConsole*>( D2DCastControl(h));
 		tx->SetFont(fontnm, height, align, bold );
-	}
+	}*/
 	return false;
 }
 

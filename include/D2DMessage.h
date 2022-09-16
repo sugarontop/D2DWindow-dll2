@@ -135,7 +135,7 @@ typedef DWORD (*D2DEventHandlerDelegate)(void* sender,LPCWSTR eventName, void* p
 
 #define WM_D2D_SET_BKMODE						(WM_APP+32) // w=0:transparent, w=1:default, ..
 #define WM_D2D_SET_TAB_POSITION					(WM_APP+33) // LPARAM=0:top tba, LPARAM=1: bottom tab
-#define  WM_D2D_SET_ACTIVE_CONTROL				(WM_APP+34) // LPARAM is idx
+#define WM_D2D_SET_ACTIVE_CONTROL				(WM_APP+34) // LPARAM is idx
 
 
 #define WM_D2D_USER_FIRST						(WM_APP+4000) // for your application
