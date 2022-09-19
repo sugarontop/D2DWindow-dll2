@@ -47,6 +47,11 @@ namespace V6
 			virtual void Draw(D2DContext& cxt) override;
 
 			virtual void CreateControl(D2DWindow* parent, D2DControls* pacontrol, const FRectF& rc, DWORD stat, LPCWSTR name, int local_id = -1);
+		protected :
+			float sc_dataHeight();
+			float sc_barThumbHeight();
+			float sc_barTotalHeight();
+			bool  sc_MouseMove(FPointF& pt);
 		private :
 			D2DColor back_;
 			D2DColor fore_;
@@ -56,6 +61,9 @@ namespace V6
 			std::shared_ptr<D2DScrollbar> vbar_;
 
 			float lastpos_;
+			float offbar_y_;
+			int scstat_;
+			float scbarThumbHeight_;
 	};
 
 

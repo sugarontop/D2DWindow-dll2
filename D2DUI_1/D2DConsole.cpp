@@ -7,6 +7,7 @@
 using namespace V6;
 using namespace TOOL;
 
+#define  APP (D2DApp::GetInstance())
 
 #define LINE_HEIGHT 26
 #define TEMP_HEIGHT 100
@@ -26,11 +27,16 @@ void D2DConsole::CreateControl(D2DWindow* parent, D2DControls* pacontrol, const 
 	FRectF rcscb(0,0,FSizeF(20, rc.Height()));
 	vbar_ = std::make_shared<D2DScrollbar>();
 	vbar_->CreateControl(parent, this, rcscb, STAT_DEFAULT, NONAME);
+	vbar_->SetSize(rc_.Size());
+	vbar_->SetMaxSize(rc_.Size().height);
 
 
 	this->back_ = ColorF::Black;
 	this->fore_ = ColorF::White;
 	lastpos_ = 0;
+	offbar_y_ = 0;
+	scstat_ =0;
+	scbarThumbHeight_ = 0;
 
 
 	FRectF rctext(0,0, FSizeF(rc.Width(), LINE_HEIGHT ));
@@ -80,6 +86,8 @@ LRESULT D2DConsole::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lPar
 				input_->SetLink(one.get());
 
 				lastpos_ += LINE_HEIGHT;
+
+				vbar_->SetMaxSize(lastpos_);
 			}
 		}
 		break;
@@ -97,16 +105,147 @@ LRESULT D2DConsole::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lPar
 			}
 		}
 		break;
+		case WM_LBUTTONDOWN:
+		{
+			MouseParam* mp = (MouseParam*)lParam;
+            auto pt = mat_.DPtoLP(mp->pt);
+			FRectF rcz = rc_.ZeroRect();		
+			
+            if (rcz.PtInRect(pt))
+            {
+                //ptold = pt;
+
+                if ( rcz.right - BARW < pt.x && pt.x < rcz.right)
+                {
+                    APP.SetCapture(this);
+                    scstat_ = 3;
+					r = 1;
+                }
+				
+			}
+		}
+		break;
+		case WM_LBUTTONUP:
+        {            
+            scstat_ = 0;
+
+			if ( APP.IsCapture(this))
+			{
+				APP.ReleaseCapture();
+				r = 1;
+			}
+
+            break;
+        }
+		break;
+		case WM_MOUSEMOVE:
+        {
+            MouseParam* mp = (MouseParam*)lParam;
+            auto pt = mat_.DPtoLP(mp->pt);
+            auto md = (rc_.ZeroRect().PtInRect(pt) ? 1: 0 );
+
+           /* if (mouse_stat_ != md )
+            {
+                mouse_stat_ = md;
+                b.bRedraw = true;
+
+            }*/
+
+            if ( md == 1 )
+            {
+                /*auto y = pt.y + offbar_y_ * scbai_;
+                int idx = (int)(y / rowheight);
+
+                if (rc_.ZeroRect().PtInRect(pt))
+                {
+                    b.bRedraw = true;
+                    if ( idx != float_idx_  && -1 < idx  && InnerRect(rc_).ZeroRect().PtInRect(pt))
+                    {
+                        float_idx_ = idx;
+                    }
+                }*/
+
+				if ( APP.IsCapture(this))
+				{
+					if ( scstat_ == 3)
+					{						
+						sc_MouseMove(pt);
+						b.bRedraw = true;
+						r = 1;
+					}
+				}
+
+                
+            }
+        }
+        break;
+		case WM_MOUSEWHEEL:
+		{
+			MouseParam* mp = (MouseParam*)lParam;
+            auto pt = mat_.DPtoLP(mp->pt);
+            auto md = (rc_.ZeroRect().PtInRect(pt) ? 1 : 0);
+			//auto md = (rc_.PtInRect(pt) ? 1 : 0);
+
+            if ( md == 1 )
+            {
+				r = InnerWndProc(b,message,wParam,lParam);
+
+				if( r == 0)
+				{
+					float a = 0;
+					if (mp->zDelta > 0)
+						a = -10.0f;
+					if (mp->zDelta < 0)
+						 a= 10.0f;
+
+					//vbar_->Offset(a);
+					offbar_y_ = max(0,min(sc_dataHeight(), offbar_y_+a ));
+
+
+					if ( offbar_y_ + sc_barThumbHeight() > rc_.Height())
+						offbar_y_ = rc_.Height()- sc_barThumbHeight();
+
+
+				}
+				r = 1;
+            }
+		}
+		break;
 	}
 
 	if ( r == 0 )
-		r = D2DControls::DefWndProc(b,message,wParam,lParam);
+		r = InnerWndProc(b,message,wParam,lParam); //D2DControls::DefWndProc(b,message,wParam,lParam);
 
 
 
 	return r;
 }
 
+float D2DConsole::sc_dataHeight()
+{
+	return lastpos_;
+}
+float D2DConsole::sc_barThumbHeight()
+{
+	return scbarThumbHeight_;
+}
+
+float D2DConsole::sc_barTotalHeight()
+{
+	return rc_.Height();
+}
+static FPointF ptold;
+bool D2DConsole::sc_MouseMove(FPointF& pt)
+{
+    offbar_y_ = max(0, offbar_y_ + (pt.y - ptold.y));
+
+    offbar_y_ = min(sc_barTotalHeight()-sc_barThumbHeight()+BARW, offbar_y_);
+
+    ptold = pt;
+
+    return false;
+}
+#define _min_thum_height 24.0f
 
 void D2DConsole::Draw(D2DContext& cxt)
 {
@@ -117,22 +256,48 @@ void D2DConsole::Draw(D2DContext& cxt)
 
 		D2DRectFilter f(cxt, rc_);
 
-		mat_ = mat.Offset(rc_); // ç∂è„Ç(0,0)Ç∆ÇµÇƒï\é¶
-		
-		auto rc = rc_.ZeroRect();
-		
 		auto back = mk_color(back_);
-		
+		(*cxt)->FillRectangle(rc_, back);
 
-		(*cxt)->FillRectangle(rc, back);
-	
-		(*cxt)->DrawRectangle(rc, cxt.black_);
-		
+		mat_ = mat.Offset(rc_.left, rc_.top); // - offbar_y_); //
+
+		mat.PushTransform();
+		mat.Offset(0,-offbar_y_);
 		this->InnerDraw(cxt);
+		mat.PopTransform();
+
+		mat.PushTransform();
+		{
+			mat.Offset(0.0f, offbar_y_);
+			//mat.Offset(0, rc_.top - offbar_y_); // ç∂è„Ç(0,0)Ç∆ÇµÇƒï\é¶
+
+			float overflow = max(0, sc_dataHeight() - sc_barTotalHeight());
+			scbarThumbHeight_ = sc_barTotalHeight() - overflow;
+			const float min_thum_height = _min_thum_height;
+			float scbai_ = 1.0f;
+			if (scbarThumbHeight_ < min_thum_height)
+			{
+				scbarThumbHeight_ = min_thum_height;
+				scbai_ = (sc_dataHeight() - sc_barTotalHeight()) / (sc_barTotalHeight() - scbarThumbHeight_); 
+			}
+
+			FRectF scbar(rc_.Size().width - BARW, 0, rc_.Size().width, scbarThumbHeight_);
+			cxt.DFillRect(scbar, D2RGB(225,5,5));
+		}
+		mat.PopTransform();
 
 
-		mat.Offset(rc_.Width(), 0);
-		vbar_->Draw2(cxt);
+		//mat_ = mat.Offset(rc_.left, rc_.top - offbar_y_); // ç∂è„Ç(0,0)Ç∆ÇµÇƒï\é¶
+		
+		//auto rc = rc_.ZeroRect();
+	
+		//(*cxt)->DrawRectangle(rc, cxt.black_);
+		
+		
+
+
+		//mat.Offset(rc_.Width()-BARW, 0);
+		//vbar_->Draw2(cxt);
 
 		mat.PopTransform();
 
@@ -167,7 +332,7 @@ LRESULT D2DLineInput::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lP
 	}
 
 	if ( r == 0 )
-		r = D2DControls::DefWndProc(b,message,wParam,lParam);
+		r = InnerWndProc(b,message,wParam,lParam);
 	return r;
 }
 void D2DLineInput::Draw(D2DContext& cxt)
@@ -233,7 +398,7 @@ LRESULT D2DSampleOutput::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 	}
 
 	if ( r == 0 )
-		r = D2DControls::DefWndProc(b,message,wParam,lParam);
+		r = InnerWndProc(b,message,wParam,lParam);
 	return r;
 }
 
