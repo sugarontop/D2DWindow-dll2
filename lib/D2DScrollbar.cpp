@@ -193,3 +193,11 @@ void D2DScrollbar::Offset( float off )
 	offset_ = min(VIEW_SIZE-thumb_size_, offset_);
 }
 
+//void D2DScrollbar::SetScrollBottom()
+//{
+//	offset_ = VIEW_SIZE-thumb_size_;
+//}
+//void D2DScrollbar::SetScrollTop()
+//{
+//	offset_ = 0;
+//}

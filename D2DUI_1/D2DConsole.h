@@ -52,6 +52,7 @@ namespace V6
 			float sc_barThumbHeight();
 			float sc_barTotalHeight();
 			bool  sc_MouseMove(FPointF& pt);
+			void sc_barSetBottom();
 		private :
 			D2DColor back_;
 			D2DColor fore_;

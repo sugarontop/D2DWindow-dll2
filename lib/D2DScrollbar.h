@@ -27,6 +27,8 @@ namespace V6 {
 			void SetMaxSize(float h){ max_size_=h; }
 			void Draw2(D2DContext& cxt);
 			void Offset( float off );
+			//void SetScrollBottom();
+			//void SetScrollTop();
 		protected :
 
 			bool bVertical_;

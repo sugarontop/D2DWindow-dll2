@@ -56,7 +56,33 @@ void D2DConsole::CreateControl(D2DWindow* parent, D2DControls* pacontrol, const 
 	lastpos_ += rctext.Height();
 
 }
+float D2DConsole::sc_dataHeight()
+{
+	return lastpos_;
+}
+float D2DConsole::sc_barThumbHeight()
+{
+	return scbarThumbHeight_;
+}
 
+float D2DConsole::sc_barTotalHeight()
+{
+	return rc_.Height();
+}
+
+void D2DConsole::sc_barSetBottom()
+{
+	float overflow = max(0, sc_dataHeight() - sc_barTotalHeight());
+	scbarThumbHeight_ = sc_barTotalHeight() - overflow;
+
+
+	offbar_y_ = sc_dataHeight();
+	if ( offbar_y_ + sc_barThumbHeight() > rc_.Height())
+		offbar_y_ = rc_.Height()- sc_barThumbHeight();
+
+
+}
+static FPointF ptold;
 LRESULT D2DConsole::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT r = 0;
@@ -88,6 +114,13 @@ LRESULT D2DConsole::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lPar
 				lastpos_ += LINE_HEIGHT;
 
 				vbar_->SetMaxSize(lastpos_);
+
+
+
+				sc_barSetBottom();
+
+				
+				r = 1;
 			}
 		}
 		break;
@@ -95,8 +128,6 @@ LRESULT D2DConsole::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lPar
 		{
 			if ( (D2DControl*)wParam == static_cast<D2DControl*>(input_.get()) )
 			{
-				int a = 0;
-
 				D2DLineInput* p = (D2DLineInput*)input_->GetLink();
 
 				p->OnCommand(2);
@@ -118,6 +149,7 @@ LRESULT D2DConsole::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lPar
                 if ( rcz.right - BARW < pt.x && pt.x < rcz.right)
                 {
                     APP.SetCapture(this);
+					ptold = pt;
                     scstat_ = 3;
 					r = 1;
                 }
@@ -151,7 +183,7 @@ LRESULT D2DConsole::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lPar
 
             }*/
 
-            if ( md == 1 )
+            //if ( md == 1 )
             {
                 /*auto y = pt.y + offbar_y_ * scbai_;
                 int idx = (int)(y / rowheight);
@@ -171,8 +203,10 @@ LRESULT D2DConsole::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lPar
 					{						
 						sc_MouseMove(pt);
 						b.bRedraw = true;
-						r = 1;
+						
 					}
+
+					r = 1;
 				}
 
                 
@@ -221,20 +255,8 @@ LRESULT D2DConsole::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lPar
 	return r;
 }
 
-float D2DConsole::sc_dataHeight()
-{
-	return lastpos_;
-}
-float D2DConsole::sc_barThumbHeight()
-{
-	return scbarThumbHeight_;
-}
 
-float D2DConsole::sc_barTotalHeight()
-{
-	return rc_.Height();
-}
-static FPointF ptold;
+
 bool D2DConsole::sc_MouseMove(FPointF& pt)
 {
     offbar_y_ = max(0, offbar_y_ + (pt.y - ptold.y));
@@ -358,6 +380,8 @@ void D2DLineInput::Draw(D2DContext& cxt)
 	}
 
 }
+
+#include "D2DEmptyControls.h"
 void D2DLineInput::OnCommand(int typ)
 {
 
@@ -365,9 +389,15 @@ void D2DLineInput::OnCommand(int typ)
 	{
 		
 		FRectF rc(0,0, FSizeF(rc_.Width(), TEMP_HEIGHT ));
-		auto one = std::make_shared<D2DSampleOutput>();
+		
+		//auto one = std::make_shared<D2DSampleOutput>();
+
+		auto one = std::make_shared<D2DEmptyControls>();
 		one->CreateControl(parent_window_, this, rc, STAT_DEFAULT, NONAME );
 		this->Add(one);
+
+		
+
 
 		_ASSERT(this->controls_.size() == 1);
 

@@ -487,8 +487,9 @@ LRESULT D2DTextbox::WndProc(AppBase& b, UINT msg, WPARAM wp, LPARAM lp)
 		break;
 		case WM_LBUTTONDBLCLK:
 			bl = true;
-			SetFont(L"Arial Black", 40, 0, false);
+			//SetFont(L"Arial Black", 40, 0, false);
 		break;
+		
 
 	}
 		 
