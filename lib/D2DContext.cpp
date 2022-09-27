@@ -165,7 +165,10 @@ void D2DContext::InitializeRenderTarget()
 		dxgiSurface.p,
 		D2D1::BitmapProperties1(
 			D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
-			D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE)),
+			D2D1::PixelFormat(
+				DXGI_FORMAT_B8G8R8A8_UNORM, 
+				D2D1_ALPHA_MODE_IGNORE)				
+			),
 		&d2d1RenderTarget);
 	
 	target_->SetTarget(d2d1RenderTarget.p);

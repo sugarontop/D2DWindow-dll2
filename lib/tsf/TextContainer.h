@@ -56,6 +56,8 @@ class CTextContainer
 		UndoTextEditor::BInfo Undo();
 		void UndoAdjust();
 
+		std::wstring GetRowText(int pos);
+
 	private :
 		int nSelStart_, nSelEnd_;
 	public :

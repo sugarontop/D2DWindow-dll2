@@ -56,7 +56,9 @@ BOOL CTextContainer::InsertText(int nPos, const WCHAR *psz, UINT nCnt, UINT& nRe
 	_ASSERT(nTextSize_ + nCnt < nBufferCharCount_);
 
 	// move target area text to last.
-	memmove(psz_ + nPos + nCnt, psz_ + nPos, (nTextSize_ - nPos) * sizeof(WCHAR));
+	_ASSERT( 0<=nPos && nTextSize_ >= (UINT)nPos );
+	
+	memmove(psz_ + nPos + nCnt, psz_ + nPos, (nTextSize_ - (UINT)nPos) * sizeof(WCHAR));
 	
 	// add new text
 	memcpy(psz_ + nPos, psz, nCnt * sizeof(WCHAR));
@@ -70,6 +72,18 @@ BOOL CTextContainer::InsertText(int nPos, const WCHAR *psz, UINT nCnt, UINT& nRe
 
 	nResultCnt = nCnt;
 	return TRUE;
+}
+
+std::wstring CTextContainer::GetRowText(int pos)
+{
+	int a = pos;
+	
+	while( 0 < a && psz_[a-1] !=L'\n')
+		a--;
+
+	int len = pos - a;
+
+	return std::wstring(psz_+a, len);
 }
 
 BOOL CTextContainer::RemoveText(int nPos, UINT nCnt, bool undo_process)
@@ -165,7 +179,7 @@ BOOL CTextContainer::EnsureBuffer(UINT nNewTextSize)
 LONG CTextContainer::AddTab(int row, bool bAdd )
 {
 	UINT nResultCnt;
-	int irow = 0, pos = 0;
+	int irow = 0, pos = 0, head_tabcnt=0, head=0;
 
 	auto ch = psz_[pos];
 	while(ch!=0)
@@ -175,12 +189,26 @@ LONG CTextContainer::AddTab(int row, bool bAdd )
 		
 		ch = psz_[pos];
 		if (ch == L'\n')
+		{
 			irow++;
+			head_tabcnt = 0;
+			head=0;
+		}
+		else if ( ch == L'\t' && head == 0)
+			head_tabcnt++;
+		else
+			head++;
+
 		pos++;
 	}
 
 	if ( bAdd )
-		InsertText(pos, L"\t",1, nResultCnt);
+	{
+		//head_tabcnt = max(1,head_tabcnt);
+
+		for(int i=0; i < head_tabcnt; i++ )
+			InsertText(pos, L"\t",1, nResultCnt);
+	}
 	else
 		RemoveText(pos, 1);
 

@@ -20,6 +20,8 @@ using namespace V6::TOOL;
 std::wstring MoneyString( const std::wstring& text );
 
 
+
+
 D2DTextbox::D2DTextbox():back_(D2RGB(255,255,255)),fore_(D2RGB(0,0,0)),border_(D2RGB(0,0,0))
 {
 
@@ -235,6 +237,12 @@ bool D2DTextbox::OnChangeFocus(bool bActive, D2DCaptureObject*)
 	return true;
 }
 
+void D2DTextbox::OnPushPreReturn()
+{
+	if ( !IsMultiline() )
+		parent_window_->SendMessage(WM_D2D_ON_TEXTBOX_RETURN, (WPARAM)this,0);
+}
+
 LRESULT D2DTextbox::WndProc(AppBase& b, UINT msg, WPARAM wp, LPARAM lp)
 {
 	if ( !BITFLG(STAT_ENABLE) )
@@ -340,15 +348,13 @@ LRESULT D2DTextbox::WndProc(AppBase& b, UINT msg, WPARAM wp, LPARAM lp)
 					bool bControl = ((GetKeyState(VK_CONTROL)& 0x80) != 0);    
 
 
-					if ( wp == VK_RETURN && !IsMultiline() )
-					{						
-						parent_window_->SendMessage(WM_D2D_ON_TEXTBOX_RETURN, (WPARAM)this,0);
-						ret = 1;
+					if ( wp == VK_RETURN  )
+					{					
+						OnPushPreReturn();
 					}
 					else if ( (wp == 'z' || wp == 'Z') && bControl )
 					{
 						Undo();
-						ret = 1;		
 					}
 
 					ret = 1;
@@ -449,12 +455,10 @@ LRESULT D2DTextbox::WndProc(AppBase& b, UINT msg, WPARAM wp, LPARAM lp)
 		{
 			if (APP.IsCapture(this))
 			{
-				bool on_bl = (WPARAM)(wp==1);
-
-
-				isImeOn_ = on_bl;
-
-				bl = false; ret=1; 
+				isImeOn_ = (wp==1);
+				
+				bl = false; 
+				ret=1; 
 			}
 		}
 		break;

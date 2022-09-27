@@ -130,11 +130,11 @@ static UIHandleWin CreateTopControl(HWND hWnd)
 	D2DSetFont(tx3, L"メイリオ", 20, true,2 );
 	D2DSetText(tx3, L"Right"); 
 
-	//UIHandle tx4 = D2DCreateTextbox(root, FRectF(100,200,1000,1000), true, STAT_DEFAULT, L"textbox4");	
-	//D2DSetFont(tx4, L"MS 明朝", 20, false,0 );
+	UIHandle tx4 = D2DCreateTextbox(root, FRectF(100,200,1000,1000), true, STAT_DEFAULT, L"textbox4");	
+	D2DSetFont(tx4, L"MS 明朝", 16, false,0 );
 
 
-	UIHandle tx4 = D2DCreateConsole(root, FRectF(900,10,FSizeF(500,800)), STAT_DEFAULT, L"console1", 1);	
+	//UIHandle tx4 = D2DCreateConsole(root, FRectF(900,10,FSizeF(500,800)), STAT_DEFAULT, L"console1", 1);	
 	//D2DSetFont(tx4, L"HGS行書体", 25, false,0 );
 
 	//----------------------------------------------

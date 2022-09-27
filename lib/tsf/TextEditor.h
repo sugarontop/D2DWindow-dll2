@@ -73,6 +73,7 @@ class CTextEditor
 		int GetTextLength(){ return ct_->GetTextLength(); }
 
 		RECT CandidateRect( RECT rc) const;
+		int GetRowText( std::wstring* pstr);
 
 		BOOL IsImeOn() const;
 		void OnChangeIME(bool bOn);

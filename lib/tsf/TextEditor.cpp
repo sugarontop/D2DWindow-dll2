@@ -369,6 +369,32 @@ void CTextEditor::InvalidateRect()
     ::InvalidateRect(hWnd_, NULL, FALSE);
 #endif
 }
+
+//----------------------------------------------------------------
+//
+// カレント行とtab数を取得
+//
+//----------------------------------------------------------------
+int CTextEditor::GetRowText(std::wstring* str)
+{
+	auto s = ct_->GetRowText(ct_->SelStart());
+	
+	int cnt = 0;
+
+	for(int i=0; i < s.length(); i++)
+	{
+		if ( s[i] == '\t')
+			cnt++;
+		else
+			break;
+	}
+
+	if ( str )
+		*str = s;
+
+	return cnt;
+}
+
 //----------------------------------------------------------------
 //
 //
@@ -918,8 +944,25 @@ LRESULT CTextEditorCtrl::WndProc(TSFApp* d, UINT message, WPARAM wParam, LPARAM 
                             if ( wch == L'\r' )
                                 wch = L'\n';
 
-                            const WCHAR wc[2] = { wch, 0 }; 
-                            this->InsertAtSelection(wc);
+							if ( wch != L'\n' )
+							{
+								const WCHAR wc[2] = { wch, 0 }; 							
+								this->InsertAtSelection(wc);
+							}
+							else
+							{
+								// \n -> auto insert tab
+
+								WCHAR cb[256]={0};
+
+								int cnt = this->GetRowText(nullptr);
+
+								cb[0] = wch;
+								for(int i=0; i < cnt; i++ )
+									cb[i+1] = L'\t';
+																
+								this->InsertAtSelection(cb);
+							}
                             ret = 1;
                         }				   
                     }

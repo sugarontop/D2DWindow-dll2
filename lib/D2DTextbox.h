@@ -99,7 +99,7 @@ namespace V6
 	protected :
 		void ActiveSw(bool bActive);
 		static std::wstring ConvertInputText(LPCWSTR text, int typ);
-		
+		void OnPushPreReturn();
 		void AutoScroll();
 		FRectF GetVsrollbarRect() const;
 		TSF::CTextEditorCtrl* ctrl() const;
@@ -133,13 +133,13 @@ namespace V6
 		D2DMat mat_sc_;
 		Scrollbar vscrollbar_;
 		DWRITE_TEXT_METRICS tm_;
-		ColorF back_;
-		ColorF fore_;
-		ColorF border_;
+		ColorF back_,fore_,border_;
+
 		DWRITE_FONT_WEIGHT font_weight_;
 		bool isImeOn_;
 		int alignment_;
 		LPVOID link_;
+		
 		
 	};
 };
