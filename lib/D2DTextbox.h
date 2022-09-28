@@ -52,6 +52,14 @@ namespace V6
 			int pos_;
 	};
 
+	struct SingleLineHeader
+	{
+		ComPTR<IDWriteTextLayout> header;
+	
+	};
+
+
+
 	class D2DTextbox: 
 		public D2DControl,
 		public IBridgeTSFInterface, 
@@ -139,7 +147,7 @@ namespace V6
 		bool isImeOn_;
 		int alignment_;
 		LPVOID link_;
-		
+		ComPTR<IDWriteTextLayout> singleline_header_;
 		
 	};
 };

@@ -49,12 +49,42 @@ void D2DTextbox::CreateControl(D2DWindow* parent, D2DControls* pacontrol, TYP ty
 
 	_ASSERT(ctrl());
 	ctrl()->SetContainer( &ct_, this ); 
+
+
+	/*if ( alignment_ == 0 )
+	{
+		LPCWSTR s = L"C:\\User\\Document>";
+
+		parent->GetContext().CreateTextLayout(s, FSizeF
+
+	}*/
+
 }
 D2DTextbox::~D2DTextbox()
 {
 	Clear();
 }
+void D2DTextbox::Clear(int md)
+{
+	ct_.Reset();
+	text_layout_.Release();
+	vscrollbar_.SetTotalHeight(0);
+	tm_ = {};
 
+	if ( md == 0 )
+	{
+		// textformatもclear
+		//if ( fmt_ != parent_window_->GetContext().textformat_ )
+		//	fmt_->Release();
+		//else	
+			fmt_ = nullptr;
+	}
+	auto ctrl = (TSF::CTextEditorCtrl*)this->parent_window_->tsf_.ctrl;
+
+	if (ctrl)
+		ctrl->Clear();
+
+}
 void D2DTextbox::SetTypPassword()
 {
 	typ_ = IBridgeTSFInterface::TYP::PASSWORD;
@@ -147,6 +177,7 @@ void D2DTextbox::Draw(D2DContext& cxt)
 		}
 		else
 		{			
+			
 			// Editorなし
 			mat.Offset(rctext);
 			mat.Offset(0, -vscrollbar_.Scroll());
@@ -160,7 +191,15 @@ void D2DTextbox::Draw(D2DContext& cxt)
 			}
 			
 			(*cxt)->DrawTextLayout(FPointF(0,0), text_layout_, fore);			
-		
+			
+			if (singleline_header_)
+			{
+				DWRITE_TEXT_METRICS mt;
+				singleline_header_->GetMetrics(&mt);
+				mat.Offset(-mt.width, 0);
+				(*cxt)->DrawTextLayout(FPointF(0,0), singleline_header_, fore);		
+			}
+
 		}
 
 		mat.PopTransform();
@@ -196,6 +235,20 @@ void D2DTextbox::ActiveSw(bool bActive)
 	_ASSERT(ctrl()->ct_);
 
 	ctrl()->CalcRender( cxt, fmt_);
+
+
+	//if ( this->alignment_ == 0 )
+	//{
+	//	LPCWSTR s = L"C:\\User\\Document>";
+	//	header_.reset();
+
+	//	header_ = std::unique_ptr<SingleLineHeader>( new SingleLineHeader());
+
+	//	ComPTR<IDWriteTextLayout> c;
+	//	cxt.CreateTextLayout2(s,wcslen(s), rc_.Size(), fmt_, &c );
+	//	header_->header = c;
+	//}
+
 	
 	text_layout_ = nullptr;
 	ctrl()->GetLayout()->GetTextLayout( &text_layout_ );
@@ -314,8 +367,6 @@ LRESULT D2DTextbox::WndProc(AppBase& b, UINT msg, WPARAM wp, LPARAM lp)
 
 		}
 		break;		
-
-
 		case WM_CHAR:		
 		case WM_KEYDOWN:
 		case WM_KEYUP:
@@ -497,12 +548,11 @@ LRESULT D2DTextbox::WndProc(AppBase& b, UINT msg, WPARAM wp, LPARAM lp)
 
 	}
 		 
-
+	// CTextEditorCtrl::WndProc
+	// 1 キーまたはマウスでのセレクションの処理
+	// 2 文字入力と\n\rまたは\t の処理
 	if ( bl )
-		ret = ctrl()->WndProc( &app, msg, wp, lp ); // WM_CHAR,WM_KEYDOWNの処理など
-
-
-		
+		ret = ctrl()->WndProc( &app, msg, wp, lp );
 		
 	if (mouse_mode == 1)
 	{			
@@ -514,7 +564,6 @@ LRESULT D2DTextbox::WndProc(AppBase& b, UINT msg, WPARAM wp, LPARAM lp)
 
 	if (msg == WM_KEYDOWN && ret == 1)
 	{
-
 		AutoScroll();
 	}
 		
@@ -726,27 +775,7 @@ bool D2DTextbox::GetSelectText(std::wstringstream* out, bool crlf )
 	return false;
 }
 
-void D2DTextbox::Clear(int md)
-{
-	ct_.Reset();
-	text_layout_.Release();
-	vscrollbar_.SetTotalHeight(0);
-	tm_ = {};
 
-	if ( md == 0 )
-	{
-		// textformatもclear
-		//if ( fmt_ != parent_window_->GetContext().textformat_ )
-		//	fmt_->Release();
-		//else	
-			fmt_ = nullptr;
-	}
-	auto ctrl = (TSF::CTextEditorCtrl*)this->parent_window_->tsf_.ctrl;
-
-	if (ctrl)
-		ctrl->Clear();
-
-}
 FRectF D2DTextbox::GetVsrollbarRect() const
 {
 	FRectF rc(rc_); //rctext_);
@@ -800,7 +829,15 @@ FRectF D2DTextbox::GetClientRect() const
 
 FRectF D2DTextbox::RectText() const
 {
-	return rc_.InflateRect(-5,-2);
+	if (!IsMultiline() && singleline_header_ )
+	{		
+		DWRITE_TEXT_METRICS mt;
+		singleline_header_->GetMetrics(&mt);
+		return rc_.InflateRect(-mt.width-5,-2);
+	}
+	
+	
+	return rc_.InflateRect(-5,-2);	
 }
 
 float D2DTextbox::sc_barTotalHeight(bool bHbar)

@@ -99,7 +99,7 @@ const FRectF* CharsRectF::Create(LPCWSTR str, const FSizeF&  sz, int slen, int* 
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-int CreateTextLayout::Create( int zStartPos, int zCaretPos, IDWriteTextLayout** layout)
+int CreateTextLayout::CreateDWriteTextLayout( int zStartPos, int zCaretPos, IDWriteTextLayout** layout)
 {
 	if ( IsSibleLine_ )
 		return CreateSingleTextLayout(zStartPos,zCaretPos,layout);

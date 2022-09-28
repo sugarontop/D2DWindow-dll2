@@ -121,7 +121,7 @@ BOOL CTextLayout::CreateLayout(D2DContext& cxt, const WCHAR *psz, int nCnt,const
 	{		
 		CreateTextLayout ct(cxt.tsf_wfactory_, psz, nCnt, fmt, sz, bSingleLine_);
 
-		StarCharPos = ct.Create( StarCharPos, zCaret, &DWTextLayout_ ); //★TextLayout_
+		StarCharPos = ct.CreateDWriteTextLayout( StarCharPos, zCaret, &DWTextLayout_ ); //★TextLayout_
 
 		_ASSERT(DWTextLayout_);
 

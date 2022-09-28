@@ -166,7 +166,7 @@ class CreateTextLayout
 			IsSibleLine_ = IsSibleLine;
 		}
 
-		int Create( int zStartPos, int zCaretPos, IDWriteTextLayout** layout);
+		int CreateDWriteTextLayout( int zStartPos, int zCaretPos, IDWriteTextLayout** layout);
 	private :
 		int CreateMultiTextLayout( int zStartPos, int zCaretPos, IDWriteTextLayout** layout);
 		int CreateSingleTextLayout( int zStartPos, int zCaretPos, IDWriteTextLayout** layout);
