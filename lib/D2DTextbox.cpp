@@ -22,7 +22,7 @@ std::wstring MoneyString( const std::wstring& text );
 
 
 
-D2DTextbox::D2DTextbox():back_(D2RGB(255,255,255)),fore_(D2RGB(0,0,0)),border_(D2RGB(0,0,0))
+D2DTextbox::D2DTextbox():back_(ColorF::White),fore_(ColorF::Black),border_(ColorF::Black)
 {
 
 }
@@ -49,16 +49,6 @@ void D2DTextbox::CreateControl(D2DWindow* parent, D2DControls* pacontrol, TYP ty
 
 	_ASSERT(ctrl());
 	ctrl()->SetContainer( &ct_, this ); 
-
-
-	/*if ( alignment_ == 0 )
-	{
-		LPCWSTR s = L"C:\\User\\Document>";
-
-		parent->GetContext().CreateTextLayout(s, FSizeF
-
-	}*/
-
 }
 D2DTextbox::~D2DTextbox()
 {
@@ -67,18 +57,15 @@ D2DTextbox::~D2DTextbox()
 void D2DTextbox::Clear(int md)
 {
 	ct_.Reset();
-	text_layout_.Release();
+	text_layout_ = nullptr; //.Release();
 	vscrollbar_.SetTotalHeight(0);
 	tm_ = {};
+	singleline_header_ = nullptr;
+	link_ = nullptr;
 
 	if ( md == 0 )
-	{
-		// textformat‚àclear
-		//if ( fmt_ != parent_window_->GetContext().textformat_ )
-		//	fmt_->Release();
-		//else	
-			fmt_ = nullptr;
-	}
+		fmt_ = nullptr;
+
 	auto ctrl = (TSF::CTextEditorCtrl*)this->parent_window_->tsf_.ctrl;
 
 	if (ctrl)
@@ -235,20 +222,6 @@ void D2DTextbox::ActiveSw(bool bActive)
 	_ASSERT(ctrl()->ct_);
 
 	ctrl()->CalcRender( cxt, fmt_);
-
-
-	//if ( this->alignment_ == 0 )
-	//{
-	//	LPCWSTR s = L"C:\\User\\Document>";
-	//	header_.reset();
-
-	//	header_ = std::unique_ptr<SingleLineHeader>( new SingleLineHeader());
-
-	//	ComPTR<IDWriteTextLayout> c;
-	//	cxt.CreateTextLayout2(s,wcslen(s), rc_.Size(), fmt_, &c );
-	//	header_->header = c;
-	//}
-
 	
 	text_layout_ = nullptr;
 	ctrl()->GetLayout()->GetTextLayout( &text_layout_ );
@@ -257,8 +230,6 @@ void D2DTextbox::ActiveSw(bool bActive)
 void D2DTextbox::StatActive(bool bActive)
 { 
 	ActiveSw(bActive);
-
-	
 
 	if (bActive)
 	{			
@@ -637,8 +608,9 @@ int D2DTextbox::CurrentPos() const
 }
 bool D2DTextbox::SetFont(LPCWSTR fontnm, float fontheight, int align, bool bold)
 {
-	if ( fmt_ != parent_window_->GetContext().textformat_ )
-		fmt_->Release();		
+	StatActive(true);
+
+	//this->ct_;
 
 	fmt_ = nullptr;
 

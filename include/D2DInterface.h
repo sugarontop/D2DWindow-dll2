@@ -7,7 +7,7 @@ namespace V6
 
 	typedef  bool (*DelegateDrawFunc)(LPVOID captureobj, ID2D1DeviceContext* cxt);
 	typedef LRESULT(*DelegateProcFunc)(LPVOID captureobj, AppBase& b, UINT message, WPARAM wParam, LPARAM lParam);
-	typedef DWORD(*DelegateClick)(void* sender,LPCWSTR funcnm, void* p );
+	typedef DWORD(*DelegateClick)(UIHandle sender,LPCWSTR funcnm, void* p );
 
 	class XDropdownListBox
 	{

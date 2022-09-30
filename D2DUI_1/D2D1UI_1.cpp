@@ -865,7 +865,7 @@ DLLEXPORT bool WINAPI D2DSetOnClick(UIHandle h, DelegateClick func)
 	
 	if ( btn )
 	{
-		std::function<DWORD(void* sender,LPCWSTR funcnm, void* p )> fn = func;
+		std::function<DWORD(UIHandle sender,LPCWSTR funcnm, void* p )> fn = func;
 
 		btn->click_ = fn;		
 		return true;
@@ -1398,7 +1398,12 @@ DLLEXPORT void WINAPI D2DEventHandler( UIHandle h, D2DEventHandlerDelegate handl
 		return;
 	}
 
-
+	auto p2 = dynamic_cast<D2DSimpleListbox*>(D2DCastControl( h ));	
+	if ( p2 )
+	{
+		p2->click_ = handler;
+		return;
+	}
 
 }
 DLLEXPORT UIHandle WINAPI D2DSetLastControl(UIHandle h)

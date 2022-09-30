@@ -126,7 +126,11 @@ LRESULT  D2DButton::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lPar
 
 						if ( click_ )
 						{
-							click_(this, L"CLICK", nullptr);
+							UIHandle h;
+							h.p = this;
+							h.typ = TYP_BUTTON;
+							
+							click_(h, L"CLICK", nullptr);
 
 						}
 						else

@@ -361,7 +361,13 @@ LRESULT D2DSimpleListbox::WndProcForControl(AppBase& b, UINT message, WPARAM wPa
 		{
 			int typ = (int)wParam;
 
-			if ( typ == 1 )
+			if ( typ == 0 )
+			{
+				LPCWSTR str = (LPCWSTR)lParam;
+				auto i = items_.size();
+				items_.push_back( std::make_shared<D2DListboxItemString>(i, std::wstring(str))); 
+			}
+			else if ( typ == 1 )
 			{			
 				ID2D1Bitmap* cs = (ID2D1Bitmap*)lParam;
 				typ_ = 0;
@@ -499,6 +505,16 @@ LRESULT D2DSimpleListbox::WndProcNormal(AppBase& b, UINT message, WPARAM wParam,
                 if (InnerRect(rc_).ZeroRect().PtInRect(pt) )
                     selected_idx_ = idx;
 
+				if (click_)
+				{
+					UIHandle h;
+					h.p = this;
+					h.typ = TYP_SIMPLE_LISTBOX;
+
+
+					click_(h, L"click", &selected_idx_);
+
+				}
 
                 return 1;
             }
@@ -622,7 +638,13 @@ LRESULT D2DSimpleListbox::WndProcNormal(AppBase& b, UINT message, WPARAM wParam,
 		{
 			int typ = (int)wParam;
 
-			if ( typ == 1 )
+			if ( typ == 0 )
+			{
+				LPCWSTR str = (LPCWSTR)lParam;
+				auto i = items_.size();
+				items_.push_back( std::make_shared<D2DListboxItemString>(i, std::wstring(str))); 
+			}
+			else if ( typ == 1 )
 			{			
 				ID2D1Bitmap* cs = (ID2D1Bitmap*)lParam;
 				typ_ = 0;
@@ -648,7 +670,7 @@ LRESULT D2DSimpleListbox::WndProcNormal(AppBase& b, UINT message, WPARAM wParam,
 		}
 		break;
 
-		case WM_D2D_SELECTED_ITEM:
+		case WM_D2D_GET_SELECTED_IDX:
 		case WM_D2D_CB_GETSELECT:
 		{			
 			int* r = (int*)lParam;
@@ -657,6 +679,24 @@ LRESULT D2DSimpleListbox::WndProcNormal(AppBase& b, UINT message, WPARAM wParam,
 
 			ret=1;
 
+		}
+		break;
+		case WM_D2D_GET_SELECTED_STRING:
+		{
+			if ( 0 <= selected_idx_ && selected_idx_ < items_.size())
+			{
+				auto p = items_[selected_idx_];
+
+				if ( dynamic_cast<D2DListboxItemString*>(p.get()))
+				{
+					D2DListboxItemString* p1 = dynamic_cast<D2DListboxItemString*>(p.get());
+					BSTR* r = (BSTR*)lParam;
+					*r = ::SysAllocString(p1->text().c_str());
+
+				}
+
+			}
+			ret = 1;
 		}
 		break;
 		case WM_D2D_COMMAND_SET:

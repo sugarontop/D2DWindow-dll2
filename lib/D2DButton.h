@@ -27,7 +27,7 @@ namespace V6
 
 		public :
 			std::wstring GetText() const { return text_; }
-			std::function<DWORD(void* sender,LPCWSTR funcnm, void* p )> click_;
+			std::function<DWORD(UIHandle sender,LPCWSTR funcnm, void* p )> click_;
 			static void CreateButtonBrush(D2DContext& cxt,float height, bool normal, ID2D1LinearGradientBrush** pbr);
 		protected :
 			

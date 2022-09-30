@@ -43,7 +43,8 @@ struct D2DNMHDR
 	LPCWSTR prm2;
 };
 
-typedef DWORD (*D2DEventHandlerDelegate)(void* sender,LPCWSTR eventName, void* param);
+
+typedef DWORD (*D2DEventHandlerDelegate)(UIHandle sender,LPCWSTR eventName, void* param);
 
 
 #define NONAME		(L"__NONAME")
@@ -125,7 +126,7 @@ typedef DWORD (*D2DEventHandlerDelegate)(void* sender,LPCWSTR eventName, void* p
 #define WM_D2D_CB_GETSELECT						(WM_APP+22)
 #define WM_D2D_MINIMUM_SIZE						(WM_APP+23)
 #define WM_D2D_INET_COMPLETE					(WM_APP+24)
-#define WM_D2D_SELECTED_ITEM					(WM_APP+25)
+#define WM_D2D_GET_SELECTED_IDX					(WM_APP+25)
 #define WM_D2D_SMOOTH_COMPLETE					(WM_APP+26)
 #define WM_D2D_COMMAND_SET						(WM_APP+27)	
 #define WM_D2D_COMMAND_GET						(WM_APP+28)
@@ -136,7 +137,7 @@ typedef DWORD (*D2DEventHandlerDelegate)(void* sender,LPCWSTR eventName, void* p
 #define WM_D2D_SET_BKMODE						(WM_APP+32) // w=0:transparent, w=1:default, ..
 #define WM_D2D_SET_TAB_POSITION					(WM_APP+33) // LPARAM=0:top tba, LPARAM=1: bottom tab
 #define WM_D2D_SET_ACTIVE_CONTROL				(WM_APP+34) // LPARAM is idx
-
+#define WM_D2D_GET_SELECTED_STRING				(WM_APP+35)
 
 #define WM_D2D_USER_FIRST						(WM_APP+4000) // for your application
 

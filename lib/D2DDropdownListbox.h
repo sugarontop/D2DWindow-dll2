@@ -31,7 +31,7 @@ namespace V6
 		virtual bool xSetSelect(int idx);
 		virtual void xClear();
 
-		std::function<DWORD(void* sender,LPCWSTR funcnm, void* p )> click_;
+		std::function<DWORD(UIHandle sender,LPCWSTR funcnm, void* p )> click_;
 	protected :
 		void OnClick();
 		void OnCloseListbox(int selected_idx);

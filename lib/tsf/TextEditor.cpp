@@ -662,7 +662,7 @@ void CTextEditor::Reset( IBridgeTSFInterface* bi )
 { 	
 	bri_ = bi;
 	
-	if ( bi )
+	if ( bri_ )
 	{
         FRectF rc =  bi->GetClientRect();
 
@@ -672,6 +672,11 @@ void CTextEditor::Reset( IBridgeTSFInterface* bi )
 
         if ( bi->GetType() == IBridgeTSFInterface::MULTILINE )
             ct_->view_size_.cx = (LONG)(rc.right - rc.left);
+	}
+	else
+	{
+		int a = 0;
+
 	}
 }
 
@@ -1001,8 +1006,8 @@ LRESULT CTextEditorCtrl::WndProc(TSFApp* d, UINT message, WPARAM wParam, LPARAM 
 //----------------------------------------------------------------
 void CTextEditorCtrl::DblClickSelection()
 {
-	auto nSelStart = GetSelectionStart();
-	auto nSelEnd = GetSelectionEnd();
+	int nSelStart = GetSelectionStart();
+	int nSelEnd = GetSelectionEnd();
 
 
 	// 後ろを検索
@@ -1037,9 +1042,6 @@ void CTextEditorCtrl::DblClickSelection()
 		nSelStart--;
 		p--;
 	}
-
-	if ( pr < 256 )
-		nSelStart++;
 
 	MoveSelection(nSelStart, nSelEnd,true);
 

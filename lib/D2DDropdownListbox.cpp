@@ -254,7 +254,11 @@ void D2DDropdownListbox::OnCloseListbox(int selected_idx)
 
 		if ( click_ )
 		{
-			click_(this, L"SELECT_CHANGE", &selected_idx_);
+			UIHandle h;
+			h.p = this;
+			h.typ = TYP_DROPDOWNLISTBOX;
+
+			click_(h, L"SELECT_CHANGE", &selected_idx_);
 
 		}
 		else

@@ -118,7 +118,7 @@ static UIHandleWin CreateTopControl(HWND hWnd)
 	UIHandle tx1 = D2DCreateTextbox(root, rctextbox, false, STAT_DEFAULT, L"textbox1");		
 	D2DSetFont(tx1, L"メイリオ", 20, true, 0 );
 	D2DSetText(tx1, L"Left alignment"); 
-
+	
 
 	rctextbox.Offset(0,40);
 	UIHandle tx2 = D2DCreateTextbox(root, rctextbox, false, STAT_DEFAULT, L"textbox2");		

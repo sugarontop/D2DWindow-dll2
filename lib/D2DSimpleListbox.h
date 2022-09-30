@@ -30,6 +30,7 @@ namespace V6
 			virtual float RowHeight() override;
 			void Clear();
 			virtual float ItemWidth() { return width_; }
+			std::wstring text() const { return title_; }
 		protected :			
 			float width_;
 			std::wstring title_;
@@ -86,10 +87,13 @@ namespace V6
 			float RowHeight() const;
 			void AddItem( const std::wstring& str);
 			void AddBitmapItem(ID2D1Bitmap* bmp);
+
+			std::function<DWORD(UIHandle sender,LPCWSTR funcnm, void* p )> click_;
+
 		protected :
 			LRESULT WndProcNormal(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam) ;
 			LRESULT WndProcForControl(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam) ;
-	protected:
+		protected:
 
 			bool OnEscape();
 			void OnClick();

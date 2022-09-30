@@ -52,13 +52,6 @@ namespace V6
 			int pos_;
 	};
 
-	struct SingleLineHeader
-	{
-		ComPTR<IDWriteTextLayout> header;
-	
-	};
-
-
 
 	class D2DTextbox: 
 		public D2DControl,
@@ -133,10 +126,12 @@ namespace V6
 		virtual float sc_dataHeight(bool bHbar) override;
 		FRectF RectText() const;
 	protected :		
+		ComPTR<IDWriteTextFormat> fmt_;
+		ComPTR<IDWriteTextLayout> text_layout_;		
+		ComPTR<IDWriteTextLayout> singleline_header_;
+
 		FRectF rc_;
 		IBridgeTSFInterface::TYP typ_;		
-		IDWriteTextFormat* fmt_;
-		ComPTR<IDWriteTextLayout> text_layout_;		
 		TSF::CTextContainer ct_;
 		D2DMat mat_sc_;
 		Scrollbar vscrollbar_;
@@ -147,7 +142,5 @@ namespace V6
 		bool isImeOn_;
 		int alignment_;
 		LPVOID link_;
-		ComPTR<IDWriteTextLayout> singleline_header_;
-		
 	};
 };
