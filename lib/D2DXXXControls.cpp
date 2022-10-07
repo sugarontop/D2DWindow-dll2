@@ -86,7 +86,7 @@ LRESULT D2DXXXControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM 
 
 		case WM_D2D_MINIMUM_SIZE:
 		{			
-			if (rc_.Empty())
+			if (rc_.IsEmpty())
 				rc_.SetRect(0,0,FSizeF(500,700));
 
 

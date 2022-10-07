@@ -273,7 +273,7 @@ void D2DTabControls::CreateControl(D2DWindow* parent, D2DControls* pacontrol, co
 	InnerCreateWindow(parent,pacontrol,stat,name,local_id);
 
 
-	if (rc.Empty())
+	if (rc.IsEmpty())
 	{
 		auto xrc = parent_control_->GetRect();
 		rc_ = xrc.ZeroRect();

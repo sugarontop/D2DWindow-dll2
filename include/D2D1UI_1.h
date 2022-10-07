@@ -59,7 +59,7 @@ DLLEXPORT UIHandle WINAPI D2DGetTab(UIHandle hctrls, USHORT idx);
 DLLEXPORT UIHandle WINAPI D2DGetControlFromIdx(UIHandle hctrls, USHORT idx);
 DLLEXPORT bool WINAPI D2DIsControls(UIHandle h);
 
-DLLEXPORT void WINAPI D2DInnerDraw(UIHandle h, LPVOID cxt);
+DLLEXPORT void WINAPI D2DInnerDraw(UIHandle h);
 DLLEXPORT void WINAPI D2DDefaultDraw(UIHandle h);
 DLLEXPORT UIHandle WINAPI D2DCreateSqlDataGrid(UIHandle hctrls, const D2D1_RECT_F& rc, DWORD stat, LPCWSTR name, int id );
 
@@ -69,6 +69,9 @@ DLLEXPORT UIHandle WINAPI D2DCreateImage(UIHandle hctrls, const D2D1_RECT_F& rc,
 DLLEXPORT bool WINAPI D2DSetProcfunction(UIHandle, DelegateProcFunc func2);
 
 DLLEXPORT UIHandle WINAPI D2DCast(void* target);
+
+
+DLLEXPORT bool WINAPI D2DGetDWriteFormat(UIHandle h, IDWriteTextFormat** out);
 
 DLLEXPORT void WINAPI D2DSetFocus(UIHandle h);
 DLLEXPORT void WINAPI D2DSetText(UIHandle h, LPCWSTR str);

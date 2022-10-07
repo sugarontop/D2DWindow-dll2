@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -143,14 +143,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="chart\StockChart.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="MyControls.h" />
+    <ClInclude Include="D2DMyControls.h" />
+    <ClInclude Include="D2DMyStockChart.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\lib\inet.cpp" />
+    <ClCompile Include="chart\DataProvider.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\;..\..\D2DUI_1;$(SolutionDir)lib;$(SolutionDir)include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="chart\StockChart.cpp" />
     <ClCompile Include="D2DAppBaseControls.cpp" />
+    <ClCompile Include="D2DMyStockChart.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="MyControls.cpp" />
+    <ClCompile Include="D2DMyControls.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

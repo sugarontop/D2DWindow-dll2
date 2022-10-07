@@ -7,7 +7,7 @@ using namespace V6;
 #pragma comment (lib, "MySample")
 
 DLLEXPORT HANDLE MySample_CreateFreePainter( UIHandle parent );
-
+DLLEXPORT HANDLE MySample_CreateChartBox( UIHandle parent );
 
 
 UIHandle gtx1;
@@ -36,11 +36,13 @@ void Sample2(UIHandle parent, LPCWSTR name, FRectF rc, int id, int nest)
 
 	D2DSendMessage(tab, WM_D2D_SET_TAB_POSITION, 0, 0);
 
-	D2DSetText(tab, L"0:1st-empty");
+	D2DSetText(tab, L"0:chart");
 
 	auto t1 = D2DGetTab(tab, 0);
-	auto t1_1 = D2DCreateEmptyControls(t1, rc, STAT_DEFAULT, NONAME);
-	D2DSendMessage(t1_1, WM_D2D_SET_BKMODE, 2, 0);
+	//auto t1_1 = D2DCreateEmptyControls(t1, rc, STAT_DEFAULT, NONAME);
+	//D2DSendMessage(t1_1, WM_D2D_SET_BKMODE, 2, 0);
+
+	MySample_CreateChartBox(t1);
 
 	// 2 TAG------------------------------------------------------------------
 	auto t2 = D2DAddNewTab(tab, L"2nd");

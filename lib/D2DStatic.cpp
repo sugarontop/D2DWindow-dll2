@@ -30,7 +30,14 @@ void D2DStatic::Draw(D2DContext& cxt)
 	{
 		ComPTR<ID2D1SolidColorBrush> br;
 		cxt.CreateBrush(txt_clr_, &br);
-		(*cxt)->DrawTextLayout(rc_.LeftTop(), text_, br );
+
+		DWRITE_TEXT_METRICS tm;
+
+		text_->GetMetrics(&tm);
+
+		FPointF pt = rc_.RightTop(-tm.width);
+
+		(*cxt)->DrawTextLayout(pt, text_, br );
 	}
 	else
 	{

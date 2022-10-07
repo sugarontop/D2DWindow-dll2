@@ -294,7 +294,7 @@ class FRectF : public D2D1_RECT_F
 		{
 			left = right = top = bottom = 0;		
 		}
-		bool Empty() const
+		bool IsEmpty() const
 		{
 			return ( left==right && top == bottom );
 		}
@@ -352,9 +352,9 @@ class FRectF : public D2D1_RECT_F
 		{
 			return FPointF( left,bottom );
 		}
-		FPointF RightTop() const
+		FPointF RightTop( float offx=0, float offy=0) const
 		{
-			return FPointF( right,top );
+			return FPointF( right+offx,top+offy );
 		}
 		FPointF RightBottom() const
 		{

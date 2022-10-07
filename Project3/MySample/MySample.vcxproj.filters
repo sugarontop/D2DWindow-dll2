@@ -21,8 +21,14 @@
     <ClInclude Include="pch.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="MyControls.h">
+    <ClInclude Include="D2DMyControls.h">
       <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="D2DMyStockChart.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="chart\StockChart.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -38,7 +44,19 @@
     <ClCompile Include="D2DAppBaseControls.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="MyControls.cpp">
+    <ClCompile Include="D2DMyControls.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lib\inet.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="D2DMyStockChart.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="chart\StockChart.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="chart\DataProvider.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

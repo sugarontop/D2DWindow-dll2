@@ -3,7 +3,7 @@
 #include "appbase.h"
 #include "D2D1UI_1.h"
 #include "D2DAppBaseControls.h"
-#include "MyControls.h"
+#include "D2DMyControls.h"
 
 using namespace V6;
 

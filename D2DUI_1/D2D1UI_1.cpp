@@ -119,17 +119,17 @@ DLLEXPORT void WINAPI D2DDefaultDraw(UIHandle h)
 }
 
 
-DLLEXPORT void WINAPI D2DInnerDraw(UIHandle h, LPVOID cxt)
+DLLEXPORT void WINAPI D2DInnerDraw(UIHandle h)
 {
 	D2DControl* p = (D2DControl*)h.p;
 	D2DControls* p1 = dynamic_cast<D2DControls*>(p);
 	_ASSERT(p1);
 
-	D2DContext& cxt1 = *(D2DContext*)cxt;
+	//D2DContext& cxt1 = *(D2DContext*)cxt;
+
+	auto& cxt1 = p1->GetParent()->GetContext();
 
 	p1->InnerDraw(cxt1);
-
-
 }
 DLLEXPORT UIHandle WINAPI D2DCreateWhiteWindow(UIHandle hctrls, const D2D1_RECT_F& rc, DWORD stat, LPCWSTR name, int id )
 {
@@ -873,7 +873,17 @@ DLLEXPORT bool WINAPI D2DSetOnClick(UIHandle h, DelegateClick func)
 	return false;
 }
 
+DLLEXPORT bool WINAPI D2DGetDWriteFormat(UIHandle h, IDWriteTextFormat** out)
+{
+	// get default DWriteFormat.
 
+	D2DControl* p = (D2DControl*)h.p;
+	auto fmt = p->GetParent()->GetContext().textformat_;
+	fmt->AddRef();
+	*out = fmt;
+
+	return true;
+}
 
 
 DLLEXPORT void WINAPI D2DEnable(UIHandle h, bool enable)

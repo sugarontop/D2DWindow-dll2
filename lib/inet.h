@@ -2,10 +2,9 @@
 struct InternetInfo
 {
 	// input
-	bool bGet;
+	bool bGet;		// true:GET, false:POST
 	BSTR url;
 	BSTR postdata;
-
 	std::function<void(InternetInfo*)> complete;
 
 	// output
@@ -18,7 +17,7 @@ struct InternetInfo
 	IStream* pstream;
 };
 
-InternetInfo* CreateInternetInfo( );
+InternetInfo* CreateInternetInfo();
 void DeleteInternetInfo(InternetInfo* p);
 
 // ::CreateThread(0,0,InetAsync, info_, 0, &dw);
