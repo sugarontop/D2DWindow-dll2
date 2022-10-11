@@ -662,6 +662,24 @@ DLLEXPORT int WINAPI D2DAddItem(UIHandle h, LPCWSTR str)
 	return 0;
 }
 
+DLLEXPORT void WINAPI D2DSelectItem(UIHandle h, int idx)
+{
+	if ( h.typ == TYP_DROPDOWNLISTBOX )
+	{
+		auto cb = dynamic_cast<D2DDropdownListbox*>((D2DControl*)h.p);
+		if ( cb )
+			cb->xSetSelect(idx);
+
+	}
+	else if ( h.typ == TYP_SIMPLE_LISTBOX )
+	{
+		auto ls = dynamic_cast<D2DSimpleListbox*>((D2DControl*)h.p);
+		if ( ls )
+			ls->SetSelectedIdx(idx);
+	}
+
+}
+
 DLLEXPORT int WINAPI D2DAddBitmapItem(UIHandle h, ID2D1Bitmap* bmp)
 {
 	//if ( h.typ == TYP_DROPDOWNLISTBOX )
@@ -1095,6 +1113,37 @@ DLLEXPORT BSTR WINAPI D2DGetText(UIHandle h, bool bAll)
 
 		return ret;
 
+	}
+	else if ( h.typ == TYP_DROPDOWNLISTBOX )
+	{
+		auto ls = static_cast<D2DDropdownListbox*>( D2DCastControl(h));
+		int idx = ls->xGetSelect();
+
+		if ( -1 < idx )
+		{
+			std::wstring s;
+
+			if ( ls->xGetSelectString(&s))
+			{
+				BSTR ret = ::SysAllocString(s.c_str());
+				return ret;
+			}
+		}
+	}
+	else if ( h.typ == TYP_SIMPLE_LISTBOX )
+	{
+		auto ls = static_cast<D2DSimpleListbox*>( D2DCastControl(h));
+		int idx = ls->GetSelectedIdx();
+
+		if ( -1 < idx )
+		{
+			std::wstring s;
+			if ( ls->GetItemString(idx, &s) )
+			{
+				BSTR ret = ::SysAllocString(s.c_str());
+				return ret;
+			}
+		}
 	}
 
 	return nullptr;

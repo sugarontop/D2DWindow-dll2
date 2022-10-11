@@ -5,6 +5,10 @@
 struct DataProviderInfo
 {
 	LPVOID info;
+
+	std::wstring cd;
+	std::wstring interval;
+
 };
 struct DataProviderResult
 {
@@ -87,7 +91,7 @@ class StockChart
 {
 	public :
 		
-		bool Load(DataProvider& dp);
+		bool Load(DataProvider& dp,DataProviderInfo& dpi);
 		
 		void Draw(ID2D1DeviceContext* cxt);
 		void GenChartData(IStream* sm, std::vector<CandleData>& ar );

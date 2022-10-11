@@ -21,11 +21,10 @@ bool D2DMyStockChart::Draw(ID2D1DeviceContext* cxt)
 			cxt->FillRectangle(rc_.ZeroRect(), br);
 
 
-			br = nullptr;
-			clr = ColorF(ColorF::Black);
-			cxt->CreateSolidColorBrush(clr, &br);
-
-			cxt->DrawText(str_.c_str(), (UINT32)str_.length(), wformat_, rc_, br );
+			//br = nullptr;
+			//clr = ColorF(ColorF::Black);
+			//cxt->CreateSolidColorBrush(clr, &br);
+			//cxt->DrawText(str_.c_str(), (UINT32)str_.length(), wformat_, rc_, br );
 
 			
 			D2DInnerDraw(hndl_);
@@ -65,11 +64,23 @@ LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 			auto t1 = D2DCreateTextbox(hndl_, FRectF(63,5,FSizeF(100,h)), false, STAT_DEFAULT, L"cd");
 			auto t2 = D2DCreateButton(hndl_, FRectF(170,5,FSizeF(100,h)), STAT_DEFAULT, L"b1", 10);
 
+			D2DCreateStatic(hndl_, FRectF(350,7,FSizeF(55,h)), STAT_DEFAULT, L"INTV: ", NONAME);
+			auto t3 = D2DCreateDropdownListbox(hndl_, FRectF(408,5,FSizeF(100,h)),  STAT_DEFAULT, L"intv");
+
+
 			D2DSetText(t1, L"spy");
-			D2DSetText(t2,L"yahoo");
+			D2DSetText(t2,L"download");
+
+			D2DAddItem(t3, L"1d");
+			D2DAddItem(t3, L"1wk");
+			D2DSelectItem(t3,0);
+
 
 			D2DGetDWriteFormat(hndl_, &wformat_);
 			
+
+			cd_ = t1;
+			intv_ = t3;
 
 			r =1;
 		}
@@ -88,11 +99,20 @@ LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 
 				str_ = L"Click!";
 
-				//InetDataProvider pv;
-				FileDataProvider pv;
-				//StockChart st;
+				InetDataProvider pv;
+				//FileDataProvider pv;
 
-				st.Load(pv);
+
+				auto cd = D2DGetText(cd_); 
+
+				auto intv = D2DGetText(intv_);
+
+				DataProviderInfo dpi;
+				dpi.cd = cd;
+				dpi.interval = intv;
+				
+
+				st.Load(pv, dpi );
 
 				r = 1;
 			}

@@ -30,6 +30,7 @@ namespace V6
 		virtual int xGetSelect();
 		virtual bool xSetSelect(int idx);
 		virtual void xClear();
+		bool xGetSelectString(std::wstring* str);
 
 		std::function<DWORD(UIHandle sender,LPCWSTR funcnm, void* p )> click_;
 	protected :

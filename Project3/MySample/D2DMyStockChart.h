@@ -31,6 +31,8 @@ class D2DMyStockChart: public D2DAppBaseControls
 			USHORT dot_idx_;
 			StockChart st;
 
+			UIHandle cd_, intv_;
+
 	};
 
 };

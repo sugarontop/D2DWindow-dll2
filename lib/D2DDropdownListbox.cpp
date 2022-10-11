@@ -59,7 +59,9 @@ void D2DDropdownListbox::Draw(D2DContext& cxt)
         mat.Offset(0, rc_.Height());
 
         if ( ls_ )
-            ls_->Draw(cxt);
+		{			
+			ls_->Draw(cxt);
+		}
 
         mat.PopTransform();
     }
@@ -302,6 +304,18 @@ bool D2DDropdownListbox::xSetSelect(int idx)
     }
     return false;
 }
+
+bool D2DDropdownListbox::xGetSelectString(std::wstring* str)
+{
+	if ( selected_idx_ < 0 )
+		return false;
+
+	*str = dynamic_cast<D2DListboxItemString*>(selected_item_.get())->text();
+
+	return true;
+
+}
+
 void D2DDropdownListbox::xClear()
 {
     str_items_.clear();

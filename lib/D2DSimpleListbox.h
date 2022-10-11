@@ -81,12 +81,15 @@ namespace V6
 			virtual LRESULT WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam) override;
 
 			int GetSelectedIdx() const { return selected_idx_; }
+			void SetSelectedIdx(int idx);
 			virtual int GetTypeid() const override{ return TYP_SIMPLE_LISTBOX; }
 			virtual std::wstring GetTreeTyp(USHORT* typ) override;
 			
 			float RowHeight() const;
 			void AddItem( const std::wstring& str);
 			void AddBitmapItem(ID2D1Bitmap* bmp);
+			bool GetItemString(int idx, std::wstring* ret) const;
+			void DrawOverWrite(D2DContext& cxt);
 
 			std::function<DWORD(UIHandle sender,LPCWSTR funcnm, void* p )> click_;
 
@@ -124,6 +127,7 @@ namespace V6
 
 			std::vector< std::shared_ptr<D2DListboxItemBase> > items_;
 			D2DColor border_clr_,back_clr_,float_clr_,select_clr_;
+			D2DMat mat_in_capturing_;
 	};
 
 };

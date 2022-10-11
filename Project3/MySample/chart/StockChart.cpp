@@ -4,11 +4,10 @@
 
 using namespace V6;
 
-bool StockChart::Load(DataProvider& dp)
+bool StockChart::Load(DataProvider& dp, DataProviderInfo& dpi)
 {
-	DataProviderInfo info;
+	DataProviderInfo& info = dpi;
 	DataRpoviderOut ou;
-
 	
 	std::vector<CandleData> ar;
 
@@ -65,6 +64,10 @@ void StockChart::GenChartData(IStream* sm, std::vector<CandleData>& ar )
 
 
 		li.QuadPart += (LONGLONG)(i+1);
+
+		if (*p == '\r')
+			li.QuadPart += 1;
+
 
 		if ( S_OK != sm->Seek(li, STREAM_SEEK_SET, &uli))
 			break;

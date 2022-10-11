@@ -23,11 +23,23 @@ float D2DSimpleListbox::RowHeight() const
 	return ROW_HEIGHT;
 }
 
+void D2DSimpleListbox::DrawOverWrite(D2DContext& cxt)
+{
+	D2DMatrix mat(*cxt);
+	mat.PushTransform();
+	mat.ReplaceTransform(mat_in_capturing_);
+
+	Draw(cxt);
+
+	mat.PopTransform();
+}
 void D2DSimpleListbox::Draw(D2DContext& cxt)
 {
     if ( BITFLG(STAT_VISIBLE))
     {
         D2DMatrix mat(*cxt);
+		mat_in_capturing_ = mat.Copy();
+
         mat.PushTransform();
 
 		ComPTR<ID2D1SolidColorBrush> br,br2;
@@ -774,7 +786,29 @@ void D2DSimpleListbox::AddBitmapItem(ID2D1Bitmap* bmp)
 	int idx = (int)items_.size();
 	items_.push_back( std::make_shared<D2DListboxItemImage>(idx, bmp)); 
 }
+void D2DSimpleListbox::SetSelectedIdx( int idx)
+{
+	if ( idx < (int)items_.size() )	
+		selected_idx_ = idx;
+}
 
+bool D2DSimpleListbox::GetItemString(int idx, std::wstring* ret) const
+{	
+	if ( idx < (int)items_.size())
+	{
+		auto p = items_[idx];
+
+		auto p2 = dynamic_cast<D2DListboxItemString*>(p.get());
+
+		if ( p2 )
+		{
+			*ret = p2->text();
+			return true;
+		}
+	}
+	
+	return false;
+}
 
 bool D2DSimpleListbox::OnEscape()
 {

@@ -387,11 +387,17 @@ void D2DControls::Draw(D2DContext& cxt)
 		D2DMatrix mat(*cxt);
 		mat.PushTransform();
 		mat.Offset( rc_ );
-		
-
-		
 
 		InnerDraw(cxt);
+
+
+		if ( APP.GetCapture() )
+		{
+			auto p = dynamic_cast<D2DSimpleListbox*>(APP.GetCapture());
+			if ( p )
+				p->DrawOverWrite(cxt);
+		}
+
 
 		mat.PopTransform();		
 	}

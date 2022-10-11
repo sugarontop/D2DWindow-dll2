@@ -81,13 +81,14 @@ DLLEXPORT void WINAPI D2DSetColor(UIHandle h, ColorF back, ColorF front, ColorF 
 DLLEXPORT void WINAPI D2DReadOnly(UIHandle h, bool readonly);
 DLLEXPORT void WINAPI D2DEnable(UIHandle h, bool enable);
 
-DLLEXPORT int WINAPI D2DAddItem(UIHandle, LPCWSTR str);
+DLLEXPORT int WINAPI D2DAddItem(UIHandle h, LPCWSTR str);
+DLLEXPORT void WINAPI D2DSelectItem(UIHandle h, int idx);
 DLLEXPORT void WINAPI D2DSetTabText(UIHandle h, LPCWSTR str);
 
 DLLEXPORT DWORD WINAPI D2DGetStat(UIHandle h);
 
 DLLEXPORT void WINAPI D2DInsertText(UIHandle h, LPCWSTR str, int len, int start_pos);
-DLLEXPORT BSTR WINAPI D2DGetText(UIHandle h, bool bAll );
+DLLEXPORT BSTR WINAPI D2DGetText(UIHandle h, bool bAll=true );
 DLLEXPORT int WINAPI D2DSendMessage(UIHandle h, UINT msg, WPARAM, LPARAM);
 
 DLLEXPORT UIHandleWin WINAPI D2DCreateMainHWnd( HWND hWnd, float font_height, int typ=0 );

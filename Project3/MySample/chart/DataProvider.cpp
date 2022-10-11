@@ -16,9 +16,13 @@ bool InetDataProvider::Connect(DataProviderInfo& info)
 	auto now = UnixTime(0,0,0);
 
 	WCHAR cb[256];
-	std::wstring cd = L"SPY";
 
-	StringCbPrintfW(cb,256,L"https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%d&period2=%d&interval=1d&events=history&includeAdjustedClose=true",cd.c_str(),dds, now);
+	auto cd = info.cd; // L"SPY";
+	auto interval = info.interval; // 1d or 1wk
+
+
+	//StringCbPrintfW(cb,256,L"https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%d&period2=%d&interval=1d&events=history&includeAdjustedClose=true",cd.c_str(),dds, now);
+	StringCbPrintfW(cb,256,L"https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%d&period2=%d&interval=%s&events=history&includeAdjustedClose=true",cd.c_str(),dds, now, interval.c_str());
 
 	pi->bGet = true;
 	pi->url = ::SysAllocString(cb);
@@ -50,7 +54,7 @@ bool InetDataProvider::Convert(DataProviderResult& res, DataRpoviderOut* out)
 {
 	InternetInfo* info = (InternetInfo*)res.info;
 
-	//out->sm = info->pstream;
+	out->sm = info->pstream;
 
 
 	//StreamToFile(L"test.txt", info->pstream);
