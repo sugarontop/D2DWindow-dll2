@@ -5,6 +5,7 @@
 using namespace V6;
 #define  APP (D2DApp::GetInstance())
 
+
 bool D2DMyStockChart::Draw(ID2D1DeviceContext* cxt)
 {
 	auto stat = D2DGetStat(Get());
@@ -19,17 +20,10 @@ bool D2DMyStockChart::Draw(ID2D1DeviceContext* cxt)
 
 			cxt->CreateSolidColorBrush(clr, &br);
 			cxt->FillRectangle(rc_.ZeroRect(), br);
-
-
-			//br = nullptr;
-			//clr = ColorF(ColorF::Black);
-			//cxt->CreateSolidColorBrush(clr, &br);
-			//cxt->DrawText(str_.c_str(), (UINT32)str_.length(), wformat_, rc_, br );
-
-			
+		
 			D2DInnerDraw(hndl_);
 
-			st.Draw(cxt);
+			stock_chart_.Draw(cxt);
 
 		}
 
@@ -62,7 +56,7 @@ LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 
 			D2DCreateStatic(hndl_, FRectF(0,7,FSizeF(55,h)), STAT_DEFAULT, L"CD: ", NONAME);
 			auto t1 = D2DCreateTextbox(hndl_, FRectF(63,5,FSizeF(100,h)), false, STAT_DEFAULT, L"cd");
-			auto t2 = D2DCreateButton(hndl_, FRectF(170,5,FSizeF(100,h)), STAT_DEFAULT, L"b1", 10);
+			auto t2 = D2DCreateButton(hndl_, FRectF(170,5,FSizeF(100,h)), STAT_DEFAULT, L"b1", 11);
 
 			D2DCreateStatic(hndl_, FRectF(350,7,FSizeF(55,h)), STAT_DEFAULT, L"INTV: ", NONAME);
 			auto t3 = D2DCreateDropdownListbox(hndl_, FRectF(408,5,FSizeF(100,h)),  STAT_DEFAULT, L"intv");
@@ -93,33 +87,53 @@ LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 		break;
 		case WM_NOTIFY:
 		{
-			if ( wParam == 10 )
+			//if ( wParam == 10 )
+			//{
+			//	D2DNMHDR* p = (D2DNMHDR*)lParam;
+
+			//	InetDataProvider pv;
+			//	//FileDataProvider pv;
+
+
+			//	auto cd = D2DGetText(cd_); 
+
+			//	auto intv = D2DGetText(intv_);
+
+			//	DataProviderInfo dpi;
+			//	dpi.cd = cd;
+			//	dpi.interval = intv;
+			//	
+
+			//	stock_chart_.Load(pv, dpi );
+
+			//	r = 1;
+			//}
+			//else 
+			if ( wParam == 11 )
 			{
 				D2DNMHDR* p = (D2DNMHDR*)lParam;
 
-				str_ = L"Click!";
-
-				InetDataProvider pv;
-				//FileDataProvider pv;
-
+				InetDataProvider* pv = new InetDataProvider();
 
 				auto cd = D2DGetText(cd_); 
-
 				auto intv = D2DGetText(intv_);
 
-				DataProviderInfo dpi;
-				dpi.cd = cd;
-				dpi.interval = intv;
-				
+				DataProviderInfo* dpi = new DataProviderInfo();
+				dpi->cd = cd;
+				dpi->interval = intv;
 
-				st.Load(pv, dpi );
+				auto complete = [b]()
+				{
+					b.Redraw();
+				};
+
+				stock_chart_.LoadAsync(pv, dpi, complete);
 
 				r = 1;
 			}
 
 		}
 		break;
-
 	}
 
 	if ( r == 0 )

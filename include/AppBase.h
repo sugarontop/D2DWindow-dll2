@@ -25,7 +25,10 @@ struct AppBase
 
 		*cx = rc.right - rc.left;
 		*cy = rc.bottom - rc.top;
-
+	}
+	void Redraw() const
+	{
+		InvalidateRect(hWnd,NULL,FALSE);
 	}
 
 };

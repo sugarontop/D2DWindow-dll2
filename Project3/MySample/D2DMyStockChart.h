@@ -29,7 +29,7 @@ class D2DMyStockChart: public D2DAppBaseControls
 			std::vector<dot> ar_;
 			D2DMat mat_;
 			USHORT dot_idx_;
-			StockChart st;
+			StockChart stock_chart_;
 
 			UIHandle cd_, intv_;
 

@@ -4,6 +4,51 @@
 
 using namespace V6;
 
+
+
+
+void StockChart::LoadAsync(DataProvider* pdp, DataProviderInfo* pdpi, std::function<void(void)> complete)
+{
+	struct X
+	{
+		DataProvider* pdp;
+		DataProviderInfo* pdpi;
+		StockChart* sc;
+		std::function<void(void)> complete;
+
+		~X()
+		{
+			delete pdp;
+			delete pdpi;
+		}
+
+
+		static DWORD CALLBACK Jackson5(LPVOID p)
+		{
+			X* x = (X*)p;
+			{
+				x->sc->Load(*x->pdp, *x->pdpi);
+
+				x->complete();
+			}
+			delete x;
+			return 0;
+		};
+	};
+
+	X* x = new X();
+	x->sc = this;
+	x->pdpi = pdpi;
+	x->pdp = pdp;
+	x->complete = complete;
+
+
+	DWORD dw;
+	::CreateThread(0,0, X::Jackson5, x,0,&dw);
+}
+
+
+
 bool StockChart::Load(DataProvider& dp, DataProviderInfo& dpi)
 {
 	DataProviderInfo& info = dpi;
@@ -26,17 +71,13 @@ bool StockChart::Load(DataProvider& dp, DataProviderInfo& dpi)
 
 			GenChartCandle( ar, mat, xar_);
 
-			
-
 			ret = true;
 		}
-
-
 	}
-
 	return ret;
-
 }
+
+
 
 void StockChart::GenChartData(IStream* sm, std::vector<CandleData>& ar )
 {

@@ -92,6 +92,9 @@ class StockChart
 	public :
 		
 		bool Load(DataProvider& dp,DataProviderInfo& dpi);
+		void LoadAsync(DataProvider* dp,DataProviderInfo* dpi, std::function<void(void)> complete);
+		//void LoadAsyncComplete(LPARAM lp);
+	
 		
 		void Draw(ID2D1DeviceContext* cxt);
 		void GenChartData(IStream* sm, std::vector<CandleData>& ar );
