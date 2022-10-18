@@ -9,6 +9,8 @@ using namespace V6;
 #define ROW_HEIGHT 22.0f
 #define _min_thum_height 24.0f
 
+static FPointF ptold;
+
 D2DSimpleListbox::D2DSimpleListbox()
 {
                 
@@ -181,7 +183,7 @@ void D2DSimpleListbox::Clear()
 
 }
 
-static FPointF ptold;
+
 bool D2DSimpleListbox::sc_MouseMove(FPointF& pt)
 {
     offbar_y_ = max(0, offbar_y_ + (pt.y - ptold.y));
@@ -548,6 +550,12 @@ LRESULT D2DSimpleListbox::WndProcNormal(AppBase& b, UINT message, WPARAM wParam,
             {            
                 OnClick(); // ‚±‚±‚ÅReleaseCapture‚·‚é
 				ret = 1;
+
+				auto p1 =  APP.GetCapture();
+				if (dynamic_cast<D2DDropdownListbox*>(p1))
+				{
+					APP.ReleaseCapture();
+				}
             }
 
             scstat_ = 0;            

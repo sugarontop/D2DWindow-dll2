@@ -19,9 +19,9 @@ DLLEXPORT HANDLE MySample_CreateFreePainter( UIHandle parent )
 
 DLLEXPORT HANDLE MySample_CreateChartBox( UIHandle parent )
 {
-	auto obj =  new D2DMyStockChart(); // auto delete : WM_D2D_DESTROY
+	auto obj =  new D2DMyStockChart(1000,600); // auto delete : WM_D2D_DESTROY
 
-	obj->Create(parent, L"sample chart",  FRectF(40,50,FSizeF(1000,600)), 0);
+	obj->Create(parent, L"sample chart",  FRectF(0,0,FSizeF(1100,800)), 0);
 
 	return nullptr;
 }

@@ -65,11 +65,8 @@ bool StockChart::Load(DataProvider& dp, DataProviderInfo& dpi)
 		{
 			GenChartData( ou.sm, ar );
 
-			Candle::matrix mat;
-			mat._x22 = 1;
-			mat._x32 = 0;
 
-			GenChartCandle( ar, mat, xar_);
+			GenChartCandle( ar, xar_);
 
 			ret = true;
 		}
@@ -134,75 +131,122 @@ int CalcGraphYMaxYMin(money* pmax1, money* pmin1)
 	return step;
 }
 
-void StockChart::GenChartCandle(std::vector<CandleData>& ar, Candle::matrix& mat, std::vector<Candle>& out)
+void StockChart::GenChartCandle(std::vector<CandleData>& ar,  std::vector<Candle>& out)
 {
 	out.clear();
 
-	money max1=0.0f, min1=9999999.0f;
+	money money_max=0.0f, money_min=9999999.0f;
 
 	for(auto& c : ar)
 	{
-		max1 = max(c.m2, max1);
-		min1 = min(c.m4, min1);
+		if ( 0 < c.m4 )
+		{
+			money_max = max(c.m2, money_max);
+			money_min = min(c.m3, money_min);
+		}
 	}
 
-	int step = CalcGraphYMaxYMin(&max1, &min1);
+	float vymax = vrect_.Height();
+	float vymin = 0;
+
+	float yscale = (vymax-vymin)/(money_max-money_min);
+	float yoff = 0;
+
+	auto scale_func = [yscale, money_min, yoff](money m1)->float
+	{		
+		return yscale*(m1-money_min) + yoff;
+	};
+
+
+	int basean [] = {1,2,5,10,20,50,100,200,500,1000,2000,5000,10000,20000,50000};
+
+	auto trim_f1 = [&basean](float m, int rank)->float
+	{
+		_ASSERT( rank < 16 );
+				
+		int* an = basean; // {10,100,1000,10000};
+
+		float af = (float)basean[rank];
+		
+		int a = m /(int)af;
+		return (float)(a*an[rank]);
+	};
+
+	int k = 0;
+	std::vector<float> trim;
+
+
+	for(;;)
+	{
+		auto max1 = trim_f1(money_max,k);
+		auto min1 = trim_f1(money_min,k);
+		int cnt = (max1-min1 )/basean[k];
+
+		if ( cnt < 10 )
+		{
+			for(int i= 0; i < cnt; i++ )	
+			{
+				trim.push_back(min1);
+				min1 += basean[k];
+			}
+			break;
+		}
+		k++;
+	}
+
+
+
 
 
 
 	for(auto& c : ar)
 	{
-		Candle cd;
-		cd.raw = c;
-		cd.conv(mat);
-		out.push_back(cd);
+		if ( 0 < c.m4 )
+		{
+			Candle cd;
+			cd.raw = c;
+			cd.conv(scale_func);
+			out.push_back(cd);
+		}
 	}
 }
 
-void StockChart::TrimCandle(Candle::matrix& mat, std::vector<Candle>& ar)
-{
-	for(auto& c : ar)
-	{
-		Candle& cd = c;
-		cd.conv(mat);
-	}
-}
 
 void StockChart::Draw(ID2D1DeviceContext* cxt)
 {
-	
-	
-	FRectF rc(10,60,1000,600);
+	FRectF figure_rc(30,80, vrect_.Size());
 
 		
 	ComPTR<ID2D1SolidColorBrush> br,bgreen,bred,brw;
 		
 	cxt->CreateSolidColorBrush(D2RGB(0,0,0), &br);
-	cxt->CreateSolidColorBrush(D2RGB(0,200,0), &bgreen);
-	cxt->CreateSolidColorBrush(D2RGB(200,0,0), &bred);
+	cxt->CreateSolidColorBrush(D2RGB(0,180,0), &bgreen);
+	cxt->CreateSolidColorBrush(D2RGB(180,0,0), &bred);
 	cxt->CreateSolidColorBrush(D2RGB(255,255,255), &brw);
 
-	cxt->DrawRectangle(rc, br);
-	cxt->FillRectangle(rc, brw);
+	cxt->DrawRectangle(figure_rc, br);
+	cxt->FillRectangle(figure_rc, brw);
 
-	float x=rc.right,off=5;
+	float x=figure_rc.right, off=5;
 	x -= off;
 
 	for(auto it = xar_.rbegin(); it != xar_.rend(); it++)	
 	{			
-		if ( x < 0 )
+		if ( x < figure_rc.left )
 			break;
 		
-		auto br1 = ( it->vpos[0] < it->vpos[4] ? bgreen : bred);
+		float* c = (*it).vpos;
+
+		auto br1 = ( c[0] < c[3] ? bgreen : bred);
 		
-		rc.SetRect( x, 600-it->vpos[0], x+off, 600-it->vpos[4] );
+		FRectF rc( x, figure_rc.bottom-c[0], x+off, figure_rc.bottom-c[3] );
 		cxt->FillRectangle(rc, br1);
 
 		x -= off;
 	}
 }
 
-float tof(const std::string& s)
+inline float tof(const std::string& s)
 {
 	return (float)atof(s.c_str());
 }
@@ -254,11 +298,11 @@ bool CandleData::load( LPCSTR csv_row, ULONG len )
 }
 
 
-void Candle::conv( matrix& mat )
+void Candle::conv( std::function<float(float)> func ) // float ysc, float money_min, float yoff )
 {
-	vpos[0] = mat._x22*raw.m1 + mat._x32;
-	vpos[1] = mat._x22*raw.m2 + mat._x32;
-	vpos[2] = mat._x22*raw.m3 + mat._x32;
-	vpos[3] = mat._x22*raw.m4 + mat._x32;
-	vpos[4] = mat._x22*raw.m4ex + mat._x32;
+	vpos[0] = func(raw.m1); // ysc*(raw.m1-money_min) + yoff;
+	vpos[1] = func(raw.m2); 
+	vpos[2] = func(raw.m3); 
+	vpos[3] = func(raw.m4); 
+	vpos[4] = func(raw.m4ex);
 }

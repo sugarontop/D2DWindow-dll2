@@ -87,29 +87,28 @@ LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 		break;
 		case WM_NOTIFY:
 		{
-			//if ( wParam == 10 )
-			//{
-			//	D2DNMHDR* p = (D2DNMHDR*)lParam;
+			if ( wParam == 110 )
+			{
+				D2DNMHDR* p = (D2DNMHDR*)lParam;
 
-			//	InetDataProvider pv;
-			//	//FileDataProvider pv;
+				//InetDataProvider pv;
+				FileDataProvider pv;
 
 
-			//	auto cd = D2DGetText(cd_); 
+				auto cd = D2DGetText(cd_); 
 
-			//	auto intv = D2DGetText(intv_);
+				auto intv = D2DGetText(intv_);
 
-			//	DataProviderInfo dpi;
-			//	dpi.cd = cd;
-			//	dpi.interval = intv;
-			//	
+				DataProviderInfo dpi;
+				dpi.cd = cd;
+				dpi.interval = intv;
+				
 
-			//	stock_chart_.Load(pv, dpi );
+				stock_chart_.Load(pv, dpi );
 
-			//	r = 1;
-			//}
-			//else 
-			if ( wParam == 11 )
+				r = 1;
+			}
+			else if ( wParam == 11 )
 			{
 				D2DNMHDR* p = (D2DNMHDR*)lParam;
 

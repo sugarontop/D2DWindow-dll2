@@ -39,8 +39,6 @@ void Sample2(UIHandle parent, LPCWSTR name, FRectF rc, int id, int nest)
 	D2DSetText(tab, L"0:chart");
 
 	auto t1 = D2DGetTab(tab, 0);
-	//auto t1_1 = D2DCreateEmptyControls(t1, rc, STAT_DEFAULT, NONAME);
-	//D2DSendMessage(t1_1, WM_D2D_SET_BKMODE, 2, 0);
 
 	MySample_CreateChartBox(t1);
 

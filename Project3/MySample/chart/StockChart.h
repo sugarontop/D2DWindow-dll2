@@ -75,12 +75,8 @@ struct Candle
 	
 	float vpos[5];
 
-	struct matrix
-	{
-		float _x22,_x32;
-	};
 
-	void conv( matrix& mat);
+	void conv( std::function<float(float)> func) ; 
 	
 };
 
@@ -90,6 +86,8 @@ struct Candle
 class StockChart
 {
 	public :
+
+		StockChart( V6::FRectF rc):vrect_(rc){};
 		
 		bool Load(DataProvider& dp,DataProviderInfo& dpi);
 		void LoadAsync(DataProvider* dp,DataProviderInfo* dpi, std::function<void(void)> complete);
@@ -98,8 +96,11 @@ class StockChart
 		
 		void Draw(ID2D1DeviceContext* cxt);
 		void GenChartData(IStream* sm, std::vector<CandleData>& ar );
-		void GenChartCandle(std::vector<CandleData>& ar, Candle::matrix& mat, std::vector<Candle>& out);
-		void TrimCandle(Candle::matrix& mat, std::vector<Candle>& ar);
+		void GenChartCandle(std::vector<CandleData>& ar, std::vector<Candle>& out);
+
 
 		std::vector<Candle> xar_;
+
+		V6::FRectF vrect_;
+
 };
