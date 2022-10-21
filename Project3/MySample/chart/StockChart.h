@@ -103,7 +103,7 @@ class StockChart
 
 		void SetSize(V6::FSizeF vsz);
 
-		void MouseMove(V6::FPointF pt);
+		bool MouseMove(V6::FPointF pt);
 
 		std::vector<Candle> xar_;
 		std::vector<FigureTrimline> ar_trim_;
@@ -114,6 +114,7 @@ class StockChart
 
 		std::function<float(float)> v2money_;
 		money mouse_place_value_;
+		std::wstring cd_;
 
 	protected :
 		void DrawTrimline(ID2D1DeviceContext* cxt);

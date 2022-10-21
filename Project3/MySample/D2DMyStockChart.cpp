@@ -24,6 +24,7 @@ bool D2DMyStockChart::Draw(ID2D1DeviceContext* cxt)
 		
 			D2DInnerDraw(hndl_);
 
+		
 			stock_chart_.Draw(cxt);
 
 		}
@@ -44,16 +45,12 @@ LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 			hndl_ = *(UIHandle*)lParam;						
 			rc_ = D2DGetRect(hndl_);
 
-			this->stock_chart_.SetSize(rc_.Size());
+
+			FSizeF sz = rc_.Size().Inflate(0,-TOPBAR_HEIGHT);
+
+			this->stock_chart_.SetSize(sz);
 
 			auto hParent = D2DGetParent(hndl_);
-
-			//if ( rc.IsEmpty())
-			//{
-			//	
-			//	FRectF rc = D2DGetRect(hParent);
-			//	//rc_ = rc.ZeroRect();
-			//}
 
 			float h = 23.0f;
 
@@ -91,8 +88,8 @@ LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 				
 				wtextformat = nullptr;
 
-				if (S_OK ==(wf->CreateTextFormat(L"MS –¾’©", NULL, DWRITE_FONT_WEIGHT_REGULAR,
-					DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL,20.0f, LOCALE, &wtextformat)))
+				if (S_OK ==(wf->CreateTextFormat(L"Arial", NULL, DWRITE_FONT_WEIGHT_REGULAR,
+					DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL,30.0f, LOCALE, &wtextformat)))
 					{
 						stock_chart_.money_textformat_ = wtextformat;
 
@@ -166,8 +163,8 @@ LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 
 			if ( rc_.ZeroPtInRect(pt))
 			{
-				stock_chart_.MouseMove(pt);
-				b.Redraw();
+				if ( stock_chart_.MouseMove(pt))
+					b.Redraw();
 			}
 
 		}

@@ -17,14 +17,14 @@ void StockChart::SetSize(FSizeF vsz)
 
 }
 
-void StockChart::MouseMove(FPointF pt)
+bool StockChart::MouseMove(FPointF pt)
 {
-	if ( v2money_ )
+	if ( v2money_ && pt.y > 0)
 	{
 		mouse_place_value_ = v2money_(vrect_.bottom-pt.y);
-		//TRACE( L"money=%-8.0f, val=%-8.0f\n", m, vrect_.bottom-pt.y);
-		//m = 0;
+		return true;
 	}
+	return false;
 }
 
 void StockChart::LoadAsync(DataProvider* pdp, DataProviderInfo* pdpi, std::function<void(void)> complete)
@@ -73,6 +73,8 @@ bool StockChart::Load(DataProvider& dp, DataProviderInfo& dpi)
 {
 	DataProviderInfo& info = dpi;
 	DataRpoviderOut ou;
+
+	cd_ = info.cd;
 	
 	std::vector<CandleData> ar;
 
@@ -231,7 +233,12 @@ void StockChart::GenChartCandle(std::vector<CandleData>& ar,  std::vector<Candle
 
 void StockChart::Draw(ID2D1DeviceContext* cxt)
 {
-	FRectF figure_rc = vrect_;
+	
+	D2DMatrix mat(cxt);
+	mat.PushTransform();
+	mat.Offset(0, vrect_.top );
+
+	FRectF figure_rc = vrect_.ZeroRect();
 
 		
 	ComPTR<ID2D1SolidColorBrush> black,bgreen,bred,brw,btrim;
@@ -264,11 +271,14 @@ void StockChart::Draw(ID2D1DeviceContext* cxt)
 	}
 
 	DrawTrimline(cxt);
+
+
+	mat.PopTransform();
 }
 
 void StockChart::DrawTrimline(ID2D1DeviceContext* cxt)
 {
-	FRectF figure_rc = vrect_;
+	FRectF figure_rc = vrect_.ZeroRect();
 	WCHAR cb[64];
 
 	ComPTR<ID2D1SolidColorBrush> btrim;
@@ -296,7 +306,7 @@ void StockChart::DrawTrimline(ID2D1DeviceContext* cxt)
 
 
 	FRectF rc(0,figure_rc.top,1000,figure_rc.top+50);
-	StringCbPrintf(cb,_countof(cb),L"%-8.1f", mouse_place_value_ );
+	StringCbPrintf(cb,_countof(cb),L"%s  %-8.1f", cd_.c_str(), mouse_place_value_ );
 	cxt->DrawText(cb, wcslen(cb), money_textformat_, rc, btrim);
 }
 
