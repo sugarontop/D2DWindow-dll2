@@ -11,9 +11,15 @@ bool InetDataProvider::Connect(DataProviderInfo& info)
 {
 	InternetInfo* pi = CreateInternetInfo( );
 
+	auto dds = UnixTime(2021,1,1);
+	auto now = UnixTime(0,0,0); // <--today
 
-	auto dds = UnixTime(2021,10,1);
-	auto now = UnixTime(0,0,0);
+
+	if (info.interval == L"1wk")
+	{
+		dds = UnixTime(2014,1,1); // <--tekitou
+	}
+
 
 	WCHAR cb[256];
 

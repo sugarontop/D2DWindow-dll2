@@ -790,7 +790,13 @@ DLLEXPORT UIHandle WINAPI D2DCreateWhiteControls(LPVOID captureobj, DelegateDraw
 	auto cs1 = new D2DWhiteControl(captureobj, func1, func2);
 	auto ctrls = (D2DControls*)hctrls.p;
 	auto win = ctrls->GetParent();
-	cs1->CreateControl(win, ctrls, rc, stat, name, id);
+
+	FRectF rcf = rc;
+
+	if ( rcf.IsEmpty())
+		rcf = ctrls->GetParentControls()->GetRect();
+
+	cs1->CreateControl(win, ctrls, rcf, stat, name, id);
 	ctrls->Add(std::shared_ptr<D2DWhiteControl>(cs1));
 
 	AppBase ab = {};

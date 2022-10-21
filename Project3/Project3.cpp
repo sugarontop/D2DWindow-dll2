@@ -116,9 +116,12 @@ static UIHandleWin CreateTopControl(HWND hWnd)
     
     auto root = D2DGetRootControls(hwin);
 
+	RECT rc;
+	::GetClientRect(hWnd, &rc);
+
+	_ASSERT(rc.left == 0 && rc.top == 0);
 	
-	
-	Sample2(root, L"test", FRectF(0,0,2000,1400), 1, 0);
+	Sample2(root, L"test", FRectF(0,0,rc.right,rc.bottom), 1, 0);
 
 
 
@@ -252,5 +255,4 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     return r;
 }
-
 

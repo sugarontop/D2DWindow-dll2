@@ -7,7 +7,7 @@ using namespace V6;
 #pragma comment (lib, "MySample")
 
 DLLEXPORT HANDLE MySample_CreateFreePainter( UIHandle parent );
-DLLEXPORT HANDLE MySample_CreateChartBox( UIHandle parent );
+DLLEXPORT HANDLE MySample_CreateChartBox( UIHandle parent, D2D1_RECT_F rc, LPCWSTR default_cd );
 
 
 UIHandle gtx1;
@@ -40,7 +40,9 @@ void Sample2(UIHandle parent, LPCWSTR name, FRectF rc, int id, int nest)
 
 	auto t1 = D2DGetTab(tab, 0);
 
-	MySample_CreateChartBox(t1);
+	MySample_CreateChartBox(t1, FRectF(0,0,FSizeF(rc.Size().width, 400)), L"SPY");
+	MySample_CreateChartBox(t1, FRectF(0,450,FSizeF(rc.Size().width, 400)), L"QQQ");
+
 
 	// 2 TAG------------------------------------------------------------------
 	auto t2 = D2DAddNewTab(tab, L"2nd");
@@ -71,6 +73,7 @@ void Sample2(UIHandle parent, LPCWSTR name, FRectF rc, int id, int nest)
 
 	D2DEventHandler(ls1, MyTest);
 
-	//Sample2(t3_1, L"test2", FRectF(0,0,FSizeF(900,900)), 0, ++nest);
+	MySample_CreateChartBox(t3_1, FRectF(500,0,FSizeF(1000,500)), L"SPY");
+	
 
 }

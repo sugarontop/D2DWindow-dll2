@@ -74,12 +74,14 @@ struct Candle
 	CandleData raw;
 	
 	float vpos[5];
-
-
 	void conv( std::function<float(float)> func) ; 
-	
 };
 
+struct FigureTrimline
+{
+	float vy;
+	money val;
+};
 
 
 
@@ -87,7 +89,7 @@ class StockChart
 {
 	public :
 
-		StockChart( V6::FRectF rc):vrect_(rc){};
+		StockChart( V6::FRectF rc);
 		
 		bool Load(DataProvider& dp,DataProviderInfo& dpi);
 		void LoadAsync(DataProvider* dp,DataProviderInfo* dpi, std::function<void(void)> complete);
@@ -95,12 +97,25 @@ class StockChart
 	
 		
 		void Draw(ID2D1DeviceContext* cxt);
+		
 		void GenChartData(IStream* sm, std::vector<CandleData>& ar );
-		void GenChartCandle(std::vector<CandleData>& ar, std::vector<Candle>& out);
+		void GenChartCandle(std::vector<CandleData>& ar, std::vector<Candle>& out, std::vector<FigureTrimline>& trimout);
 
+		void SetSize(V6::FSizeF vsz);
+
+		void MouseMove(V6::FPointF pt);
 
 		std::vector<Candle> xar_;
+		std::vector<FigureTrimline> ar_trim_;
 
 		V6::FRectF vrect_;
+		ComPTR<IDWriteTextFormat> trim_textformat_;
+		ComPTR<IDWriteTextFormat> money_textformat_;
+
+		std::function<float(float)> v2money_;
+		money mouse_place_value_;
+
+	protected :
+		void DrawTrimline(ID2D1DeviceContext* cxt);
 
 };

@@ -17,11 +17,15 @@ DLLEXPORT HANDLE MySample_CreateFreePainter( UIHandle parent )
 }
 
 
-DLLEXPORT HANDLE MySample_CreateChartBox( UIHandle parent )
+DLLEXPORT HANDLE MySample_CreateChartBox( UIHandle parent, D2D1_RECT_F rc, LPCWSTR cd  )
 {
-	auto obj =  new D2DMyStockChart(1000,600); // auto delete : WM_D2D_DESTROY
+	auto obj =  new D2DMyStockChart(rc.right-rc.left, rc.bottom-rc.top); // auto delete : WM_D2D_DESTROY
+		
+	obj->Create(parent, L"sample chart",  rc, 0);
 
-	obj->Create(parent, L"sample chart",  FRectF(0,0,FSizeF(1100,800)), 0);
+	
+
+	D2DSendMessage(parent, WM_D2D_APP_SETDEFAULT_CD, (WPARAM)obj, (LPARAM)cd);
 
 	return nullptr;
 }

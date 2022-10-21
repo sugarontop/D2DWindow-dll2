@@ -12,6 +12,7 @@ bool D2DMyStockChart::Draw(ID2D1DeviceContext* cxt)
 	//if ( BITFLG2( stat, STAT_VISIBLE))
 	{
 		D2DMatrix mat(cxt);
+
 		mat.PushTransform();
 		mat_ = mat.Offset(rc_);
 		{
@@ -43,14 +44,16 @@ LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 			hndl_ = *(UIHandle*)lParam;						
 			rc_ = D2DGetRect(hndl_);
 
+			this->stock_chart_.SetSize(rc_.Size());
+
 			auto hParent = D2DGetParent(hndl_);
 
-			if ( rc_.IsEmpty())
-			{
-				
-				FRectF rc = D2DGetRect(hParent);
-				rc_ = rc.ZeroRect();
-			}
+			//if ( rc.IsEmpty())
+			//{
+			//	
+			//	FRectF rc = D2DGetRect(hParent);
+			//	//rc_ = rc.ZeroRect();
+			//}
 
 			float h = 23.0f;
 
@@ -73,6 +76,30 @@ LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 			D2DGetDWriteFormat(hndl_, &wformat_);
 			
 
+			ComPTR<IDWriteFactory> wf;
+			ComPTR<IDWriteTextFormat> wtextformat;
+
+			if ( S_OK == (DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), (IUnknown**) &wf)))
+			{
+				
+				if (S_OK ==(wf->CreateTextFormat(L"MS –¾’©", NULL, DWRITE_FONT_WEIGHT_REGULAR,
+					DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL,10.0f, LOCALE, &wtextformat)))
+					{
+						stock_chart_.trim_textformat_ = wtextformat;
+
+					}	
+				
+				wtextformat = nullptr;
+
+				if (S_OK ==(wf->CreateTextFormat(L"MS –¾’©", NULL, DWRITE_FONT_WEIGHT_REGULAR,
+					DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL,20.0f, LOCALE, &wtextformat)))
+					{
+						stock_chart_.money_textformat_ = wtextformat;
+
+					}		
+			}
+
+
 			cd_ = t1;
 			intv_ = t3;
 
@@ -91,8 +118,7 @@ LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 			{
 				D2DNMHDR* p = (D2DNMHDR*)lParam;
 
-				//InetDataProvider pv;
-				FileDataProvider pv;
+				FileDataProvider pv; // test—p
 
 
 				auto cd = D2DGetText(cd_); 
@@ -132,6 +158,32 @@ LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 			}
 
 		}
+		break;
+		case WM_MOUSEMOVE:
+		{
+			MouseParam* mp = (MouseParam*)lParam;
+			auto pt = mat_.DPtoLP(mp->pt);
+
+			if ( rc_.ZeroPtInRect(pt))
+			{
+				stock_chart_.MouseMove(pt);
+				b.Redraw();
+			}
+
+		}
+		break;
+		case WM_D2D_APP_SETDEFAULT_CD :
+		{
+			if ( (UINT_PTR)wParam == (UINT_PTR)this )
+			{
+				LPCWSTR cd = (LPCWSTR)lParam;
+
+				D2DSetText(cd_, cd);
+
+				r = 1;
+			}
+
+		};
 		break;
 	}
 

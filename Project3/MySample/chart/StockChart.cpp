@@ -5,7 +5,27 @@
 using namespace V6;
 
 
+StockChart::StockChart( V6::FRectF rc):vrect_(rc)
+{
+	
 
+}
+
+void StockChart::SetSize(FSizeF vsz)
+{
+	vrect_.SetSize(vsz);
+
+}
+
+void StockChart::MouseMove(FPointF pt)
+{
+	if ( v2money_ )
+	{
+		mouse_place_value_ = v2money_(vrect_.bottom-pt.y);
+		//TRACE( L"money=%-8.0f, val=%-8.0f\n", m, vrect_.bottom-pt.y);
+		//m = 0;
+	}
+}
 
 void StockChart::LoadAsync(DataProvider* pdp, DataProviderInfo* pdpi, std::function<void(void)> complete)
 {
@@ -66,7 +86,7 @@ bool StockChart::Load(DataProvider& dp, DataProviderInfo& dpi)
 			GenChartData( ou.sm, ar );
 
 
-			GenChartCandle( ar, xar_);
+			GenChartCandle( ar, xar_, ar_trim_);
 
 			ret = true;
 		}
@@ -113,25 +133,7 @@ void StockChart::GenChartData(IStream* sm, std::vector<CandleData>& ar )
 }
 
 
-
-int CalcGraphYMaxYMin(money* pmax1, money* pmin1)
-{
-	money& _max = *pmax1;
-	money& _min = *pmin1;
-
-	_ASSERT( _min < _max );
-
-	auto k = (int)log10(_max-_min);
-
-	int step = pow(10, k);
-
-	_max = _max + step;
-	_min = _min - step;
-
-	return step;
-}
-
-void StockChart::GenChartCandle(std::vector<CandleData>& ar,  std::vector<Candle>& out)
+void StockChart::GenChartCandle(std::vector<CandleData>& ar,  std::vector<Candle>& out, std::vector<FigureTrimline>& trimout)
 {
 	out.clear();
 
@@ -157,6 +159,12 @@ void StockChart::GenChartCandle(std::vector<CandleData>& ar,  std::vector<Candle
 		return yscale*(m1-money_min) + yoff;
 	};
 
+	auto r_scale_func = [yscale, money_min, yoff](float y)->float
+	{		
+		return (y - yoff)/yscale+money_min;
+	};
+
+	v2money_ = r_scale_func;
 
 	int basean [] = {1,2,5,10,20,50,100,200,500,1000,2000,5000,10000,20000,50000};
 
@@ -168,7 +176,7 @@ void StockChart::GenChartCandle(std::vector<CandleData>& ar,  std::vector<Candle
 
 		float af = (float)basean[rank];
 		
-		int a = m /(int)af;
+		int a = (int)(m /(int)af);
 		return (float)(a*an[rank]);
 	};
 
@@ -180,10 +188,12 @@ void StockChart::GenChartCandle(std::vector<CandleData>& ar,  std::vector<Candle
 	{
 		auto max1 = trim_f1(money_max,k);
 		auto min1 = trim_f1(money_min,k);
-		int cnt = (max1-min1 )/basean[k];
+		int cnt = (int)(max1-min1 )/basean[k];
 
 		if ( cnt < 10 )
 		{
+			min1 += basean[k];
+
 			for(int i= 0; i < cnt; i++ )	
 			{
 				trim.push_back(min1);
@@ -194,10 +204,17 @@ void StockChart::GenChartCandle(std::vector<CandleData>& ar,  std::vector<Candle
 		k++;
 	}
 
+	std::vector<FigureTrimline> vtrim;
 
+	for(auto& it : trim)
+	{		
+		FigureTrimline y;
+		y.val = it;
+		y.vy = scale_func(y.val);
+		vtrim.push_back(y);
+	}
 
-
-
+	trimout = vtrim;
 
 	for(auto& c : ar)
 	{
@@ -214,17 +231,18 @@ void StockChart::GenChartCandle(std::vector<CandleData>& ar,  std::vector<Candle
 
 void StockChart::Draw(ID2D1DeviceContext* cxt)
 {
-	FRectF figure_rc(30,80, vrect_.Size());
+	FRectF figure_rc = vrect_;
 
 		
-	ComPTR<ID2D1SolidColorBrush> br,bgreen,bred,brw;
+	ComPTR<ID2D1SolidColorBrush> black,bgreen,bred,brw,btrim;
 		
-	cxt->CreateSolidColorBrush(D2RGB(0,0,0), &br);
-	cxt->CreateSolidColorBrush(D2RGB(0,180,0), &bgreen);
-	cxt->CreateSolidColorBrush(D2RGB(180,0,0), &bred);
+	cxt->CreateSolidColorBrush(D2RGB(0,0,0), &black);
+	cxt->CreateSolidColorBrush(D2RGB(8,153,129), &bgreen);
+	cxt->CreateSolidColorBrush(D2RGB(242,54,69), &bred);
 	cxt->CreateSolidColorBrush(D2RGB(255,255,255), &brw);
+	
 
-	cxt->DrawRectangle(figure_rc, br);
+	cxt->DrawRectangle(figure_rc, black);
 	cxt->FillRectangle(figure_rc, brw);
 
 	float x=figure_rc.right, off=5;
@@ -244,7 +262,44 @@ void StockChart::Draw(ID2D1DeviceContext* cxt)
 
 		x -= off;
 	}
+
+	DrawTrimline(cxt);
 }
+
+void StockChart::DrawTrimline(ID2D1DeviceContext* cxt)
+{
+	FRectF figure_rc = vrect_;
+	WCHAR cb[64];
+
+	ComPTR<ID2D1SolidColorBrush> btrim;
+	cxt->CreateSolidColorBrush(D2RGB(171,171,171), &btrim);
+	for(auto& it : ar_trim_)
+	{
+		FPointF pt1(figure_rc.left,figure_rc.bottom-it.vy);
+		FPointF pt2(figure_rc.right,pt1.y);
+
+		cxt->DrawLine(pt1,pt2,btrim );
+	}
+
+	const float value_font_height = 10.0f;
+
+	for(auto& it : ar_trim_)
+	{
+		float y = figure_rc.bottom-it.vy;
+
+		FRectF rc(0,y,1000,y+value_font_height);
+
+		StringCbPrintf(cb,_countof(cb),L"%-8.1f", it.val );
+
+		cxt->DrawText(cb, wcslen(cb), trim_textformat_, rc, btrim);
+	}
+
+
+	FRectF rc(0,figure_rc.top,1000,figure_rc.top+50);
+	StringCbPrintf(cb,_countof(cb),L"%-8.1f", mouse_place_value_ );
+	cxt->DrawText(cb, wcslen(cb), money_textformat_, rc, btrim);
+}
+
 
 inline float tof(const std::string& s)
 {

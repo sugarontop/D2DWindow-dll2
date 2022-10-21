@@ -4,6 +4,9 @@
 #include "D2DAppBaseControls.h"
 #include "chart\StockChart.h"
 
+
+#define WM_D2D_APP_SETDEFAULT_CD	(WM_D2D_USER_FIRST+1)
+
 namespace V6 {
 
 class D2DMyStockChart: public D2DAppBaseControls
@@ -13,13 +16,9 @@ class D2DMyStockChart: public D2DAppBaseControls
 
 			StockChart stock_chart_;
 
-			D2DMyStockChart(float cx, float cy):stock_chart_(FRectF(0,0,cx,cy))
+			D2DMyStockChart(float cx, float cy):stock_chart_(FRectF(0,40,cx,cy))
 			{
-				rc_.top = 0;
-				rc_.left = 0;				
-				rc_.bottom = cy;
-				rc_.right = cx;
-			
+				// "rc_" is setted in WM_D2D_CREATE
 			}
 
 			virtual bool Draw(ID2D1DeviceContext* cxt) override;
