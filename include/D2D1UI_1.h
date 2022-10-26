@@ -89,7 +89,9 @@ DLLEXPORT DWORD WINAPI D2DGetStat(UIHandle h);
 
 DLLEXPORT void WINAPI D2DInsertText(UIHandle h, LPCWSTR str, int len, int start_pos);
 DLLEXPORT BSTR WINAPI D2DGetText(UIHandle h, bool bAll=true );
+
 DLLEXPORT int WINAPI D2DSendMessage(UIHandle h, UINT msg, WPARAM, LPARAM);
+DLLEXPORT int WINAPI D2DTabSendMessage(UIHandle h, UINT msg, WPARAM, LPARAM);
 
 DLLEXPORT UIHandleWin WINAPI D2DCreateMainHWnd( HWND hWnd, float font_height, int typ=0 );
 

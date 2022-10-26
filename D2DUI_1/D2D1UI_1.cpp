@@ -1511,6 +1511,25 @@ DLLEXPORT int WINAPI D2DSendMessage(UIHandle h, UINT msg, WPARAM wp, LPARAM lp)
 	return (int)ctrl->WndProc(b,msg,wp,lp);
 }
 
+DLLEXPORT int WINAPI D2DTabSendMessage(UIHandle h, UINT msg, WPARAM wp, LPARAM lp)
+{
+	// さかのぼってTabControlsを探して、その子へメッセージを流す仕組み
+	UIHandle x = h;
+
+	while(x.p)
+	{
+		auto k = dynamic_cast<D2DTabControls*>((D2DControl*)x.p);
+		if ( k )
+		{
+			AppBase b={};
+			return (int)k->WndProc(b,msg,wp,lp);
+		}
+		x = D2DGetParent(x);
+	}
+
+	return 0;
+}
+
 DLLEXPORT D2D1_RECT_F* WINAPI D2DRectAnimation(const D2D1_RECT_F& rcStart, const D2D1_RECT_F& rcEnd, D2D1_RECT_F* p, int p_size, int style)
 {
 	_ASSERT( 0 < p_size && p );

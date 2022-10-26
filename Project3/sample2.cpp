@@ -73,7 +73,7 @@ void Sample2(UIHandle parent, LPCWSTR name, FRectF rc, int id, int nest)
 
 	D2DEventHandler(ls1, MyTest);
 
-	MySample_CreateChartBox(t3_1, FRectF(500,0,FSizeF(1000,500)), L"SPY");
+	//MySample_CreateChartBox(t3_1, FRectF(500,0,FSizeF(1000,500)), L"SPY");
 	
 
 }

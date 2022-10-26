@@ -5,7 +5,7 @@
 using namespace V6;
 #define  APP (D2DApp::GetInstance())
 
-
+// D2DMyStockChart //////////////////////////////////////////////////////////////////////////
 bool D2DMyStockChart::Draw(ID2D1DeviceContext* cxt)
 {
 	auto stat = D2DGetStat(Get());
@@ -43,7 +43,10 @@ LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 		case WM_D2D_CREATE:
 		{			
 			hndl_ = *(UIHandle*)lParam;						
-			rc_ = D2DGetRect(hndl_);
+			FRectF rc = D2DGetRect(hndl_);
+
+
+			rc_ = rc.ZeroRect();
 
 
 			FSizeF sz = rc_.Size().Inflate(0,-TOPBAR_HEIGHT);
@@ -129,6 +132,7 @@ LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 
 				stock_chart_.Load(pv, dpi );
 
+
 				r = 1;
 			}
 			else if ( wParam == 11 )
@@ -144,9 +148,13 @@ LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 				dpi->cd = cd;
 				dpi->interval = intv;
 
-				auto complete = [b]()
+				auto complete = [b, this]()
 				{
+					D2DTabSendMessage(this->hndl_, WM_D2D_APP_ON_CHART_CHANGED, 0, (LPARAM)this);
+					
 					b.Redraw();
+
+
 				};
 
 				stock_chart_.LoadAsync(pv, dpi, complete);
@@ -181,6 +189,69 @@ LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 			}
 
 		};
+		break;
+	}
+
+	if ( r == 0 )
+		r = D2DDefControlProc(hndl_,b,message,wParam,lParam);
+
+	return r;
+}
+
+
+
+// D2DMyStockDataView //////////////////////////////////////////////////////////////////////////
+
+bool D2DMyStockDataView::Draw(ID2D1DeviceContext* cxt)
+{
+	D2DMatrix mat(cxt);
+
+	mat.PushTransform();
+	mat_ = mat.Offset(rc_);
+
+	ComPTR<ID2D1SolidColorBrush> br;
+	auto clr = ColorF(ColorF::AliceBlue);
+	cxt->CreateSolidColorBrush(clr, &br);
+	cxt->FillRectangle(rc_.ZeroRect(), br);
+
+
+
+
+	mat.PopTransform();
+	return false;
+}
+LRESULT D2DMyStockDataView::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	LRESULT r = 0;
+
+	switch( message )
+	{
+		case WM_D2D_CREATE:
+		{			
+			hndl_ = *(UIHandle*)lParam;						
+			FRectF rc = D2DGetRect(hndl_);
+			rc_ = rc.ZeroRect();
+
+
+
+
+		}
+		break;
+		case WM_D2D_DESTROY:
+		{
+			delete this;
+			r= 1;
+		}
+		break;
+		case WM_D2D_APP_ON_CHART_CHANGED:
+		{
+			D2DMyStockChart* chart = (D2DMyStockChart*)lParam;
+
+
+
+			r = 1;
+
+		}
 		break;
 	}
 

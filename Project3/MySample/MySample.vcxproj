@@ -159,6 +159,7 @@
     <ClCompile Include="D2DMyStockChart.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="D2DMyControls.cpp" />
+    <ClCompile Include="memodb.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -93,9 +93,7 @@ class StockChart
 		
 		bool Load(DataProvider& dp,DataProviderInfo& dpi);
 		void LoadAsync(DataProvider* dp,DataProviderInfo* dpi, std::function<void(void)> complete);
-		//void LoadAsyncComplete(LPARAM lp);
 	
-		
 		void Draw(ID2D1DeviceContext* cxt);
 		
 		void GenChartData(IStream* sm, std::vector<CandleData>& ar );
@@ -104,6 +102,7 @@ class StockChart
 		void SetSize(V6::FSizeF vsz);
 
 		bool MouseMove(V6::FPointF pt);
+		void WriteDataToDb(LPCWSTR cd, const std::vector<CandleData>& ar);
 
 		std::vector<Candle> xar_;
 		std::vector<FigureTrimline> ar_trim_;

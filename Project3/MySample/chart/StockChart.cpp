@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "comptr.h"
 #include "StockChart.h"
+#include "memodb.h"
 
 using namespace V6;
 
@@ -83,12 +84,12 @@ bool StockChart::Load(DataProvider& dp, DataProviderInfo& dpi)
 	{
 		auto st = dp.LoadSolidData( info );
 
-		if ( dp.Convert( st, &ou ) )
+		if ( st.result && dp.Convert( st, &ou ) )
 		{
 			GenChartData( ou.sm, ar );
-
-
 			GenChartCandle( ar, xar_, ar_trim_);
+
+			WriteDataToDb(info.cd.c_str(), ar);
 
 			ret = true;
 		}
@@ -252,7 +253,8 @@ void StockChart::Draw(ID2D1DeviceContext* cxt)
 	cxt->DrawRectangle(figure_rc, black);
 	cxt->FillRectangle(figure_rc, brw);
 
-	float x=figure_rc.right, off=5;
+	float x=figure_rc.right;
+	const float off=5;
 	x -= off;
 
 	for(auto it = xar_.rbegin(); it != xar_.rend(); it++)	
@@ -266,6 +268,9 @@ void StockChart::Draw(ID2D1DeviceContext* cxt)
 		
 		FRectF rc( x, figure_rc.bottom-c[0], x+off, figure_rc.bottom-c[3] );
 		cxt->FillRectangle(rc, br1);
+
+		FRectF rc2( rc.left+2, figure_rc.bottom-c[1], rc.left+3, figure_rc.bottom-c[2] );
+		cxt->FillRectangle(rc2, br1);
 
 		x -= off;
 	}
@@ -309,6 +314,32 @@ void StockChart::DrawTrimline(ID2D1DeviceContext* cxt)
 	StringCbPrintf(cb,_countof(cb),L"%s  %-8.1f", cd_.c_str(), mouse_place_value_ );
 	cxt->DrawText(cb, wcslen(cb), money_textformat_, rc, btrim);
 }
+
+
+
+
+void StockChart::WriteDataToDb(LPCWSTR cd, const std::vector<CandleData>& ar)
+{
+	std::vector<MEMODB::StockItem> ar2( ar.size());
+	int k = 0;
+
+	for(auto& it :ar)
+	{
+		MEMODB::StockItem s;
+		s.m1 = it.m1;
+		s.m2 = it.m2;
+		s.m3 = it.m3;
+		s.m4 = it.m4;
+		s.volume = it.qnt;
+		lstrcpyA(s.date, it.date);
+		s.typ = MEMODB::StockItem::TYP::DAY;
+
+		ar2[k++] = s;
+	}
+	
+	MEMODB::FileWrite(cd, ar2);
+}
+
 
 
 inline float tof(const std::string& s)
@@ -371,3 +402,5 @@ void Candle::conv( std::function<float(float)> func ) // float ysc, float money_
 	vpos[3] = func(raw.m4); 
 	vpos[4] = func(raw.m4ex);
 }
+
+

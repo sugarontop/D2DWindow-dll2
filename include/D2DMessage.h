@@ -139,6 +139,7 @@ typedef DWORD (*D2DEventHandlerDelegate)(UIHandle sender,LPCWSTR eventName, void
 #define WM_D2D_SET_ACTIVE_CONTROL				(WM_APP+34) // LPARAM is idx
 #define WM_D2D_GET_SELECTED_STRING				(WM_APP+35)
 
+
 #define WM_D2D_USER_FIRST						(WM_APP+4000) // for your application
 
 
