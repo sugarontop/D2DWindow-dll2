@@ -263,7 +263,7 @@ LRESULT D2DMyStockDataView::WndProc(AppBase& b, UINT message, WPARAM wParam, LPA
 				StringCbPrintf(cb,_countof(cb),L"%c%d=%s&", (WCHAR)(colnm+col-1), row, s.c_str());
 				return cb;
 			};
-
+			
 			auto iconv = [](int row, int col, int d)->std::wstring{
 			
 				_ASSERT(row>0 && col>0 && col < 26);
@@ -284,6 +284,12 @@ LRESULT D2DMyStockDataView::WndProc(AppBase& b, UINT message, WPARAM wParam, LPA
 				return cb;
 			};
 
+			auto A2W = [](LPCSTR a)->std::wstring {
+				int wlen = ::MultiByteToWideChar(CP_ACP,0,a,lstrlenA(a),nullptr,0);
+				std::unique_ptr<WCHAR[]> wcb(new WCHAR[wlen]);
+				::MultiByteToWideChar(CP_ACP,0,a,lstrlenA(a), wcb.get(), wlen);
+				return std::wstring(wcb.get(),wlen);	
+			};
 
 			int row = 1;
 			for(auto& it : ch.xar_)
@@ -291,11 +297,14 @@ LRESULT D2DMyStockDataView::WndProc(AppBase& b, UINT message, WPARAM wParam, LPA
 				std::wstring cmd;
 
 				cmd  = conv(row, 1, cd );
-				cmd += fconv(row, 2, it.raw.m1 );
-				cmd += fconv(row, 3, it.raw.m2 );
-				cmd += fconv(row, 4, it.raw.m3 );
-				cmd += fconv(row, 5, it.raw.m4 );
-				cmd += iconv(row, 6, it.raw.qnt );
+				cmd += conv(row, 2, A2W(it.raw.date) );
+				cmd += fconv(row, 3, it.raw.m1 );
+				cmd += fconv(row, 4, it.raw.m2 );
+				cmd += fconv(row, 5, it.raw.m3 );
+				cmd += fconv(row, 6, it.raw.m4 );
+				cmd += iconv(row, 7, it.raw.qnt );
+
+				
 
 				
 				D2DSendMessage(hgridview_,WM_D2D_SET_GRIDVIEW_VALUE,(WPARAM)0,(LPARAM)cmd.c_str()); 
