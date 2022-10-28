@@ -28,6 +28,8 @@ struct ControlMapItem
 	int col;
 };
 
+
+
 struct SmoothCar
 {
 	public :

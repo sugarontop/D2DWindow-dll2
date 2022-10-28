@@ -76,6 +76,7 @@ typedef DWORD (*D2DEventHandlerDelegate)(UIHandle sender,LPCWSTR eventName, void
 #define TYP_SQLDATAGRID 21
 #define TYP_TAB_CONTROLS_ITEM 22
 #define TYP_CONSOLE 23
+#define TYP_DATAGRIDVIEW 24
 
 #define theWhite D2RGB(255,255,255)
 #define theBlack D2RGB(0,0,0)
@@ -139,6 +140,7 @@ typedef DWORD (*D2DEventHandlerDelegate)(UIHandle sender,LPCWSTR eventName, void
 #define WM_D2D_SET_ACTIVE_CONTROL				(WM_APP+34) // LPARAM is idx
 #define WM_D2D_GET_SELECTED_STRING				(WM_APP+35)
 
+#define WM_D2D_SET_GRIDVIEW_VALUE				(WM_APP+36)
 
 #define WM_D2D_USER_FIRST						(WM_APP+4000) // for your application
 

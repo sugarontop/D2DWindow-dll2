@@ -32,7 +32,8 @@ namespace V6
 			std::vector<Row> Items_;
 
 			D2DColor fore_,back_;
-
-
 	};
+
+
+
 };

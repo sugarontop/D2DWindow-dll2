@@ -180,6 +180,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\include\D2D1UI_1.h" />
+    <ClInclude Include="..\include\D2DMessage.h" />
     <ClInclude Include="..\lib\AppBase.h" />
     <ClInclude Include="..\lib\D2DButton.h" />
     <ClInclude Include="..\lib\D2DColor.h" />
@@ -208,6 +209,7 @@
     <ClCompile Include="..\lib\D2DColor.cpp" />
     <ClCompile Include="..\lib\D2DContext.cpp" />
     <ClCompile Include="..\lib\D2DControls_with_Scrollbar.cpp" />
+    <ClCompile Include="..\lib\D2DDataGridView.cpp" />
     <ClCompile Include="..\lib\D2DDropdownListbox.cpp" />
     <ClCompile Include="..\lib\D2DEmptyControls.cpp" />
     <ClCompile Include="..\lib\D2DFileManage.cpp" />

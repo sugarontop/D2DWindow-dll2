@@ -98,7 +98,7 @@ LRESULT D2DLogin::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam
 		case WM_D2D_SET_COLOR:
 		{
 			ColorF clr = *(ColorF*)lParam;
-			int idx = wParam;
+			int idx = (int)wParam;
 			if ( idx == COLOR_IDX_BACK )
 				clr_[idx] = clr; //back_ = clr;
 			else if ( idx == COLOR_IDX_FORE )

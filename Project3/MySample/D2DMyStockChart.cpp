@@ -215,7 +215,7 @@ bool D2DMyStockDataView::Draw(ID2D1DeviceContext* cxt)
 	cxt->FillRectangle(rc_.ZeroRect(), br);
 
 
-
+	D2DInnerDraw(hndl_);
 
 	mat.PopTransform();
 	return false;
@@ -233,7 +233,7 @@ LRESULT D2DMyStockDataView::WndProc(AppBase& b, UINT message, WPARAM wParam, LPA
 			rc_ = rc.ZeroRect();
 
 
-
+			hgridview_ = D2DCreateDataGridView(hndl_, rc_, STAT_DEFAULT, NONAME);
 
 		}
 		break;
@@ -247,7 +247,61 @@ LRESULT D2DMyStockDataView::WndProc(AppBase& b, UINT message, WPARAM wParam, LPA
 		{
 			D2DMyStockChart* chart = (D2DMyStockChart*)lParam;
 
+			StockChart& ch = chart->stock_chart_;
 
+			auto cd = ch.cd_;
+
+			auto ar = ch.xar_;
+
+
+			auto conv = [](int row, int col, std::wstring s)->std::wstring{
+			
+				_ASSERT(row>0 && col>0 && col < 26);
+				WCHAR colnm = L'A';
+
+				WCHAR cb[64];
+				StringCbPrintf(cb,_countof(cb),L"%c%d=%s&", (WCHAR)(colnm+col-1), row, s.c_str());
+				return cb;
+			};
+
+			auto iconv = [](int row, int col, int d)->std::wstring{
+			
+				_ASSERT(row>0 && col>0 && col < 26);
+				WCHAR colnm = L'A';
+
+				WCHAR cb[64];
+				StringCbPrintf(cb,_countof(cb),L"%c%d=%d&", (WCHAR)(colnm+col-1), row, d);
+				return cb;
+			};
+
+			auto fconv = [](int row, int col, float d)->std::wstring{
+			
+				_ASSERT(row>0 && col>0 && col < 26);
+				WCHAR colnm = L'A';
+
+				WCHAR cb[64];
+				StringCbPrintf(cb,_countof(cb),L"%c%d=%f&", (WCHAR)(colnm+col-1), row, d);
+				return cb;
+			};
+
+
+			int row = 1;
+			for(auto& it : ch.xar_)
+			{
+				std::wstring cmd;
+
+				cmd  = conv(row, 1, cd );
+				cmd += fconv(row, 2, it.raw.m1 );
+				cmd += fconv(row, 3, it.raw.m2 );
+				cmd += fconv(row, 4, it.raw.m3 );
+				cmd += fconv(row, 5, it.raw.m4 );
+				cmd += iconv(row, 6, it.raw.qnt );
+
+				
+				D2DSendMessage(hgridview_,WM_D2D_SET_GRIDVIEW_VALUE,(WPARAM)0,(LPARAM)cmd.c_str()); 
+
+				row++;
+			}
 
 			r = 1;
 

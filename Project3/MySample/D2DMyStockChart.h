@@ -8,6 +8,7 @@
 #define WM_D2D_APP_SETDEFAULT_CD		(WM_D2D_USER_FIRST+1)
 #define WM_D2D_APP_ON_CHART_CHANGED		(WM_D2D_USER_FIRST+2)
 
+
 namespace V6 {
 
 class D2DMyStockChart: public D2DAppBaseControls
@@ -76,7 +77,7 @@ class D2DMyStockDataView: public D2DAppBaseControls
 		USHORT dot_idx_;
 			
 
-		UIHandle cd_, intv_;
+		UIHandle cd_, hgridview_;
 
 };
 
