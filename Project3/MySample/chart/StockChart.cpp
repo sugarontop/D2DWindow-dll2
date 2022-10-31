@@ -232,7 +232,7 @@ void StockChart::GenChartCandle(std::vector<CandleData>& ar,  std::vector<Candle
 }
 
 
-void StockChart::Draw(ID2D1DeviceContext* cxt)
+void StockChart::Draw(ID2D1RenderTarget* cxt)
 {
 	
 	D2DMatrix mat(cxt);
@@ -281,7 +281,7 @@ void StockChart::Draw(ID2D1DeviceContext* cxt)
 	mat.PopTransform();
 }
 
-void StockChart::DrawTrimline(ID2D1DeviceContext* cxt)
+void StockChart::DrawTrimline(ID2D1RenderTarget* cxt)
 {
 	FRectF figure_rc = vrect_.ZeroRect();
 	WCHAR cb[64];

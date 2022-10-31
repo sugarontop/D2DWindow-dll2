@@ -1,40 +1,107 @@
 #include "pch.h"
 #include "D2D1UI_1.h"
-#include "D2DMyStockChart.h"
+#include "FD2DMyStockChart.h"
 #include "chart/StockChart.h"
 using namespace V6;
 #define  APP (D2DApp::GetInstance())
 
+
+
 // D2DMyStockChart //////////////////////////////////////////////////////////////////////////
-bool D2DMyStockChart::Draw(ID2D1DeviceContext* cxt)
+bool FD2DMyStockChart::Draw(ID2D1DeviceContext* cxt)
 {
 	auto stat = D2DGetStat(Get());
-	//if ( BITFLG2( stat, STAT_VISIBLE))
+	if ( BITFLG2( stat, STAT_VISIBLE))
 	{
 		D2DMatrix mat(cxt);
 
 		mat.PushTransform();
 		mat_ = mat.Offset(rc_);
+
+		ComPTR<ID2D1SolidColorBrush> br, brgray;
+		auto clr = ColorF(ColorF::LightGray);
+
+		cxt->CreateSolidColorBrush(clr, &br);
+		cxt->FillRectangle(rc_.ZeroRect(), br);
+		
+		
+		if ( view_ )
+			cxt->DrawBitmap(view_,rc_.ZeroRect());
+		else
 		{
-			ComPTR<ID2D1SolidColorBrush> br, brgray;
-			auto clr = ColorF(ColorF::LightGray);
-
-			cxt->CreateSolidColorBrush(clr, &br);
-			cxt->FillRectangle(rc_.ZeroRect(), br);
-		
-			D2DInnerDraw(hndl_);
-
-		
-			stock_chart_.Draw(cxt);
-
+			if ( CreateMemoryView( cxt, rc_.Size(), &view_))
+				cxt->DrawBitmap(view_,rc_.ZeroRect());
+			else			
+				InnerDraw(cxt);
 		}
 
-		mat.PopTransform();
+		// button etc..
+		D2DInnerDraw(hndl_);
+
+		mat.PopTransform();	
 	}
 
 	return false;
 }
-LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam)
+void FD2DMyStockChart::InnerDraw(ID2D1RenderTarget* cxt)
+{
+	stock_chart_.Draw(cxt);
+}
+
+// --------------------------------------------------
+static ID2D1RenderTarget* InitWICImagingType(UINT cx, UINT cy, IWICBitmap** out_bitmap)
+{
+	ComPTR<IWICImagingFactory> wic;
+	ComPTR<ID2D1Factory> fct;
+	ComPTR<ID2D1RenderTarget> memoryTarget;
+	LRESULT hr;
+
+	hr = ::CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_ALL, IID_IWICImagingFactory, (void**)&wic);
+
+    hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &fct);
+
+    hr = wic->CreateBitmap(cx, cy, GUID_WICPixelFormat32bppPBGRA, WICBitmapCacheOnDemand, out_bitmap);
+
+    hr = fct->CreateWicBitmapRenderTarget(*out_bitmap, D2D1::RenderTargetProperties(
+        D2D1_RENDER_TARGET_TYPE_DEFAULT,
+        D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),96.0f, 96.0f),
+        &memoryTarget);
+
+	memoryTarget.AddRef();
+	return memoryTarget;
+}
+bool FD2DMyStockChart::CreateMemoryView(ID2D1RenderTarget* target, FSizeF sz, ID2D1Bitmap** pview)
+{	
+	ComPTR<IWICBitmap> wicb_bmp;
+	ID2D1RenderTarget* mem_cxt = InitWICImagingType((UINT)sz.width,(UINT)sz.height, &wicb_bmp);
+
+	if ( mem_cxt )
+	{
+		mem_cxt->BeginDraw();
+		{
+			D2D1_MATRIX_3X2_F mat = {};
+			mat._11 = mat._22 = 1.0f; 
+			mem_cxt->SetTransform(mat);
+			mem_cxt->Clear(D2D1::ColorF(D2D1::ColorF::White));
+
+
+			InnerDraw(mem_cxt);
+		}
+		mem_cxt->EndDraw();
+
+		// 	convert IWICBitmap to ID2D1Bitmap
+		ComPTR<ID2D1Bitmap> bmp;
+		auto hr = target->CreateBitmapFromWicBitmap(wicb_bmp, NULL, pview );
+
+		// convert IWICBitmap to stream
+		// WICBitmapSourceToStream(wicb_bmp, &sm_);
+
+		return true;
+	}
+	return false;
+}
+
+LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam)
 {	
 	LRESULT r = 0;
 
@@ -131,7 +198,7 @@ LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 				
 
 				stock_chart_.Load(pv, dpi );
-
+				view_ = nullptr;
 
 				r = 1;
 			}
@@ -152,12 +219,16 @@ LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 				{
 					D2DTabSendMessage(this->hndl_, WM_D2D_APP_ON_CHART_CHANGED, 0, (LPARAM)this);
 					
+					view_ = nullptr;
+
 					b.Redraw();
 
 
 				};
 
 				stock_chart_.LoadAsync(pv, dpi, complete);
+
+				
 
 				r = 1;
 			}
@@ -190,6 +261,11 @@ LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 
 		};
 		break;
+		case WM_KEYDOWN:
+		{
+			view_ = nullptr;
+		}
+		break;
 	}
 
 	if ( r == 0 )
@@ -202,25 +278,29 @@ LRESULT D2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 
 // D2DMyStockDataView //////////////////////////////////////////////////////////////////////////
 
-bool D2DMyStockDataView::Draw(ID2D1DeviceContext* cxt)
+bool FD2DMyStockDataView::Draw(ID2D1DeviceContext* cxt)
 {
-	D2DMatrix mat(cxt);
+	auto stat = D2DGetStat(Get());
+	if ( BITFLG2( stat, STAT_VISIBLE))
+	{	
+		D2DMatrix mat(cxt);
 
-	mat.PushTransform();
-	mat_ = mat.Offset(rc_);
+		mat.PushTransform();
+		mat_ = mat.Offset(rc_);
 
-	ComPTR<ID2D1SolidColorBrush> br;
-	auto clr = ColorF(ColorF::AliceBlue);
-	cxt->CreateSolidColorBrush(clr, &br);
-	cxt->FillRectangle(rc_.ZeroRect(), br);
+		ComPTR<ID2D1SolidColorBrush> br;
+		auto clr = ColorF(ColorF::AliceBlue);
+		cxt->CreateSolidColorBrush(clr, &br);
+		cxt->FillRectangle(rc_.ZeroRect(), br);
 
 
-	D2DInnerDraw(hndl_);
+		D2DInnerDraw(hndl_);
 
-	mat.PopTransform();
+		mat.PopTransform();
+	}
 	return false;
 }
-LRESULT D2DMyStockDataView::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT FD2DMyStockDataView::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT r = 0;
 
@@ -245,7 +325,7 @@ LRESULT D2DMyStockDataView::WndProc(AppBase& b, UINT message, WPARAM wParam, LPA
 		break;
 		case WM_D2D_APP_ON_CHART_CHANGED:
 		{
-			D2DMyStockChart* chart = (D2DMyStockChart*)lParam;
+			FD2DMyStockChart* chart = (FD2DMyStockChart*)lParam;
 
 			StockChart& ch = chart->stock_chart_;
 

@@ -21,10 +21,10 @@
     <ClInclude Include="pch.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="D2DMyControls.h">
+    <ClInclude Include="FD2DMyControls.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="D2DMyStockChart.h">
+    <ClInclude Include="FD2DMyStockChart.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
     <ClInclude Include="chart\StockChart.h">
@@ -41,16 +41,16 @@
     <ClCompile Include="s1.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="D2DAppBaseControls.cpp">
+    <ClCompile Include="FD2DAppBaseControls.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="D2DMyControls.cpp">
+    <ClCompile Include="FD2DMyControls.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="..\..\lib\inet.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="D2DMyStockChart.cpp">
+    <ClCompile Include="FD2DMyStockChart.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="chart\StockChart.cpp">

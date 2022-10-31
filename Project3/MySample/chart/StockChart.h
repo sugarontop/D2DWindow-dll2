@@ -64,7 +64,7 @@ struct CandleData
 {
 	char date[12];
 	money m1,m2,m3,m4,m4ex;
-	float qnt;
+	int qnt;
 
 	bool load( LPCSTR csv_row, ULONG len );
 };
@@ -94,7 +94,7 @@ class StockChart
 		bool Load(DataProvider& dp,DataProviderInfo& dpi);
 		void LoadAsync(DataProvider* dp,DataProviderInfo* dpi, std::function<void(void)> complete);
 	
-		void Draw(ID2D1DeviceContext* cxt);
+		void Draw(ID2D1RenderTarget* cxt);
 		
 		void GenChartData(IStream* sm, std::vector<CandleData>& ar );
 		void GenChartCandle(std::vector<CandleData>& ar, std::vector<Candle>& out, std::vector<FigureTrimline>& trimout);
@@ -116,6 +116,6 @@ class StockChart
 		std::wstring cd_;
 
 	protected :
-		void DrawTrimline(ID2D1DeviceContext* cxt);
+		void DrawTrimline(ID2D1RenderTarget* cxt);
 
 };

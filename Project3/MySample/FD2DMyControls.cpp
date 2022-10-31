@@ -2,15 +2,15 @@
 #include "pch.h"
 #include "appbase.h"
 #include "D2D1UI_1.h"
-#include "D2DAppBaseControls.h"
-#include "D2DMyControls.h"
+#include "FD2DAppBaseControls.h"
+#include "FD2DMyControls.h"
 
 using namespace V6;
 
 
 #pragma comment (lib, "D2DUI_1")
 
-bool D2DSampleControls::Draw(ID2D1DeviceContext* cxt)
+bool FD2DSampleControls::Draw(ID2D1DeviceContext* cxt)
 {
 	auto stat = D2DGetStat(Get());
 	//if ( BITFLG2( stat, STAT_VISIBLE))
@@ -58,7 +58,7 @@ bool D2DSampleControls::Draw(ID2D1DeviceContext* cxt)
 				FRectF rctext(50,100,FSizeF(500,500));
 				clr = D2RGBA(100,100,100,100); 
 				cxt->CreateSolidColorBrush(clr, &brgray);
-				cxt->DrawText(s, wcslen(s), pfmt, rctext, brgray );
+				cxt->DrawText(s, (UINT32)wcslen(s), pfmt, rctext, brgray );
 			}
 
 			cxt->DrawRectangle(rc_.ZeroRect(), br );
@@ -73,7 +73,7 @@ bool D2DSampleControls::Draw(ID2D1DeviceContext* cxt)
 
 
 }
-LRESULT D2DSampleControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT FD2DSampleControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam)
 {	
 	LRESULT r = 0;
 

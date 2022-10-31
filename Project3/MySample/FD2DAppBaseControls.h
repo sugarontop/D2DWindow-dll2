@@ -2,12 +2,15 @@
 
 #include "D2DMessage.h"
 
+#define BITFLG2(a, x) ((a&x)==x)
+
+
 namespace V6
 {
-	class D2DAppBaseControls
+	class FD2DAppBaseControls
 	{
 		public :
-			D2DAppBaseControls(){ hndl_.p= nullptr;} 
+			FD2DAppBaseControls(){ hndl_.p= nullptr;} 
 
 
 			void Create(UIHandle parent, LPCWSTR name, FRectF rc, int id);

@@ -1,10 +1,10 @@
 #pragma once
 namespace V6
 {
-	class D2DSampleControls: public D2DAppBaseControls
+	class FD2DSampleControls: public FD2DAppBaseControls
 	{
 		public :
-			D2DSampleControls(){};
+			FD2DSampleControls(){};
 
 			virtual bool Draw(ID2D1DeviceContext* cxt) override;
 			virtual LRESULT WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam) override;
