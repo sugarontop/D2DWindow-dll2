@@ -397,12 +397,12 @@ DLLEXPORT UIHandle WINAPI D2DGetTab(UIHandle hctrls, USHORT idx)
 	if ( p )
 	{
 		r.p = p;
-		r.typ = TYP_CONTROLS;
+		r.typ = TYP_TAB_CONTROLS_ITEM; 
 	}
 	return r;
 
 }
-
+//virtual FRectF GetRect() const override { return rc_; }
 
 DLLEXPORT UIHandle WINAPI D2DAddNewTab(UIHandle hctrls, LPCWSTR nm)
 {	
@@ -1753,4 +1753,18 @@ DLLEXPORT void D2DRedraw(UIHandle h)
 	//pwin->GetContext().bRedraw_ = true;
 
 	InvalidateRect(pwin->GetHwnd(),NULL,FALSE);
+}
+DLLEXPORT void D2DGetClientRect(UIHandle h, D2D1_RECT_F* prc)
+{
+	D2DControl* pc = static_cast<D2DControl*>( h.p);
+
+	auto rc = pc->GetRect();
+
+	if ( h.typ == TYP_TAB_CONTROLS_ITEM)
+	{
+		rc = pc->GetRect();
+
+	}
+
+	*prc = rc;
 }

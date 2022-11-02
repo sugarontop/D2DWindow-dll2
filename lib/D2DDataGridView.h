@@ -81,7 +81,7 @@ namespace V6
 	};
 
 	
-	class D2DDataGridView : public D2DControl
+	class D2DDataGridView : public D2DControls
 	{
 		public :
 			D2DDataGridView(){};
@@ -100,6 +100,7 @@ namespace V6
 		protected :
 			void Expand(WORD row, WORD col);
 			bool ParseValues(LPCWSTR values, std::vector<CellRC>& ar);
+			void SetViewMaxSize(FSizeF sz);
 		protected :
 			FRectF rc_;
 
@@ -111,8 +112,11 @@ namespace V6
 
 			Tool tool_;
 
-
-			
+			UIHandle hndl_;
+			UINT vrow_top_;
+			UINT row_count_;
+			float vscroll_x_;
+			std::shared_ptr<D2DScrollbar> vscbar_;
 
 			D2DColor fore_,back_;
 	};

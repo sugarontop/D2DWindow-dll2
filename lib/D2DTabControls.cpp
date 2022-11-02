@@ -38,7 +38,7 @@ void D2DTabControls::Draw(D2DContext& cxt)
 	}
 	else if ( tab_typ_ == TAB_BOTTOM_BAR)
 	{
-		FSizeF sz(rc_.Size().width,rc_.Size().height-TAB_HEIGHT);
+		FSizeF sz(rc_.Size().width,rc_.Size().height); //-TAB_HEIGHT);
 
 		mat.PushTransform();
 		{
@@ -70,19 +70,20 @@ float D2DTabControls::DrawTab(D2DContext& cxt, USHORT tabidx)
 	USHORT k = 0;
 	for(auto& it : tabrects_)
 	{
-		auto clr1 = DEFAULT_TAB_COLOR; 
+		auto clr1 = DEFAULT_TAB_COLOR;
 		auto clr2 = ColorF::Black;
 
 		if ( k == tabidx )
 		{
 			clr1 = DEFAULT_TAB_ACTIVE_COLOR;
+			clr1 = (tab_typ_ == TAB_TOP_BAR ? DEFAULT_TAB_ACTIVE_COLOR : ColorF::DarkRed );
 			clr2 = ColorF::White;
 		}
 
 		cxt.DDrawRect(it, ColorF::Black, clr1);
 
 		auto tab_name = this->controls_[k]->GetLocalName();
-		cxt.DText(FPointF(it.left+6, it.top), tab_name.c_str(), clr2);
+		cxt.DText(FPointF(it.left+6, it.top+3), tab_name.c_str(), clr2);
 
 		k++;
 	}
@@ -120,7 +121,12 @@ LRESULT D2DTabControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM 
 
 			auto nm = GetName();
 
-			if ( rc_.PtInRect(pt))
+			auto rc(rc_);
+
+			if ( tab_typ_ == TAB_BOTTOM_BAR )
+				rc.bottom += TAB_HEIGHT;
+
+			if ( rc.PtInRect(pt))
 			{
 				int k = 0;
 				auto old = tab_idx_;
@@ -138,7 +144,6 @@ LRESULT D2DTabControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM 
 						if ( old !=tab_idx_ )
 							parent_window_->SendMessage(WM_D2D_TAB_CHANGE, (WPARAM)this, (LPARAM)tab_idx_);
 							
-						//APP.SetCapture(this);
 						break;
 					}
 					k++;
@@ -266,17 +271,25 @@ LRESULT D2DTabControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM 
 
 		if ( r == 0 )
 		{
-			for(UINT i= 0; i < controls_.size(); i++ )
+			if ( (WM_MOUSEFIRST <= message && message <= WM_MOUSELAST) ||
+					(WM_KEYFIRST <= message && message <= WM_KEYLAST) )
 			{
-				if ( i != tab_idx_ )
+				// break UI message
+			}
+			else
+			{
+				for(UINT i= 0; i < controls_.size(); i++ )
 				{
-					ctrls = dynamic_cast<D2DControls*>(controls_[i].get());
-					if ( ctrls )
-						r = ctrls->InnerWndProc(b,message,wParam,lParam);
+					if ( i != tab_idx_ )
+					{
+						ctrls = dynamic_cast<D2DControls*>(controls_[i].get());
+						if ( ctrls )
+							r = ctrls->InnerWndProc(b,message,wParam,lParam);
 
-					if ( r )
-						break;
-				}				
+						if ( r )
+							break;
+					}				
+				}
 			}
 		}
 	}
@@ -306,21 +319,25 @@ void D2DTabControls::CreateControl(D2DWindow* parent, D2DControls* pacontrol, co
 	back_ = ColorF::White;
 	fore_ = ColorF::Black;
 
+
+	FSizeF tabpage_size = rc_.Size();
+	//tabpage_size.height -= TAB_HEIGHT;
+
 	for(int i = 0; i < 1; i++ )
 	{
 		WCHAR nm[64];
 		wsprintf(nm,L"%s@%d", name_.c_str(), i);
 
-		if (BITFLG(STAT_SIMPLE))
+		if (BITFLG(CREATE_SIMPLE))
 		{			
 			auto page1 = std::make_shared<D2DControls>();
-			page1->CreateControl(parent,this, FRectF(0,0,rc_.Size()), STAT_DEFAULT, nm );
+			page1->CreateControl(parent,this, FRectF(0,0,tabpage_size), STAT_DEFAULT, nm );
 			Add(page1);
 		}
 		else
 		{
 			auto page1 = std::make_shared<D2DControls_with_Scrollbar>();
-			page1->CreateControl(parent,this, FRectF(0,0,rc_.Size()), STAT_DEFAULT, nm );
+			page1->CreateControl(parent,this, FRectF(0,0,tabpage_size), STAT_DEFAULT, nm );
 			Add(page1);
 		}
 	}
@@ -372,17 +389,20 @@ D2DControls* D2DTabControls::AddNewTab(LPCWSTR tabName)
 	tabnm += L"@";
 	tabnm += tabName;
 
-	if (BITFLG(STAT_SIMPLE))
+	auto sz = rc_.Size();
+	//sz.height -= TAB_HEIGHT;
+
+	if (BITFLG(CREATE_SIMPLE))
 	{
 		auto page1 = std::make_shared<D2DControls>();
-		page1->CreateControl(parent_window_,this, FRectF(0,0,rc_.Size()), STAT_DEFAULT, tabnm.c_str() );
+		page1->CreateControl(parent_window_,this, FRectF(0,0,sz), STAT_DEFAULT, tabnm.c_str() );
 		Add(page1);
 		ret = page1.get();
 	}
 	else
 	{
 		auto page1 = std::make_shared<D2DControls_with_Scrollbar>();
-		page1->CreateControl(parent_window_,this, FRectF(0,0,rc_.Size()), STAT_DEFAULT, tabnm.c_str() );
+		page1->CreateControl(parent_window_,this, FRectF(0,0,sz), STAT_DEFAULT, tabnm.c_str() );
 		Add(page1);
 		ret = page1.get();
 

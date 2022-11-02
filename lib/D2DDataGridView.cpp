@@ -1,21 +1,27 @@
 #include "pch.h"
+#include "D2DScrollbar.h"
 #include "D2DDataGridView.h"
 
 
 using namespace V6;
 
 #define FONT_HEIGHT 11.0f
+#define ROW_HEIGHT (FONT_HEIGHT+4.0f)
+#define HEADER_HEIGHT 0.0f
+#define TAB_BAR_HEIGHT 0
 
 void D2DDataGridView::CreateControl(D2DWindow* parent, D2DControls* pacontrol, const FRectF& rc, DWORD stat, LPCWSTR name, int local_id)
 {
 	InnerCreateWindow(parent,pacontrol,stat,name,local_id);
 
-	fore_ = D2RGB(0,0,0);
-	back_ = D2RGB(255,255,255);
+	fore_ = ColorF::Black;
+	back_ = ColorF::White;
+
 	rc_ = rc;
 
 	buffer_row_ = 100;
 	buffer_col_ = 10;
+	row_count_ = 0;
 
 	table_ = new Cell[buffer_row_*buffer_col_];
 }
@@ -79,6 +85,13 @@ void D2DDataGridView::Expand(WORD row, WORD col)
 
 void D2DDataGridView::SetValue(UINT row, UINT col, const GridViewCellValue& cv)
 {
+	// 1 start
+	_ASSERT( row > 0 && col > 0 );
+	
+	// 0 start
+	row--;
+	col--;
+	
 	Expand(row,col);
 
 	_ASSERT ( row < buffer_row_ && col < buffer_col_ );
@@ -86,6 +99,7 @@ void D2DDataGridView::SetValue(UINT row, UINT col, const GridViewCellValue& cv)
 	Cell& pc = table_[buffer_col_*row + col];
 		
 	pc.set(tool_, cv);
+
 
 }
 
@@ -127,25 +141,45 @@ void D2DDataGridView::Draw(D2DContext& cxt)
         mat_ = mat.PushTransform();
         mat.Offset(rc_);
 
-		const float h = FONT_HEIGHT+4.0f,  w = 100.0f;
-		FPointF pt(0,0);
+		mat.PushTransform();	
 
-		for(auto row=0; row < min(50, buffer_row_); row++ )
-		{
-			mat.PushTransform();
-			for(auto col=0; col < buffer_col_; col++ )
+			const float h = ROW_HEIGHT,  w = 100.0f;
+			FPointF pt(0,0);
+
+			vrow_top_ =  (int)(vscbar_->LogicalOffset() / ROW_HEIGHT+0.5f);
+
+			UINT ir = 0;
+
+			for(auto row=vrow_top_; row < buffer_row_; row++ )
 			{
-				auto& cell = table_[row*buffer_col_ + col];
+				mat.PushTransform();
+				for(auto col=0; col < buffer_col_; col++ )
+				{
+					auto& cell = table_[row*buffer_col_ + col];
 
-				if ( cell.t )
-					(*cxt)->DrawTextLayout(pt,cell.t,fore, D2D1_DRAW_TEXT_OPTIONS::D2D1_DRAW_TEXT_OPTIONS_CLIP);
+					if ( cell.t )
+						(*cxt)->DrawTextLayout(pt,cell.t,fore, D2D1_DRAW_TEXT_OPTIONS::D2D1_DRAW_TEXT_OPTIONS_CLIP);
 
-				mat.Offset(w, 0);
+					mat.Offset(w, 0);
+				}
+				mat.PopTransform();
+
+
+				if ( (++ir)*ROW_HEIGHT > rc_.Height() )
+					break;
+
+				mat.Offset(0,h);
+				
 			}
-			mat.PopTransform();
+		mat.PopTransform();
 
-			mat.Offset(0,h);
-		}
+
+		mat.PushTransform();	
+			mat.Offset(vscroll_x_, HEADER_HEIGHT );
+			vscbar_->Draw2(cxt);
+		mat.PopTransform();
+
+
 		mat.PopTransform();
 	}
 }
@@ -162,6 +196,18 @@ LRESULT D2DDataGridView::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 				tool_.factory->CreateTextFormat(L"MS –¾’©", NULL, DWRITE_FONT_WEIGHT_REGULAR,
 					DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL,FONT_HEIGHT, LOCALE, &tool_.format);
 			}
+
+
+			hndl_ = *(UIHandle*)lParam;		
+
+			auto scV = std::make_shared<D2DScrollbar>();
+			scV->CreateControl(parent_window_, this, FRectF(0,0,BARW,200), STAT_DEFAULT, L"VSCBAR");
+			this->Add(scV);
+			vscbar_ = scV;
+
+			vrow_top_ = 0;
+			vscroll_x_ = 0;
+
 			r = 1;
 		}
 		break;
@@ -181,6 +227,7 @@ LRESULT D2DDataGridView::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 				
 				ParseValues( values, ar );
 
+				row_count_ = 0;
 				for(auto& it : ar )
 				{
 					GridViewCellValue cv; 
@@ -191,89 +238,79 @@ LRESULT D2DDataGridView::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 					cv.value = (LPVOID)s;
 					SetValue(it.row,it.col, cv);
 
-
-
-
-				}
-
+					row_count_ = it.row;
+				}								
 			}
+			else if ( wParam == 1 )
+			{
+				FSizeF sz;
+				sz.height = (row_count_ ) * ROW_HEIGHT;
+				SetViewMaxSize(sz);
+			}
+
 			r = 1;
 		}
 		break;
+		case WM_MOUSEWHEEL:
+		{
+			MouseParam* mp = (MouseParam*)lParam;
+            auto pt = mat_.DPtoLP(mp->pt);
+            auto md = (rc_.PtInRect(pt) ? 1 : 0);
 
-		//case WM_D2D_COMMAND_SET:
-		//{
-		//	//var k3 = dd.create("type=grid&id=10105&x=650&y=50&cx=150&cy=450&nm=gd1");
-		//	//k3.set("color=#FFFFA0&bkcolor=#111111");
-		//	//k3.set("add&title=ABCDEFG1&val=000000");
+            if ( md == 1 )
+            {
+				r = InnerWndProc(b,message,wParam,lParam);
 
-		//	if ( (UINT_PTR)this == (UINT_PTR)wParam)
-		//	{
-		//		LPCWSTR cmdstr = (LPCWSTR)lParam;
+				if( r == 0)
+				{
+					float a = 0;
+					if (mp->zDelta > 0)
+						a = -ROW_HEIGHT;
+					else if (mp->zDelta < 0)
+						 a= ROW_HEIGHT;
 
-		//		auto ar = SplitW(cmdstr,L"&");
-		//		std::wstring cmd;
-		//		
-		//		std::wstring title;
-		//		for(auto& it : ar)
-		//		{
-		//			auto ar2 = SplitW(it.c_str(), L"=");
-
-		//			if ( ar2.size() == 1 )
-		//			{
-		//				cmd = ar2[0];
-
-		//			}
-		//			else if ( ar2.size() == 2)
-		//			{
-		//				if ( cmd==L"add" && (ar2[0] == L"title") )
-		//				{
-		//					title = ar2[1];
-		//				}	
-		//				else if ( cmd==L"add" && (ar2[0] == L"val") )
-		//				{
-		//					std::wstring& val = ar2[1];
-
-		//					Row r;
-		//					r.colcnt = 2;
-		//					r.value = new PIDWriteTextLayout[2];
-
-		//					auto& cxt = this->GetParent()->GetContext();
-
-		//					IDWriteTextLayout *playout, *playout2;
-		//					if (SOK(cxt.wfactory_->CreateTextLayout(title.c_str(), title.length(), cxt.textformat_, 1000,1000, &playout )))
-		//						r.value[0] = playout;
-		//					if (SOK(cxt.wfactory_->CreateTextLayout(val.c_str(), val.length(), cxt.textformat_, 1000,1000, &playout2 )))
-		//						r.value[1] = playout2;
-
-		//					Items_.push_back(r);
-		//				}
-		//				else if (ar2[0] == L"color")
-		//				{
-		//					D2DColor clr(ar2[1].c_str());
-		//					fore_ = clr;
-		//				}
-		//				else if (ar2[0] == L"bkcolor")
-		//				{
-		//					D2DColor clr(ar2[1].c_str());
-		//					back_ = clr;
-		//				}
-		//			}
-
-		//		}
-		//		r = 1;
-		//	}
-
-
-		//}
-		//break;
-
+					vscbar_->Offset(a);
+				}
+				r = 1;
+            }
+		}
+		break;
 	}
+
+	if ( r == 0 )
+		r = DefWndProc(b,message,wParam,lParam);
+		//r = InnerWndProc(b,message,wParam,lParam);
+
 	return r;
 
 
 }
+void D2DDataGridView::SetViewMaxSize(FSizeF all_data_view_sz)
+{				
+	//_ASSERT((0 < sz.width) && (0 < sz.height));
+	_ASSERT((0 < all_data_view_sz.height));
 
+	vscroll_x_ = rc_.Width()-BARW;
+	//hscroll_x_ = 0;
+
+	vscbar_->SetStat(STAT_DEFAULT);
+	//sch_->SetStat(STAT_DEFAULT);
+
+	vscbar_->SetMaxSize( all_data_view_sz.height );
+	//sch_->SetMaxSize( sz.width );
+	//sch_->SetSize(rc_.Size());
+
+
+	FSizeF tsz(rc_.Size());
+	tsz.height -= (HEADER_HEIGHT + TAB_BAR_HEIGHT);
+	vscbar_->SetSize(tsz);
+
+	//if (sz.width <= rc_.Size().width)
+	//	sch_->SetStat(0);
+	if (all_data_view_sz.height <= rc_.Size().height-HEADER_HEIGHT)
+		vscbar_->SetStat(0);
+	
+}
 bool D2DDataGridView::ParseValues(LPCWSTR values, std::vector<CellRC>& ar)
 {
 	CellRC cell;

@@ -158,4 +158,5 @@ DLLEXPORT int WINAPI D2DAddBitmapItem(UIHandle h, ID2D1Bitmap* bmp);
 DLLEXPORT ID2D1RenderTarget* WINAPI D2DGetRenderTarget(UIHandle h);
 
 DLLEXPORT void D2DRedraw(UIHandle h);
+DLLEXPORT void D2DGetClientRect(UIHandle h, D2D1_RECT_F* prc);
 };

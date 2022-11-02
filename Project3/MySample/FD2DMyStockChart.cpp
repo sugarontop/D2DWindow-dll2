@@ -181,11 +181,11 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 		break;
 		case WM_NOTIFY:
 		{
-			if ( wParam == 110 )
+			if ( wParam == 110 ) // test—p
 			{
 				D2DNMHDR* p = (D2DNMHDR*)lParam;
 
-				FileDataProvider pv; // test—p
+				FileDataProvider pv;
 
 
 				auto cd = D2DGetText(cd_); 
@@ -198,6 +198,8 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 				
 
 				stock_chart_.Load(pv, dpi );
+
+				D2DTabSendMessage(this->hndl_, WM_D2D_APP_ON_CHART_CHANGED, 0, (LPARAM)this);
 				view_ = nullptr;
 
 				r = 1;
@@ -312,8 +314,10 @@ LRESULT FD2DMyStockDataView::WndProc(AppBase& b, UINT message, WPARAM wParam, LP
 			FRectF rc = D2DGetRect(hndl_);
 			rc_ = rc.ZeroRect();
 
-
 			hgridview_ = D2DCreateDataGridView(hndl_, rc_, STAT_DEFAULT, NONAME);
+
+			D2DDefControlProc(hndl_,b, WM_D2D_CREATE,  (WPARAM)0 ,(LPARAM)&hgridview_);
+			r = 1;
 
 		}
 		break;
@@ -383,14 +387,13 @@ LRESULT FD2DMyStockDataView::WndProc(AppBase& b, UINT message, WPARAM wParam, LP
 				cmd += fconv(row, 5, it.raw.m3 );
 				cmd += fconv(row, 6, it.raw.m4 );
 				cmd += iconv(row, 7, it.raw.qnt );
-
-				
-
 				
 				D2DSendMessage(hgridview_,WM_D2D_SET_GRIDVIEW_VALUE,(WPARAM)0,(LPARAM)cmd.c_str()); 
 
 				row++;
 			}
+
+			D2DSendMessage(hgridview_,WM_D2D_SET_GRIDVIEW_VALUE,(WPARAM)1,(LPARAM)0); 
 
 			r = 1;
 

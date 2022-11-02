@@ -26,8 +26,11 @@ void D2DScrollbar::CreateControl(D2DWindow* parent, D2DControls* pacontrol, cons
 	view_size_ = (bVertical_ ? sz_.height : sz_.width );
 	max_size_ = view_size_ ;
 	thumb_size_ = 10;
-	other_scrollbar_size_ = BARW;
+	other_scrollbar_size_ = 0;
 	offset_ = 0;
+
+
+//other_scrollbar_size_ = BARW; // Léöå^ÇÃèÍçá
 }
 
 
