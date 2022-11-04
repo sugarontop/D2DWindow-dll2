@@ -104,6 +104,9 @@ class StockChart
 		bool MouseMove(V6::FPointF pt);
 		void WriteDataToDb(LPCWSTR cd, const std::vector<CandleData>& ar);
 
+		LPCWSTR GetNowValue(money* val);
+
+
 		std::vector<Candle> xar_;
 		std::vector<FigureTrimline> ar_trim_;
 
@@ -114,6 +117,7 @@ class StockChart
 		std::function<float(float)> v2money_;
 		money mouse_place_value_;
 		std::wstring cd_;
+		std::string now_date_;
 
 	protected :
 		void DrawTrimline(ID2D1RenderTarget* cxt);

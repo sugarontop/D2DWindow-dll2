@@ -49,6 +49,8 @@ void D2DTextbox::CreateControl(D2DWindow* parent, D2DControls* pacontrol, TYP ty
 
 	_ASSERT(ctrl());
 	ctrl()->SetContainer( &ct_, this ); 
+
+	SetText(L"",0);
 }
 D2DTextbox::~D2DTextbox()
 {

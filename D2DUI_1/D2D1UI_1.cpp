@@ -559,6 +559,8 @@ DLLEXPORT UIHandle WINAPI D2DCreateTextbox(UIHandle hctrls, const D2D1_RECT_F& r
 	ctrls->Add( std::shared_ptr<D2DTextbox>(pgtx));	
 
 
+	
+
 	int xx = pgtx->GetStat();
 
 	if ( ext == 1 )

@@ -132,6 +132,11 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 			auto t3 = D2DCreateDropdownListbox(hndl_, FRectF(408,5,FSizeF(100,h)),  STAT_DEFAULT, L"intv");
 
 
+			D2DCreateStatic(hndl_, FRectF(520,7,FSizeF(155,h)), STAT_DEFAULT, L"DATE-VALUE: ", NONAME);
+			now_value_ = D2DCreateTextbox(hndl_, FRectF(680,5,FSizeF(200,h)), false, STAT_DEFAULT, L"now");
+			D2DReadOnly(now_value_, true);
+
+
 			D2DSetText(t1, L"spy");
 			D2DSetText(t2,L"download");
 
@@ -245,7 +250,18 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 			if ( rc_.ZeroPtInRect(pt))
 			{
 				if ( stock_chart_.MouseMove(pt))
+				{
+					money m4;
+					LPCWSTR date = stock_chart_.GetNowValue(&m4);
+
+
+					WCHAR cb[256];
+					StringCbPrintf(cb,256,L"%s - %-8.1f", date, m4);
+
+					D2DSetText(now_value_, cb);
+
 					b.Redraw();
+				}
 			}
 
 		}
@@ -267,6 +283,12 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 		{
 			view_ = nullptr;
 		}
+		break;
+		case WM_D2D_RESOURCES_UPDATE:
+		{
+			if ( wParam == 0 )
+				view_ = nullptr;
+ 		}
 		break;
 	}
 

@@ -40,7 +40,7 @@ void Sample2(UIHandle parent, LPCWSTR name, FRectF rc, int id, int nest)
 
 	auto t1 = D2DGetTab(tab, 0);
 
-	float xoff = 20;
+	float xoff = 0;
 
 	MySample_CreateChartBox(t1, FRectF(xoff,0,FSizeF(rc.Size().width-xoff, 800)), L"SPY");
 

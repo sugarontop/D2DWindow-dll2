@@ -48,7 +48,7 @@ class FD2DMyStockChart: public FD2DAppBaseControls
 		USHORT dot_idx_;
 			
 
-		UIHandle cd_, intv_;
+		UIHandle cd_, intv_, now_value_;
 
 
 };

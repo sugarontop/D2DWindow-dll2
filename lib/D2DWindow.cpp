@@ -102,7 +102,7 @@ void D2DWindow::ForceWndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lPa
 					cxt_.OnDiscardGraphicsResources();
 					ResourceUpdate(false);
 					top_control_->ResourceUpdate(false, cxt_);
-					return;
+					
 				}
 				break;
 				case 1:
@@ -118,7 +118,7 @@ void D2DWindow::ForceWndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lPa
 					cxt_.OnRestructGraphicsResources();
 					ResourceUpdate(true);
 					top_control_->ResourceUpdate(true, cxt_);
-					return;
+					
 				}
 				break;
 

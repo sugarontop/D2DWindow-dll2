@@ -22,10 +22,39 @@ bool StockChart::MouseMove(FPointF pt)
 {
 	if ( v2money_ && pt.y > 0)
 	{
+		// pt.y
 		mouse_place_value_ = v2money_(vrect_.bottom-pt.y);
+
+
+		// pt.x
+		FRectF figure_rc = vrect_.ZeroRect();
+		float x=figure_rc.right; 
+		const float off=5;
+		for(auto it = xar_.rbegin(); it != xar_.rend(); it++)	
+		{			
+			if ( x <= pt.x && pt.x <= x+off)
+			{
+				now_date_ = (*it).raw.date;
+				break;
+			}
+			x -= off;
+		}
+
+
 		return true;
 	}
 	return false;
+}
+
+LPCWSTR StockChart::GetNowValue(money* val)
+{
+	*val = mouse_place_value_;
+
+	static WCHAR date[64];
+
+	::MultiByteToWideChar(CP_ACP,0,now_date_.c_str(), now_date_.length(), date, 64 );
+	
+	return date;
 }
 
 void StockChart::LoadAsync(DataProvider* pdp, DataProviderInfo* pdpi, std::function<void(void)> complete)
@@ -311,7 +340,7 @@ void StockChart::DrawTrimline(ID2D1RenderTarget* cxt)
 
 
 	FRectF rc(0,figure_rc.top,1000,figure_rc.top+50);
-	StringCbPrintf(cb,_countof(cb),L"%s  %-8.1f", cd_.c_str(), mouse_place_value_ );
+	StringCbPrintf(cb,_countof(cb),L"%s", cd_.c_str() );
 	cxt->DrawText(cb, wcslen(cb), money_textformat_, rc, btrim);
 }
 
