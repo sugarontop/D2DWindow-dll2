@@ -41,6 +41,13 @@ LRESULT D2DWindow::CheckPostMessage(AppBase* pb)
 				pb->bRedraw=bb.bRedraw;
 		}
 	}
+
+	if ( !death_objects_.empty())
+	{
+		death_objects_.clear();
+	}
+
+
 	return 0;
 }
 
@@ -145,6 +152,7 @@ LRESULT D2DWindow::InnerWndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM 
 			hr = 1;
 		}
 		break;
+		
 
 		case WM_TIMER:
 		{

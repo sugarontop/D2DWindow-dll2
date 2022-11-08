@@ -50,6 +50,8 @@ DLLEXPORT UIHandle WINAPI D2DCreateMDISplitFrame(UIHandle hctrls, const D2D1_REC
 DLLEXPORT UIHandle WINAPI D2DCreateChildWindow(UIHandle hctrls, const D2D1_RECT_F& rc, DWORD stat, LPCWSTR name, int id=-1 );
 DLLEXPORT UIHandle WINAPI D2DCreateFileManage(UIHandle hctrls, const D2D1_RECT_F& rc, DWORD stat, LPCWSTR name, int id=-1 );
 
+DLLEXPORT UIHandle WINAPI D2DCreateDialog(UIHandle hctrls, const D2D1_RECT_F& rc );
+
 DLLEXPORT UIHandle WINAPI D2DCreateLogin(UIHandle hctrls, const D2D1_RECT_F& rc, DWORD stat, LPCWSTR name, int id=-1 );
 DLLEXPORT UIHandle WINAPI D2DCreateDataGridView(UIHandle hctrls, const D2D1_RECT_F& rc, DWORD stat, LPCWSTR name, int id=-1 );
 
@@ -101,6 +103,8 @@ DLLEXPORT UIHandle WINAPI D2DGetControlFromName(UIHandleWin hMainWnd, LPCWSTR nm
 
 DLLEXPORT UIHandleWin WINAPI D2DGetWindow(UIHandle h);
 DLLEXPORT UIHandle WINAPI D2DGetParent(UIHandle h);
+
+DLLEXPORT void WINAPI D2DGetTextFormat(UIHandle h, IDWriteTextFormat** out);
 
 DLLEXPORT ID2D1DeviceContext* WINAPI D2DGetDeviceContext(UIHandleWin main);
 

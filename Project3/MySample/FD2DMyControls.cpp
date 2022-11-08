@@ -96,7 +96,7 @@ LRESULT FD2DSampleControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPA
 			r =1;
 		}
 		break;
-		case WM_D2D_DESTROY:
+		case WM_D2D_ON_DESTROY:
 		{
 			delete this;
 			r= 1;

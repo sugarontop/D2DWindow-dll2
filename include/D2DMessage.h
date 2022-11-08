@@ -53,30 +53,33 @@ typedef DWORD (*D2DEventHandlerDelegate)(UIHandle sender,LPCWSTR eventName, void
 #define LRESULT_FAIL		99999
 
 
-#define TYP_NULL 0
-#define TYP_TEXTBOX 1
-#define TYP_BUTTON 2
-#define TYP_CONTROLS 3
-#define TYP_DROPDOWNLISTBOX 4
-#define TYP_MAIN_WINDOW 5
-#define TYP_WHITE_CONTROL 6
-#define TYP_SIMPLE_LISTBOX 7
-#define TYP_MESSAGEBOX 8
-#define TYP_CLIENT_CONTROL 9
-#define TYP_STATIC 10
-#define TYP_MDI_CONTROLS 11
-#define TYP_MDISPLIT_CONTROLS  12
-#define TYP_ACCORDIONBAR  13
-#define TYP_WHITE_WINDOW 14
-#define TYP_IMAGE 15
-#define TYP_SCROLLBAR 16
-#define TYP_TAB_CONTROLS 17
-#define TYP_GRIDVIEW 18
-#define TYP_LOGIN 19
-#define TYP_SQLDATAGRID 21
-#define TYP_TAB_CONTROLS_ITEM 22
-#define TYP_CONSOLE 23
-#define TYP_DATAGRIDVIEW 24
+#define TYP_NULL				0
+#define TYP_TEXTBOX				1
+#define TYP_BUTTON				2
+#define TYP_CONTROLS			3
+#define TYP_DROPDOWNLISTBOX		4
+#define TYP_MAIN_WINDOW			5
+#define TYP_WHITE_CONTROL		6
+#define TYP_SIMPLE_LISTBOX		7
+#define TYP_MESSAGEBOX			8
+#define TYP_CLIENT_CONTROL		9
+#define TYP_STATIC				10
+#define TYP_MDI_CONTROLS		11
+#define TYP_MDISPLIT_CONTROLS	12
+#define TYP_ACCORDIONBAR		13
+#define TYP_WHITE_WINDOW		14
+#define TYP_IMAGE				15
+#define TYP_SCROLLBAR			16
+#define TYP_TAB_CONTROLS		17
+#define TYP_GRIDVIEW			18
+#define TYP_LOGIN				19
+#define TYP_SQLDATAGRID			21
+#define TYP_TAB_CONTROLS_ITEM	22
+#define TYP_CONSOLE				23
+#define TYP_DATAGRIDVIEW		24
+#define TYP_DIALOG				25
+
+
 
 #define theWhite D2RGB(255,255,255)
 #define theBlack D2RGB(0,0,0)
@@ -96,7 +99,7 @@ typedef DWORD (*D2DEventHandlerDelegate)(UIHandle sender,LPCWSTR eventName, void
 #define WM_D2D_CB_INSERTSTRING					(WM_APP+1)
 #define WM_D2D_RESOURCES_UPDATE					(WM_APP+2)
 #define WM_D2D_CREATE							(WM_APP+3)
-#define WM_D2D_DESTROY							(WM_APP+4)
+//#define WM_D2D_DESTROY							(WM_APP+4)
 
 
 
@@ -107,7 +110,7 @@ typedef DWORD (*D2DEventHandlerDelegate)(UIHandle sender,LPCWSTR eventName, void
 #define WM_D2D_MDI_TILE_HORZ					(WM_APP+9) //•À‚×‚Ä•\Ž¦
 
 
-#define WM_D2D_ONCLOSE							(WM_APP+10)
+#define WM_D2D_ON_DESTROY						(WM_APP+10)
 #define WM_D2D_SET_SIZE							(WM_APP+11)
 #define WM_D2D_SET_COLOR						(WM_APP+12) // w=0:back,1:fore,l=ColorF
 

@@ -115,11 +115,19 @@ class StockChart
 		ComPTR<IDWriteTextFormat> money_textformat_;
 
 		std::function<float(float)> v2money_;
+
+		std::function<float(money m1)> money2vpos_;
+
 		money mouse_place_value_;
 		std::wstring cd_;
 		std::string now_date_;
 
 	protected :
 		void DrawTrimline(ID2D1RenderTarget* cxt);
+		void DrawCandle(ID2D1RenderTarget* cxt);
+		void DrawParabolic(ID2D1RenderTarget* cxt);
+
+
+		const char* SearchDate( float x );
 
 };

@@ -9,7 +9,12 @@
 #define WM_D2D_APP_ON_CHART_CHANGED		(WM_D2D_USER_FIRST+2)
 
 
+class FD2DDialogTest;
+
+
 namespace V6 {
+
+
 
 class FD2DMyStockChart: public FD2DAppBaseControls
 {
@@ -40,6 +45,7 @@ class FD2DMyStockChart: public FD2DAppBaseControls
 	protected :
 		void InnerDraw(ID2D1RenderTarget* cxt);
 		bool CreateMemoryView(ID2D1RenderTarget* target, FSizeF sz, ID2D1Bitmap** pview);
+		void ShowDialog(int n);
 
 		ComPTR<ID2D1Bitmap> view_;
 		
@@ -49,7 +55,7 @@ class FD2DMyStockChart: public FD2DAppBaseControls
 			
 
 		UIHandle cd_, intv_, now_value_;
-
+		std::shared_ptr<FD2DDialogTest> dlg_;
 
 };
 
@@ -67,24 +73,12 @@ class FD2DMyStockDataView: public FD2DAppBaseControls
 
 		FRectF rc_;
 		std::wstring str_;
-
-		/*ComPTR<IDWriteTextFormat> wformat_;
-
-		struct dot
-		{
-			FPointF pt;
-			USHORT idx;
-		};
-
-
-		std::vector<dot> ar_;
-		*/
 		D2DMat mat_;
 		USHORT dot_idx_;
 			
-
 		UIHandle cd_, hgridview_;
 
+		
 };
 
 

@@ -27,7 +27,7 @@ D2DClientControls::~D2DClientControls()
 	{
 		AppBase b;
 		b.hWnd=0;
-		ProcFunc_(captureobj_, b, WM_D2D_DESTROY, 0, 0 );
+		ProcFunc_(captureobj_, b, WM_D2D_ON_DESTROY, 0, 0 );
 	}
 
 }

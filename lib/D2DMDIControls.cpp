@@ -197,7 +197,7 @@ LRESULT D2DMDIFrame::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lPa
 		}
 		break;
 
-		case WM_D2D_ONCLOSE:
+		case WM_D2D_ON_DESTROY:
 		{			
 			// update acive_idx_;
 
@@ -264,7 +264,7 @@ LRESULT D2DMDIFrame::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lPa
 			hr = k->WndProc(b, message, wParam, lParam);
 	}
 
-	if ( hr == 0 && (message == WM_LBUTTONDOWN || message == WM_D2D_ONCLOSE) )
+	if ( hr == 0 && (message == WM_LBUTTONDOWN || message == WM_D2D_ON_DESTROY) )
 		hr = D2DControls::DefWndProc(b,message,wParam,lParam);
 
 
@@ -353,16 +353,7 @@ LRESULT D2DMDIChild::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lPa
 		case WM_D2D_CREATE :
 			r = 1;
 		break;
-		case WM_D2D_ONCLOSE:
-		{
-			if ( (D2DControl*)lParam == this )
-			{
-				int a = 0;
-
-				r = 1;
-			}
-		}
-		break;
+	
 		//case WM_LBUTTONDOWN:
 		case WM_MOUSEMOVE:
 		case WM_LBUTTONUP:

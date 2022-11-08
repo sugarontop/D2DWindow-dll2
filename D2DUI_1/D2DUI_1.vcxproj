@@ -184,6 +184,7 @@
     <ClInclude Include="..\lib\AppBase.h" />
     <ClInclude Include="..\lib\D2DButton.h" />
     <ClInclude Include="..\lib\D2DColor.h" />
+    <ClInclude Include="..\lib\D2DDialog.h" />
     <ClInclude Include="..\lib\D2DDropdownListbox.h" />
     <ClInclude Include="..\lib\D2DEmptyControls.h" />
     <ClInclude Include="..\lib\D2DImageControl.h" />
@@ -209,6 +210,7 @@
     <ClCompile Include="..\lib\D2DContext.cpp" />
     <ClCompile Include="..\lib\D2DControls_with_Scrollbar.cpp" />
     <ClCompile Include="..\lib\D2DDataGridView.cpp" />
+    <ClCompile Include="..\lib\D2DDialog.cpp" />
     <ClCompile Include="..\lib\D2DDropdownListbox.cpp" />
     <ClCompile Include="..\lib\D2DEmptyControls.cpp" />
     <ClCompile Include="..\lib\D2DFileManage.cpp" />

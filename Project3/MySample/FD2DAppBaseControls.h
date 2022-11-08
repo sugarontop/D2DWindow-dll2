@@ -11,7 +11,7 @@ namespace V6
 	{
 		public :
 			FD2DAppBaseControls(){ hndl_.p= nullptr;} 
-
+			virtual ~FD2DAppBaseControls(){}
 
 			void Create(UIHandle parent, LPCWSTR name, FRectF rc, int id);
 

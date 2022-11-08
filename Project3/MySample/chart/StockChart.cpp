@@ -18,6 +18,46 @@ void StockChart::SetSize(FSizeF vsz)
 
 }
 
+
+const char* StockChart::SearchDate( float ptx )
+{
+	FRectF figure_rc = vrect_.ZeroRect();
+	float x=figure_rc.right; 
+	const float off=5;
+	int typ = 1;	
+	
+	if ( typ == 0 )
+	{
+		for(auto it = xar_.rbegin(); it != xar_.rend(); it++)	
+		{			
+			if ( x-off <= ptx && ptx <= x)
+			{
+				return (*it).raw.date;
+			}
+			x -= off;
+		}
+	}
+	else if ( typ == 1 )
+	{		
+		int n = 1;
+		int k = (int)xar_.size();
+		
+		for(int it = k-1; it >= 0; it-=n )
+		{			
+			if ( x-off <= ptx && ptx <= x)
+			{
+				return xar_[it].raw.date;
+			}
+
+			n = max(1, (int)((x - ptx ) / off));
+
+			x -= off*n;
+		}
+	}
+	return nullptr;
+}
+
+
 bool StockChart::MouseMove(FPointF pt)
 {
 	if ( v2money_ && pt.y > 0)
@@ -27,21 +67,13 @@ bool StockChart::MouseMove(FPointF pt)
 
 
 		// pt.x
-		FRectF figure_rc = vrect_.ZeroRect();
-		float x=figure_rc.right; 
-		const float off=5;
-		for(auto it = xar_.rbegin(); it != xar_.rend(); it++)	
-		{			
-			if ( x <= pt.x && pt.x <= x+off)
-			{
-				now_date_ = (*it).raw.date;
-				break;
-			}
-			x -= off;
+		auto s = SearchDate( pt.x );
+
+		if ( s )
+		{
+			now_date_ = s;
+			return true;
 		}
-
-
-		return true;
 	}
 	return false;
 }
@@ -52,7 +84,7 @@ LPCWSTR StockChart::GetNowValue(money* val)
 
 	static WCHAR date[64];
 
-	::MultiByteToWideChar(CP_ACP,0,now_date_.c_str(), now_date_.length(), date, 64 );
+	::MultiByteToWideChar(CP_ACP,0,now_date_.c_str(), (int)now_date_.length(), date, 64 );
 	
 	return date;
 }
@@ -258,12 +290,13 @@ void StockChart::GenChartCandle(std::vector<CandleData>& ar,  std::vector<Candle
 			out.push_back(cd);
 		}
 	}
+
+	money2vpos_ = scale_func;
 }
 
 
 void StockChart::Draw(ID2D1RenderTarget* cxt)
 {
-	
 	D2DMatrix mat(cxt);
 	mat.PushTransform();
 	mat.Offset(0, vrect_.top );
@@ -271,17 +304,31 @@ void StockChart::Draw(ID2D1RenderTarget* cxt)
 	FRectF figure_rc = vrect_.ZeroRect();
 
 		
-	ComPTR<ID2D1SolidColorBrush> black,bgreen,bred,brw,btrim;
+	ComPTR<ID2D1SolidColorBrush> black,brw;
 		
 	cxt->CreateSolidColorBrush(D2RGB(0,0,0), &black);
-	cxt->CreateSolidColorBrush(D2RGB(8,153,129), &bgreen);
-	cxt->CreateSolidColorBrush(D2RGB(242,54,69), &bred);
 	cxt->CreateSolidColorBrush(D2RGB(255,255,255), &brw);
-	
 
 	cxt->DrawRectangle(figure_rc, black);
 	cxt->FillRectangle(figure_rc, brw);
 
+	DrawCandle(cxt);
+
+	DrawTrimline(cxt);
+
+	//DrawParabolic(cxt);
+
+	mat.PopTransform();
+}
+
+void StockChart::DrawCandle(ID2D1RenderTarget* cxt)
+{
+	ComPTR<ID2D1SolidColorBrush> black,bgreen,bred,brw,btrim;
+	
+	cxt->CreateSolidColorBrush(D2RGB(8,153,129), &bgreen);
+	cxt->CreateSolidColorBrush(D2RGB(242,54,69), &bred);
+	
+	FRectF figure_rc = vrect_.ZeroRect();
 	float x=figure_rc.right;
 	const float off=5;
 	x -= off;
@@ -304,10 +351,44 @@ void StockChart::Draw(ID2D1RenderTarget* cxt)
 		x -= off;
 	}
 
-	DrawTrimline(cxt);
+
+}
+void StockChart::DrawParabolic(ID2D1RenderTarget* cxt)
+{
+	if ( xar_.size() < 300 ) return;
+	
+	// calc
+	money test = xar_[300].raw.m4 * 0.9;
+	auto ypos = money2vpos_(test);
 
 
-	mat.PopTransform();
+
+
+
+
+
+
+	// draw
+
+	ComPTR<ID2D1SolidColorBrush> black,bgreen,bred,brw,btrim;
+	cxt->CreateSolidColorBrush(D2RGB(0,0,0), &black);
+
+	FRectF figure_rc = vrect_.ZeroRect();
+	float x=figure_rc.right;
+	const float off=5;
+	x -= off;
+	
+	D2D1_ROUNDED_RECT rrc;
+	rrc.radiusX = 2;
+	rrc.radiusY = 2;
+
+	for(auto it = xar_.rbegin(); it != xar_.rend(); it++)	
+	{
+		FRectF rc( x, figure_rc.bottom-ypos, x+off, figure_rc.bottom-ypos+off );
+		rrc.rect = rc;
+		cxt->DrawRoundedRectangle(rrc, black);
+		x -= off;
+	}
 }
 
 void StockChart::DrawTrimline(ID2D1RenderTarget* cxt)
@@ -335,13 +416,13 @@ void StockChart::DrawTrimline(ID2D1RenderTarget* cxt)
 
 		StringCbPrintf(cb,_countof(cb),L"%-8.1f", it.val );
 
-		cxt->DrawText(cb, wcslen(cb), trim_textformat_, rc, btrim);
+		cxt->DrawText(cb, (UINT32)wcslen(cb), trim_textformat_, rc, btrim);
 	}
 
 
 	FRectF rc(0,figure_rc.top,1000,figure_rc.top+50);
 	StringCbPrintf(cb,_countof(cb),L"%s", cd_.c_str() );
-	cxt->DrawText(cb, wcslen(cb), money_textformat_, rc, btrim);
+	cxt->DrawText(cb, (UINT32)wcslen(cb), money_textformat_, rc, btrim);
 }
 
 
@@ -413,7 +494,7 @@ bool CandleData::load( LPCSTR csv_row, ULONG len )
 		m3 = tof(ar[3]);
 		m4 = tof(ar[4]);
 		m4ex = tof(ar[5]);
-		qnt= tof(ar[6]);
+		qnt= (int)tof(ar[6]);
 
 		return true;
 	}

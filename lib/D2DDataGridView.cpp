@@ -211,12 +211,7 @@ LRESULT D2DDataGridView::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM
 			r = 1;
 		}
 		break;
-		case WM_D2D_DESTROY:
-		{
-			delete this;
-			r = 1;
-		}
-		break;
+		
 		case WM_D2D_SET_GRIDVIEW_VALUE:
 		{
 			if ( wParam == 0 )

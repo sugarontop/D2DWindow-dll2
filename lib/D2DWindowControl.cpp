@@ -68,9 +68,12 @@ void D2DControl::DestroyControl()
 
 			parent_window_->name_map_.erase(name_);
 
+			AppBase a={};
+			p->WndProc(a, WM_D2D_ON_DESTROY, 0, 0);
+
 		}
 
-		parent_control_->SendMesage(WM_D2D_ONCLOSE, 0, (LPARAM)this);
+		//parent_control_->SendMesage(WM_D2D_ONCLOSE, 0, (LPARAM)this);
 		parent_control_ = nullptr;
 
 	}

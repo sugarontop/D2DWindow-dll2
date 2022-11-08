@@ -26,6 +26,7 @@
 #include "D2DSqlDataGrid.h"
 #include "D2DEmptyControls.h"
 #include "D2DConsole.h"
+#include "D2DDialog.h"
 
 using namespace V6;
 #define  APP (D2DApp::GetInstance())
@@ -1769,4 +1770,44 @@ DLLEXPORT void D2DGetClientRect(UIHandle h, D2D1_RECT_F* prc)
 	}
 
 	*prc = rc;
+}
+DLLEXPORT UIHandle WINAPI D2DCreateDialog(UIHandle hctrls, const D2D1_RECT_F& rc )
+{
+	_ASSERT(hctrls.p);
+
+	auto pgtx = std::make_shared<D2DDialog>();
+
+	auto ctrls = (D2DControls*)hctrls.p;
+	auto win = ctrls->GetParent();
+
+	pgtx->CreateControl(win,ctrls, rc, STAT_DEFAULT, NONAME, -1 );
+	ctrls->Add(pgtx);	
+
+
+	UIHandle r;
+	r.p = pgtx.get();
+	r.typ = TYP_DIALOG;
+
+	AppBase ab = {};
+	ab.hWnd = win->GetHwnd();
+	pgtx->WndProc(ab, WM_D2D_CREATE,  (WPARAM)win ,(LPARAM)&r);
+
+	return r;
+
+
+}
+
+DLLEXPORT void WINAPI D2DGetTextFormat(UIHandle hctrls, IDWriteTextFormat** out)
+{
+	// Get default TextFormat
+
+
+	auto ctrls = (D2DControls*)hctrls.p;
+	auto textformat = ctrls->GetParent()->GetContext().textformat_;
+
+	textformat.AddRef();
+	
+	*out = textformat.p;
+
+
 }

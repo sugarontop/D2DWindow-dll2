@@ -178,7 +178,7 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 			r =1;
 		}
 		break;
-		case WM_D2D_DESTROY:
+		case WM_D2D_ON_DESTROY:
 		{
 			delete this;
 			r= 1;
@@ -281,7 +281,15 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 		break;
 		case WM_KEYDOWN:
 		{
-			view_ = nullptr;
+			// wparam : VK_XXXX...
+			// lparam : 
+
+			if ( wParam == 0x41) // A key
+			{
+				ShowDialog(0);
+				r = 1;
+			}
+
 		}
 		break;
 		case WM_D2D_RESOURCES_UPDATE:
@@ -290,6 +298,18 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 				view_ = nullptr;
  		}
 		break;
+
+		case WM_CHAR:
+		{
+			int a =0;
+			r = 1;
+		}
+		break;
+		case WM_KEYUP:
+		{
+			r = 1;
+		}
+		break;
 	}
 
 	if ( r == 0 )
@@ -297,6 +317,7 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 
 	return r;
 }
+
 
 
 
@@ -343,7 +364,7 @@ LRESULT FD2DMyStockDataView::WndProc(AppBase& b, UINT message, WPARAM wParam, LP
 
 		}
 		break;
-		case WM_D2D_DESTROY:
+		case WM_D2D_ON_DESTROY:
 		{
 			delete this;
 			r= 1;
@@ -427,4 +448,130 @@ LRESULT FD2DMyStockDataView::WndProc(AppBase& b, UINT message, WPARAM wParam, LP
 		r = D2DDefControlProc(hndl_,b,message,wParam,lParam);
 
 	return r;
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+class FD2DDialogTest: public FD2DAppBaseControls
+{
+	public :
+
+		FD2DDialogTest()
+		{
+			// "rc_" is setted in WM_D2D_CREATE
+		}
+
+		virtual bool Draw(ID2D1DeviceContext* cxt) override;
+		virtual LRESULT WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam) override;
+
+		FRectF rc_;
+		std::wstring str_;
+		D2DMat mat_;
+};
+
+
+bool FD2DDialogTest::Draw(ID2D1DeviceContext* cxt)
+{
+	
+	//if (BITFLG(STAT_VISIBLE))
+    {		
+		ComPTR<ID2D1SolidColorBrush> back, back2;
+		ComPTR<ID2D1SolidColorBrush> fore;
+
+		(cxt)->CreateSolidColorBrush(D2RGB(0,0,0), &fore);	
+		(cxt)->CreateSolidColorBrush(D2RGB(180,150,165), &back);
+		(cxt)->CreateSolidColorBrush(D2RGB(200,200,200), &back2);
+
+       // D2DRectFilter fil(cxt, rc_ );
+
+
+	   FRectF rc(rc_);
+		(cxt)->FillRectangle(rc,back);
+		(cxt)->FillRectangle(rc.InflateRect(-3,-3),back2);
+
+		D2DMatrix mat(cxt);
+        mat_ = mat.PushTransform();
+
+       
+        mat.Offset(rc_);
+		
+
+		auto win = D2DGetParent(hndl_);
+		
+		ComPTR<IDWriteTextFormat> textformat;
+
+		D2DGetTextFormat(hndl_, &textformat);
+		std::wstring s = L"Dialog control TEST";
+		(cxt)->DrawText(s.c_str(),(UINT32)s.length(), textformat, FRectF(0,0,200,100), fore);
+
+
+		D2DInnerDraw(hndl_);
+		
+
+		mat.PopTransform();
+	}
+
+	return false;
+}
+LRESULT FD2DDialogTest::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	LRESULT r=0;
+
+	switch( message )
+	{
+		case WM_D2D_CREATE:
+		{	
+			hndl_ = *(UIHandle*)lParam;	
+
+			D2DSetCapture(hndl_); // <-- Dialog
+
+			rc_ = D2DGetRect(hndl_);
+
+			D2DCreateTextbox(hndl_, FRectF(100,100,FSizeF(200,26)), false, STAT_DEFAULT, L"test1");
+			D2DCreateTextbox(hndl_, FRectF(100,150,FSizeF(200,26)), false, STAT_DEFAULT, L"test2");
+			D2DCreateButton(hndl_, FRectF(100,200,FSizeF(100,26)), STAT_DEFAULT, L"btn1", 101);
+
+			r = 1;
+		}
+		break;
+		case WM_KEYDOWN:
+		{
+			if ( wParam == VK_ESCAPE )
+			{
+				D2DReleaseCapture();
+				D2DDestroyControl(hndl_);
+
+				r = 1;
+			}
+		}
+		break;
+		case WM_NOTIFY:
+		{
+			if ( wParam == 101 )
+			{
+				r = 1;
+
+				D2DReleaseCapture();
+				D2DDestroyControl(hndl_);
+			}
+
+		}
+		break;
+
+
+
+
+	}
+
+	return r;
+}
+
+void FD2DMyStockChart::ShowDialog(int n)
+{
+	//auto dlg = D2DCreateDialog( hndl_, FRectF(100,100, FSizeF(300,300)));
+
+
+	dlg_ = std::make_shared<FD2DDialogTest>();
+	dlg_->Create(hndl_,NONAME, FRectF(100,100, FSizeF(500,300)), 0);
+
+
 }

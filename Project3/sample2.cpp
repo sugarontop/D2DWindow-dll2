@@ -13,13 +13,16 @@ DLLEXPORT HANDLE MySample_CreateChartBox( UIHandle parent, D2D1_RECT_F rc, LPCWS
 UIHandle gtx1;
 DWORD MyTest(UIHandle sender, LPCWSTR eventName, void* param)
 {
-	BSTR text;
+	BSTR text = nullptr;
 	D2DSendMessage(sender, WM_D2D_GET_SELECTED_STRING,0,(LPARAM)&text);
 
 
+	if ( text )
+	{
+		D2DSetFont(gtx1, text, 12, false,0 );
 
-	D2DSetFont(gtx1, text, 12, false,0 );
-
+		::SysFreeString(text);
+	}
 
 
 	return 0;
