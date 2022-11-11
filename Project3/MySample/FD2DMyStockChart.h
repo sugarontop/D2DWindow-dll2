@@ -7,7 +7,7 @@
 #define TOPBAR_HEIGHT 40.0f
 #define WM_D2D_APP_SETDEFAULT_CD		(WM_D2D_USER_FIRST+1)
 #define WM_D2D_APP_ON_CHART_CHANGED		(WM_D2D_USER_FIRST+2)
-
+#define WM_D2D_APP_SET_CD				(WM_D2D_USER_FIRST+3)
 
 class FD2DDialogTest;
 
@@ -45,7 +45,7 @@ class FD2DMyStockChart: public FD2DAppBaseControls
 	protected :
 		void InnerDraw(ID2D1RenderTarget* cxt);
 		bool CreateMemoryView(ID2D1RenderTarget* target, FSizeF sz, ID2D1Bitmap** pview);
-		void ShowDialog(int n);
+		void ShowDialog(int n, FRectF rc);
 
 		ComPTR<ID2D1Bitmap> view_;
 		
@@ -54,8 +54,9 @@ class FD2DMyStockChart: public FD2DAppBaseControls
 		USHORT dot_idx_;
 			
 
-		UIHandle cd_, intv_, now_value_;
+		UIHandle txtCD_, txtIntv_, now_value_;
 		std::shared_ptr<FD2DDialogTest> dlg_;
+		
 
 };
 

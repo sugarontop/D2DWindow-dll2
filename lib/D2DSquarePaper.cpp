@@ -136,7 +136,7 @@ LRESULT D2DSquarePaper::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM 
 				hwin.p = parent_window_;
 				FRectF rc(0,0,300,100);
 
-				D2DMessageBox(hwin, rc, L"no problem", L"this is sample text");
+				//D2DMessageBox(hcntrl_, rc, L"no problem", L"this is sample text");
 
 
 				r = 1;

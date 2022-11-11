@@ -637,6 +637,8 @@ LRESULT D2DSimpleListbox::WndProcNormal(AppBase& b, UINT message, WPARAM wParam,
         case WM_KEYDOWN:
         {
 			auto key = 0xff & wParam;
+			ret = 0;
+
             if (key == VK_ESCAPE ) 
             {
                 if ( OnEscape() )
@@ -648,8 +650,8 @@ LRESULT D2DSimpleListbox::WndProcNormal(AppBase& b, UINT message, WPARAM wParam,
 							APP.ReleaseCapture();
 						
 						ls->OnCloseListbox(-1);
+						ret = 1;
 					}
-					ret = 1;
 				}
             }
         }
