@@ -355,17 +355,13 @@ void StockChart::DrawCandle(ID2D1RenderTarget* cxt)
 }
 void StockChart::DrawParabolic(ID2D1RenderTarget* cxt)
 {
+	// ñ¢äÆê¨,Å@pending
+
 	if ( xar_.size() < 300 ) return;
 	
 	// calc
 	money test = xar_[300].raw.m4 * 0.9;
 	auto ypos = money2vpos_(test);
-
-
-
-
-
-
 
 
 	// draw
@@ -511,6 +507,101 @@ void Candle::conv( std::function<float(float)> func ) // float ysc, float money_
 	vpos[2] = func(raw.m3); 
 	vpos[3] = func(raw.m4); 
 	vpos[4] = func(raw.m4ex);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+#include "HiggsJson.h"
+
+using namespace HiggsJson;
+
+
+std::wstring IStreamToString(IStream* sm)
+{
+	char cb[256];
+
+	ULONG cnt = 0;
+
+	std::stringstream asm1;
+	while( S_OK == sm->Read(cb,256,&cnt) && cnt > 0)
+		asm1.write(cb, cnt);
+
+	std::string xasm1 = asm1.str();
+
+	int len = ::MultiByteToWideChar(CP_UTF8,0,xasm1.c_str(), xasm1.length(), 0,0);
+	std::vector<WCHAR> wcb(len);
+	::MultiByteToWideChar(CP_UTF8,0,xasm1.c_str(), xasm1.length(), &wcb[0], len);
+
+	return std::wstring(&wcb[0],len);
+}
+
+bool PrimeStockDataLoad( std::map<std::wstring,PrimeStockDataItem>& mapStockData)
+{
+	WCHAR cb[256];
+
+	std::wstring cds=L"";
+
+	int i = 0;
+	for(auto& s : mapStockData )
+	{
+		if (i!=0)
+			cds += L',';
+		
+		cds += s.first;
+		i++;		
+	}
+	
+	StringCbPrintfW(cb,256,L"https://query1.finance.yahoo.com/v7/finance/quote?symbols=%s",cds.c_str());
+
+	std::function<void(IStream*)> cmpl = [&](IStream* sm){
+
+		//WCHAR* ParseList( LPCWSTR str, std::vector<Higgs>& ar );
+		
+		std::map<std::wstring,Higgs> m;
+
+		std::wstring src = IStreamToString(sm);
+
+		WCHAR* p1 = ParseMap( src.c_str(), m );
+
+		auto h = m[L"quoteResponse"];
+
+		std::map<std::wstring,Higgs> m2;
+		ParseMap( h.head, m2 );
+
+		auto h2 = m2[L"result"];
+
+		std::vector<Higgs> results;
+		ParseList( h2.head, results);
+
+
+		for(auto& it : results )
+		{
+			std::map<std::wstring,Higgs> m3;
+			ParseMap(it.head, m3);
+
+			auto h4 = m3[L"regularMarketPrice"];
+			auto h5 = m3[L"symbol"];
+
+
+			std::wstring s4(h4.head, h4.len);
+
+
+			std::wstring cd = ToStr(h5);
+			money m4 = (money)_wtof(s4.c_str());
+
+
+			PrimeStockDataItem k;
+			k.cd = cd;
+			k.regularMarketPrice = m4;
+
+			mapStockData[cd] = k;
+		}
+	};
+
+	InetDataProvider::GetJson(cb, cmpl);
+
+
+	return true;
 }
 
 

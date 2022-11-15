@@ -39,5 +39,14 @@ DLLEXPORT HANDLE MySample_CreateChartBox( UIHandle parent, D2D1_RECT_F rc, LPCWS
 	auto obj2 =  new FD2DMyStockDataView(rc1.right-rc1.left, rc1.bottom-rc1.top); // auto delete : WM_D2D_DESTROY		
 	obj2->Create(h2, L"data view",  rc, 0);
 
+
+	// tab page : 3
+	//auto h3 = D2DAddNewTab(tabcontrols, L"short chart");
+	//auto obj3 =  new FD2DMyStockChart(rc1.right-rc1.left, rc1.bottom-rc1.top); // auto delete : WM_D2D_DESTROY		
+	//obj3->Create(h3, L"sample chart",  rc, 0);
+	//D2DSendMessage(parent, WM_D2D_APP_SETDEFAULT_CD, (WPARAM)obj3, (LPARAM)cd);	
+	//D2DSetText(tabcontrols, L"2:chart");
+
+
 	return nullptr;
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-
+struct InternetInfo;
 
 struct DataProviderInfo
 {
@@ -46,6 +46,8 @@ class InetDataProvider : public DataProvider
 		virtual bool Connect(DataProviderInfo& info);
 		virtual DataProviderResult LoadSolidData(DataProviderInfo& info);
 		virtual bool Convert(DataProviderResult& res, DataRpoviderOut* out);
+
+		static bool GetJson(LPCWSTR url, std::function<void(IStream*)> completefunc);
 };
 
 class FileDataProvider : public DataProvider
@@ -105,6 +107,7 @@ class StockChart
 		void WriteDataToDb(LPCWSTR cd, const std::vector<CandleData>& ar);
 
 		LPCWSTR GetNowValue(money* val);
+		bool IsEmpty(){ return xar_.empty(); }
 
 
 		std::vector<Candle> xar_;
@@ -131,3 +134,14 @@ class StockChart
 		const char* SearchDate( float x );
 
 };
+
+
+struct PrimeStockDataItem
+{
+	std::wstring cd;
+	money regularMarketPrice;
+
+};
+
+bool PrimeStockDataLoad( std::map<std::wstring,PrimeStockDataItem>& mapStockData);
+

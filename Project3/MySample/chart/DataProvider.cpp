@@ -25,9 +25,7 @@ bool InetDataProvider::Connect(DataProviderInfo& info)
 
 	auto cd = info.cd; // L"SPY";
 	auto interval = info.interval; // 1d or 1wk
-
-
-	//StringCbPrintfW(cb,256,L"https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%d&period2=%d&interval=1d&events=history&includeAdjustedClose=true",cd.c_str(),dds, now);
+	
 	StringCbPrintfW(cb,256,L"https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%d&period2=%d&interval=%s&events=history&includeAdjustedClose=true",cd.c_str(),dds, now, interval.c_str());
 
 	pi->bGet = true;
@@ -38,6 +36,32 @@ bool InetDataProvider::Connect(DataProviderInfo& info)
 
 	return true;
 }
+
+bool InetDataProvider::GetJson(LPCWSTR url, std::function<void(IStream*)> completefunc)
+{
+	InternetInfo* x = CreateInternetInfo();
+
+	x->bGet = true;
+	x->url = ::SysAllocString(url);
+	x->postdata = nullptr;
+	x->complete = [completefunc](InternetInfo* pi)
+	{
+		if ( pi->result == 200 )		
+			completefunc(pi->pstream);
+	};
+
+	DWORD dw;
+	HANDLE h = ::CreateThread(0,0,InetAsync, (LPVOID)x, 0, &dw);
+
+	if ( h != nullptr )
+		::WaitForSingleObject(h, INFINITE);
+
+	DeleteInternetInfo(x);
+
+	return (200 == x->result);
+}
+
+
 DataProviderResult InetDataProvider::LoadSolidData(DataProviderInfo& info)
 {
 	DWORD dw;
@@ -46,7 +70,8 @@ DataProviderResult InetDataProvider::LoadSolidData(DataProviderInfo& info)
 
 	HANDLE h = ::CreateThread(0,0,InetAsync, (LPVOID)pi, 0, &dw);
 
-	::WaitForSingleObject(h, INFINITE);
+	if ( h != nullptr )
+		::WaitForSingleObject(h, INFINITE);
 
 	DataProviderResult ret;
 
@@ -116,19 +141,6 @@ bool FileDataProvider::Convert(DataProviderResult& res, DataRpoviderOut* out)
 	
 	return true;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #define _SECOND ((__int64) 10000000)

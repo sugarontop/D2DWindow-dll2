@@ -61,8 +61,7 @@ bool FD2DMyStockChart::Draw(ID2D1DeviceContext* cxt)
 
 		cxt->CreateSolidColorBrush(clr, &br);
 		cxt->FillRectangle(rc_.ZeroRect(), br);
-		
-		
+			
 		if ( view_ )
 			cxt->DrawBitmap(view_,rc_.ZeroRect());
 		else
@@ -75,6 +74,13 @@ bool FD2DMyStockChart::Draw(ID2D1DeviceContext* cxt)
 
 		// button etc..
 		D2DInnerDraw(hndl_);
+	
+		if ( stock_chart_.IsEmpty())
+		{
+			DrawPrimeData(cxt);
+
+		}
+		
 
 		mat.PopTransform();	
 	}
@@ -85,7 +91,32 @@ void FD2DMyStockChart::InnerDraw(ID2D1RenderTarget* cxt)
 {
 	stock_chart_.Draw(cxt);
 }
+void FD2DMyStockChart::DrawPrimeData(ID2D1DeviceContext* cxt)
+{
+	FRectF rc(10,100, FSizeF(200,30));
 
+	ComPTR<IDWriteTextFormat> textformat;
+
+	D2DGetTextFormat(hndl_, &textformat);
+
+	ComPTR<ID2D1SolidColorBrush> br, brgray;
+	auto clr = ColorF(ColorF::Black);
+	cxt->CreateSolidColorBrush(clr, &br);
+
+
+	for(auto& it : prime_ )
+	{
+		WCHAR cb[256];
+		StringCbPrintf(cb,256,L"%s %-8.1f", it.second.cd.c_str(), it.second.regularMarketPrice);
+		
+		cxt->DrawText(cb,wcslen(cb), textformat, rc, br);
+
+		rc.Offset(0,30);
+	}
+
+
+
+}
 // --------------------------------------------------
 static ID2D1RenderTarget* InitWICImagingType(UINT cx, UINT cy, IWICBitmap** out_bitmap)
 {
@@ -212,6 +243,20 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 			txtCD_ = t1;
 			txtIntv_ = t3;
 
+
+
+			/// 
+			PrimeStockDataItem item = {};
+			prime_[L"SPY"] = item;
+			prime_[L"QQQ"] = item;
+			prime_[L"VTI"] = item;
+			prime_[L"XLE"] = item;
+			prime_[L"ARKK"] = item;
+
+
+			PrimeStockDataLoad(prime_);
+
+
 			r =1;
 		}
 		break;
@@ -325,7 +370,7 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 
 			if ( wParam == 0x41) // A key
 			{
-				ShowDialog(0, FRectF(100,100,FSizeF(200,300)));
+				ShowDialog(0, FRectF(100,100,FSizeF(500,300)));
 				r = 1;
 			}
 			else if ( wParam == 0x42) // B key

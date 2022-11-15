@@ -43,7 +43,9 @@ class FD2DMyStockChart: public FD2DAppBaseControls
 		};
 
 	protected :
-		void InnerDraw(ID2D1RenderTarget* cxt);
+		void InnerDraw(ID2D1RenderTarget* cxt);		
+		void DrawPrimeData(ID2D1DeviceContext* cxt);
+
 		bool CreateMemoryView(ID2D1RenderTarget* target, FSizeF sz, ID2D1Bitmap** pview);
 		void ShowDialog(int n, FRectF rc);
 
@@ -56,7 +58,7 @@ class FD2DMyStockChart: public FD2DAppBaseControls
 
 		UIHandle txtCD_, txtIntv_, now_value_;
 		std::shared_ptr<FD2DDialogTest> dlg_;
-		
+		std::map<std::wstring, PrimeStockDataItem> prime_;
 
 };
 

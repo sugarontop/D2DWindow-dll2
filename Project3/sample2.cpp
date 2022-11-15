@@ -64,7 +64,6 @@ void Sample2(UIHandle parent, LPCWSTR name, FRectF rc, int id, int nest)
 	D2DSendMessage(t3_1, WM_D2D_SET_BKMODE, 2, 0);
 
 	auto tx1 = D2DCreateTextbox(t3_1, FRectF(100,100,FSizeF(200,26)), false, STAT_DEFAULT, L"calc");
-	//D2DSendMessage(tx1, WM_D2D_COMMAND_SET, (WPARAM)tx1.p, (LPARAM)L"type=money" );
 	D2DSendMessage(tx1, WM_D2D_SET_TEXT, (WPARAM)0, (LPARAM)L"SEGA MEGA DRIVE" );
 
 	gtx1 = tx1;
@@ -77,7 +76,7 @@ void Sample2(UIHandle parent, LPCWSTR name, FRectF rc, int id, int nest)
 
 	D2DEventHandler(ls1, MyTest);
 
-	//MySample_CreateChartBox(t3_1, FRectF(500,0,FSizeF(1000,500)), L"SPY");
+//MySample_CreateChartBox(t3_1, FRectF(500,0,FSizeF(1000,500)), L"SPY");
 	
 
 }
