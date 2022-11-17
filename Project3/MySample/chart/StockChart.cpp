@@ -5,6 +5,7 @@
 
 using namespace V6;
 
+HANDLE MyCreateThread(int,int,LPTHREAD_START_ROUTINE th, LPVOID prm, DWORD, DWORD* ret);
 
 StockChart::StockChart( V6::FRectF rc):vrect_(rc)
 {
@@ -89,6 +90,8 @@ LPCWSTR StockChart::GetNowValue(money* val)
 	return date;
 }
 
+
+
 void StockChart::LoadAsync(DataProvider* pdp, DataProviderInfo* pdpi, std::function<void(void)> complete)
 {
 	struct X
@@ -126,7 +129,8 @@ void StockChart::LoadAsync(DataProvider* pdp, DataProviderInfo* pdpi, std::funct
 
 
 	DWORD dw;
-	::CreateThread(0,0, X::Jackson5, x,0,&dw);
+	//::CreateThread(0,0, X::Jackson5, x,0,&dw);
+	MyCreateThread(0,0, X::Jackson5, x,0,&dw);
 }
 
 
@@ -360,7 +364,7 @@ void StockChart::DrawParabolic(ID2D1RenderTarget* cxt)
 	if ( xar_.size() < 300 ) return;
 	
 	// calc
-	money test = xar_[300].raw.m4 * 0.9;
+	money test = (money)xar_[300].raw.m4 * 0.9f;
 	auto ypos = money2vpos_(test);
 
 
@@ -389,6 +393,8 @@ void StockChart::DrawParabolic(ID2D1RenderTarget* cxt)
 
 void StockChart::DrawTrimline(ID2D1RenderTarget* cxt)
 {
+	if ( trim_textformat_ == nullptr ) return;
+	
 	FRectF figure_rc = vrect_.ZeroRect();
 	WCHAR cb[64];
 
@@ -446,7 +452,16 @@ void StockChart::WriteDataToDb(LPCWSTR cd, const std::vector<CandleData>& ar)
 	MEMODB::FileWrite(cd, ar2);
 }
 
+std::shared_ptr<StockChart> StockChart::Clone() const
+{
+	std::shared_ptr<StockChart> ret = std::make_shared<StockChart>(FRectF(0,0,200,200));
 
+	ret->money_textformat_ = this->money_textformat_;
+	ret->trim_textformat_ = this->trim_textformat_;
+
+	return ret;
+
+}
 
 inline float tof(const std::string& s)
 {
@@ -528,9 +543,9 @@ std::wstring IStreamToString(IStream* sm)
 
 	std::string xasm1 = asm1.str();
 
-	int len = ::MultiByteToWideChar(CP_UTF8,0,xasm1.c_str(), xasm1.length(), 0,0);
+	int len = ::MultiByteToWideChar(CP_UTF8,0,xasm1.c_str(), (int)xasm1.length(), 0,0);
 	std::vector<WCHAR> wcb(len);
-	::MultiByteToWideChar(CP_UTF8,0,xasm1.c_str(), xasm1.length(), &wcb[0], len);
+	::MultiByteToWideChar(CP_UTF8,0,xasm1.c_str(), (int)xasm1.length(), &wcb[0], len);
 
 	return std::wstring(&wcb[0],len);
 }

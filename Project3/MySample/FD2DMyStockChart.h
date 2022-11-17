@@ -15,15 +15,28 @@ class FD2DDialogTest;
 namespace V6 {
 
 
+class ChartShot
+{
+	public:
+		ChartShot(const StockChart* org);
+
+		void Draw(FRectF rc, ID2D1RenderTarget* cxt);
+
+		void Load(std::wstring cd, UIHandle hdl);
+
+		std::shared_ptr<StockChart> stock_chart_;
+};
+
+
 
 class FD2DMyStockChart: public FD2DAppBaseControls
 {
 	public :
 			
 
-		StockChart stock_chart_;
+		std::unique_ptr<StockChart> stock_chart_;
 
-		FD2DMyStockChart(float cx, float cy):stock_chart_(FRectF(0,TOPBAR_HEIGHT,cx,cy))
+		FD2DMyStockChart(float cx, float cy)
 		{
 			// "rc_" is setted in WM_D2D_CREATE
 		}
@@ -60,6 +73,7 @@ class FD2DMyStockChart: public FD2DAppBaseControls
 		std::shared_ptr<FD2DDialogTest> dlg_;
 		std::map<std::wstring, PrimeStockDataItem> prime_;
 
+		std::vector<std::shared_ptr<ChartShot>> shots_;
 };
 
 class FD2DMyStockDataView: public FD2DAppBaseControls

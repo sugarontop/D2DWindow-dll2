@@ -24,7 +24,7 @@ class ShortBSTR
 		std::wstring Str(){ return std::wstring(bstr_); }
 		std::wstring UpperStr()
 		{ 
-			for(int i=0; i< ::SysStringLen(bstr_); i++)
+			for(int i=0; i< (int)::SysStringLen(bstr_); i++)
 			{
 				if ( 'a' <= bstr_[i] && bstr_[i] <='z' )
 					bstr_[i] -= ('a'-'A');
@@ -75,12 +75,13 @@ bool FD2DMyStockChart::Draw(ID2D1DeviceContext* cxt)
 		// button etc..
 		D2DInnerDraw(hndl_);
 	
-		if ( stock_chart_.IsEmpty())
+		if ( stock_chart_->IsEmpty())
 		{
 			DrawPrimeData(cxt);
 
 		}
-		
+		else
+			shots_.clear();
 
 		mat.PopTransform();	
 	}
@@ -89,7 +90,7 @@ bool FD2DMyStockChart::Draw(ID2D1DeviceContext* cxt)
 }
 void FD2DMyStockChart::InnerDraw(ID2D1RenderTarget* cxt)
 {
-	stock_chart_.Draw(cxt);
+	stock_chart_->Draw(cxt);
 }
 void FD2DMyStockChart::DrawPrimeData(ID2D1DeviceContext* cxt)
 {
@@ -109,11 +110,31 @@ void FD2DMyStockChart::DrawPrimeData(ID2D1DeviceContext* cxt)
 		WCHAR cb[256];
 		StringCbPrintf(cb,256,L"%s %-8.1f", it.second.cd.c_str(), it.second.regularMarketPrice);
 		
-		cxt->DrawText(cb,wcslen(cb), textformat, rc, br);
+		cxt->DrawText(cb,(int)wcslen(cb), textformat, rc, br);
 
 		rc.Offset(0,30);
 	}
 
+	int i=0;
+	LPCWSTR cds[] = {L"SPY",L"QQQ",L"MSFT",L"AAPL"};
+	FRectF rcs[]={ FRectF(600,100,FSizeF(500,300)),FRectF(1200,100,FSizeF(500,300)),FRectF(600,500,FSizeF(500,300)),FRectF(1200,500,FSizeF(500,300))};
+	if ( shots_.empty() )
+	{
+		for(i = 0; i <_countof(cds); i++ )
+		{
+			auto shot = std::make_shared<ChartShot>(stock_chart_.get()); 
+			shot->Load(cds[i], hndl_);
+
+			shots_.push_back(shot);
+		}
+	}
+
+	i=0;
+	for(auto& it : shots_)
+	{
+		FRectF rc = rcs[i++];
+		it->Draw(rc, cxt);
+	}
 
 
 }
@@ -187,7 +208,7 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 
 			FSizeF sz = rc_.Size().Inflate(0,-TOPBAR_HEIGHT);
 
-			this->stock_chart_.SetSize(sz);
+			
 
 			auto hParent = D2DGetParent(hndl_);
 
@@ -219,13 +240,17 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 			ComPTR<IDWriteFactory> wf;
 			ComPTR<IDWriteTextFormat> wtextformat;
 
+			
+
+			stock_chart_ = std::make_unique<StockChart>(FRectF(0,TOPBAR_HEIGHT,sz));
+
 			if ( S_OK == (DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), (IUnknown**) &wf)))
 			{
 				
 				if (S_OK ==(wf->CreateTextFormat(L"MS –¾’©", NULL, DWRITE_FONT_WEIGHT_REGULAR,
 					DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL,10.0f, LOCALE, &wtextformat)))
 					{
-						stock_chart_.trim_textformat_ = wtextformat;
+						stock_chart_->trim_textformat_ = wtextformat;
 
 					}	
 				
@@ -234,7 +259,7 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 				if (S_OK ==(wf->CreateTextFormat(L"Arial", NULL, DWRITE_FONT_WEIGHT_REGULAR,
 					DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL,30.0f, LOCALE, &wtextformat)))
 					{
-						stock_chart_.money_textformat_ = wtextformat;
+						stock_chart_->money_textformat_ = wtextformat;
 
 					}		
 			}
@@ -284,7 +309,7 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 				dpi.interval = intv.Str();
 				
 
-				stock_chart_.Load(pv, dpi );
+				stock_chart_->Load(pv, dpi );
 
 				D2DTabSendMessage(this->hndl_, WM_D2D_APP_ON_CHART_CHANGED, 0, (LPARAM)this);
 				view_ = nullptr;
@@ -317,7 +342,7 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 
 				};
 
-				stock_chart_.LoadAsync(pv, dpi, complete);
+				stock_chart_->LoadAsync(pv, dpi, complete);
 
 				
 
@@ -333,10 +358,10 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 
 			if ( rc_.ZeroPtInRect(pt))
 			{
-				if ( stock_chart_.MouseMove(pt))
+				if ( stock_chart_->MouseMove(pt))
 				{
 					money m4;
-					LPCWSTR date = stock_chart_.GetNowValue(&m4);
+					LPCWSTR date = stock_chart_->GetNowValue(&m4);
 
 
 					WCHAR cb[256];
@@ -472,7 +497,7 @@ LRESULT FD2DMyStockDataView::WndProc(AppBase& b, UINT message, WPARAM wParam, LP
 		{
 			FD2DMyStockChart* chart = (FD2DMyStockChart*)lParam;
 
-			StockChart& ch = chart->stock_chart_;
+			StockChart& ch = *(chart->stock_chart_);
 
 			auto cd = ch.cd_;
 
@@ -825,4 +850,43 @@ void FD2DMyStockChart::ShowDialog(int typ, FRectF rc)
 {
 	dlg_ = std::make_shared<FD2DDialogTest>(typ);
 	dlg_->Create(hndl_,NONAME, rc, 0);
+}
+
+
+
+ChartShot::ChartShot(const StockChart* org)
+{
+	stock_chart_ = org->Clone();
+}
+void ChartShot::Load(std::wstring cd,UIHandle hdl)
+{
+	InetDataProvider* pdp = new InetDataProvider();
+	DataProviderInfo* pdpi = new DataProviderInfo();
+
+	pdpi->cd = cd;
+	pdpi->info = nullptr;
+	pdpi->interval = L"1d";
+
+
+	auto comp = [hdl](){
+		
+		D2DRedraw(hdl);
+
+	};
+	
+	stock_chart_->LoadAsync(pdp, pdpi, comp);
+
+}
+
+void ChartShot::Draw(FRectF rc, ID2D1RenderTarget* cxt)
+{
+	D2DMatrix mat(cxt);
+    mat.PushTransform();       
+    mat.Offset(rc);
+
+	stock_chart_->SetSize(rc.Size());
+
+	stock_chart_->Draw(cxt);
+
+	mat.PopTransform();
 }

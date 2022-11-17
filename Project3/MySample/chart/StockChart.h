@@ -91,7 +91,7 @@ class StockChart
 {
 	public :
 
-		StockChart( V6::FRectF rc);
+		StockChart( V6::FRectF rc );
 		
 		bool Load(DataProvider& dp,DataProviderInfo& dpi);
 		void LoadAsync(DataProvider* dp,DataProviderInfo* dpi, std::function<void(void)> complete);
@@ -110,12 +110,16 @@ class StockChart
 		bool IsEmpty(){ return xar_.empty(); }
 
 
+		std::shared_ptr<StockChart> Clone() const;
+
+
 		std::vector<Candle> xar_;
 		std::vector<FigureTrimline> ar_trim_;
 
 		V6::FRectF vrect_;
-		ComPTR<IDWriteTextFormat> trim_textformat_;
+		
 		ComPTR<IDWriteTextFormat> money_textformat_;
+		ComPTR<IDWriteTextFormat> trim_textformat_;
 
 		std::function<float(float)> v2money_;
 
@@ -126,6 +130,8 @@ class StockChart
 		std::string now_date_;
 
 	protected :
+		
+
 		void DrawTrimline(ID2D1RenderTarget* cxt);
 		void DrawCandle(ID2D1RenderTarget* cxt);
 		void DrawParabolic(ID2D1RenderTarget* cxt);
@@ -135,7 +141,7 @@ class StockChart
 
 };
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////
 struct PrimeStockDataItem
 {
 	std::wstring cd;

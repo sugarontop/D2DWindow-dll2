@@ -6,6 +6,7 @@
 ULONG UnixTime(int yyyy, int mm, int dd );
 bool StreamDuplicate( IStream* src, IStream** out);
 bool StreamToFile(LPCWSTR dstFileName, IStream* src);
+HANDLE MyCreateThread(int,int,LPTHREAD_START_ROUTINE th, LPVOID prm, DWORD, DWORD* ret);
 
 bool InetDataProvider::Connect(DataProviderInfo& info)
 {
@@ -52,7 +53,7 @@ bool InetDataProvider::GetJson(LPCWSTR url, std::function<void(IStream*)> comple
 
 	DWORD dw;
 	HANDLE h = ::CreateThread(0,0,InetAsync, (LPVOID)x, 0, &dw);
-
+	
 	if ( h != nullptr )
 		::WaitForSingleObject(h, INFINITE);
 
@@ -68,7 +69,8 @@ DataProviderResult InetDataProvider::LoadSolidData(DataProviderInfo& info)
 
 	InternetInfo* pi = (InternetInfo*)info.info;
 
-	HANDLE h = ::CreateThread(0,0,InetAsync, (LPVOID)pi, 0, &dw);
+	//HANDLE h = ::CreateThread(0,0,InetAsync, (LPVOID)pi, 0, &dw);
+	HANDLE h = MyCreateThread(0,0,InetAsync, (LPVOID)pi, 0, &dw);
 
 	if ( h != nullptr )
 		::WaitForSingleObject(h, INFINITE);
