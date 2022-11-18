@@ -1,4 +1,3 @@
-
 #include "pch.h"
 #include "appbase.h"
 #include "D2D1UI_1.h"
@@ -6,7 +5,6 @@
 #include "FD2DMyControls.h"
 
 using namespace V6;
-
 
 #pragma comment (lib, "D2DUI_1")
 

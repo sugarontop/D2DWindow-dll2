@@ -26,12 +26,12 @@ void D2DEmptyControls::CreateControl(D2DWindow* parent, D2DControls* pacontrol, 
 
 }
 
-static void DrawLattice(D2DContext& cxt, FSizeF sz, float box)
+static void DrawLattice(ID2D1RenderTarget* pcxt, FSizeF sz, float box)
 {
-	D2DMatrix mat(*cxt);
+	D2DMatrix mat(pcxt);
 	mat.PushTransform();
 	ComPTR<ID2D1SolidColorBrush> br;
-	(*cxt)->CreateSolidColorBrush(D2RGB(235,235,235), &br);
+	(pcxt)->CreateSolidColorBrush(D2RGB(235,235,235), &br);
 
 	int hcnt = sz.height / box * 2;
 	int wcnt = sz.width / box * 2;
@@ -44,8 +44,8 @@ static void DrawLattice(D2DContext& cxt, FSizeF sz, float box)
 		mat.PushTransform();
 		for(int j=0; j<wcnt; j++ )
 		{
-			(*cxt)->FillRectangle(brc, br);
-			(*cxt)->FillRectangle(brc2, br);
+			(pcxt)->FillRectangle(brc, br);
+			(pcxt)->FillRectangle(brc2, br);
 
 			mat.Offset(box*2, 0);
 		}
@@ -57,12 +57,37 @@ static void DrawLattice(D2DContext& cxt, FSizeF sz, float box)
 }
 void test(D2DContext& cxt);
 
+#define RATTICE 25
+
+bool CreateMemoryView(D2DContext& cxt, FSizeF sz, ID2D1Bitmap** out)
+{
+	ComPTR<IWICBitmap> wicb_bmp;
+	ComPTR<ID2D1RenderTarget> mem_cxt = D2DCreateSecondRenderTarget((UINT)sz.width,(UINT)sz.height, &wicb_bmp);
+
+	if ( mem_cxt )
+	{
+		mem_cxt->BeginDraw();
+		{
+			D2D1_MATRIX_3X2_F mat = {};
+			mat._11 = mat._22 = 1.0f; 
+			mem_cxt->SetTransform(mat);
+			mem_cxt->Clear(D2D1::ColorF(D2D1::ColorF::White));
+
+
+			DrawLattice(mem_cxt, sz, RATTICE );
+		}
+		mem_cxt->EndDraw();
+
+		// 	convert IWICBitmap to ID2D1Bitmap				
+		auto hr = (*cxt)->CreateBitmapFromWicBitmap(wicb_bmp, NULL, out );
+
+		return (hr == S_OK);
+	}
+	return false;
+}
 void D2DEmptyControls::Draw(D2DContext& cxt)
 {
 	D2DRectFilter f(cxt, rc_);
-
-	
-
 	D2DMatrix mat(*cxt);
 	mat.PushTransform();
 	mat.Offset(rc_);
@@ -72,7 +97,26 @@ void D2DEmptyControls::Draw(D2DContext& cxt)
 		if (0 < bk_mode_ && bk_mode_ != 3 )
 		{
 			cxt.DFillRect(rc_, ColorF::White);
-			DrawLattice(cxt, rc_.Size(), 25 );
+
+			const FSizeF sz(RATTICE*20,RATTICE*20);
+			if ( !LatticeBitmap_ )
+				CreateMemoryView( cxt, sz, &LatticeBitmap_);					
+
+			mat.PushTransform();
+			for(int ix=0; ix < rc_.Size().width / sz.width; ix++)
+			{
+				mat.PushTransform();
+				for(int iy=0; iy < rc_.Size().height / sz.height; iy++)
+				{
+					(*cxt)->DrawBitmap(LatticeBitmap_, FRectF(0,0,sz) );
+					mat.Offset(0,sz.height);
+				}
+				mat.PopTransform();
+
+				mat.Offset(sz.width,0);
+			}
+			mat.PopTransform();
+
 		}
 		if (bk_mode_ == 2 || bk_mode_ == 4 )
 		{
@@ -156,6 +200,12 @@ LRESULT D2DEmptyControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 			text_ = (LPCWSTR)lParam;
 
 		}
+		break;
+		case WM_D2D_RESOURCES_UPDATE:
+		{
+			if ( wParam == 0 )
+				LatticeBitmap_ = nullptr;
+ 		}
 		break;
 
 	}

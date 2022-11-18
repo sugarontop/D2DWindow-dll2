@@ -20,6 +20,8 @@ namespace V6
 			int bk_mode_;
 			std::wstring text_;
 
+			ComPTR<ID2D1Bitmap> LatticeBitmap_;
+
 	};
 };
 

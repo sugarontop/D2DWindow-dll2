@@ -1818,3 +1818,31 @@ DLLEXPORT void WINAPI D2DGetTextFormat(UIHandle hctrl, IDWriteTextFormat** out)
 
 
 }
+DLLEXPORT ID2D1RenderTarget* D2DCreateSecondRenderTarget(UINT cx, UINT cy, IWICBitmap** out_bitmap)
+{
+	ComPTR<IWICImagingFactory> wic;
+	ComPTR<ID2D1Factory> fct;
+	ComPTR<ID2D1RenderTarget> memoryTarget;
+	LRESULT hr;
+
+	hr = CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_ALL, IID_IWICImagingFactory, (void**)&wic);
+	if ( hr != S_OK) goto err;
+
+    hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &fct);
+	if ( hr != S_OK) goto err;
+
+    hr = wic->CreateBitmap(cx, cy, GUID_WICPixelFormat32bppPBGRA, WICBitmapCacheOnDemand, out_bitmap);
+	if ( hr != S_OK) goto err;
+
+    hr = fct->CreateWicBitmapRenderTarget(*out_bitmap, D2D1::RenderTargetProperties(
+        D2D1_RENDER_TARGET_TYPE_DEFAULT,
+        D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),96.0f, 96.0f),
+        &memoryTarget);
+	if ( hr != S_OK) goto err;
+
+	memoryTarget.AddRef();
+	return memoryTarget;
+err:
+	
+	return nullptr;
+}

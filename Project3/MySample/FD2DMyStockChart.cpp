@@ -139,31 +139,10 @@ void FD2DMyStockChart::DrawPrimeData(ID2D1DeviceContext* cxt)
 
 }
 // --------------------------------------------------
-static ID2D1RenderTarget* InitWICImagingType(UINT cx, UINT cy, IWICBitmap** out_bitmap)
-{
-	ComPTR<IWICImagingFactory> wic;
-	ComPTR<ID2D1Factory> fct;
-	ComPTR<ID2D1RenderTarget> memoryTarget;
-	LRESULT hr;
-
-	hr = ::CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_ALL, IID_IWICImagingFactory, (void**)&wic);
-
-    hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &fct);
-
-    hr = wic->CreateBitmap(cx, cy, GUID_WICPixelFormat32bppPBGRA, WICBitmapCacheOnDemand, out_bitmap);
-
-    hr = fct->CreateWicBitmapRenderTarget(*out_bitmap, D2D1::RenderTargetProperties(
-        D2D1_RENDER_TARGET_TYPE_DEFAULT,
-        D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),96.0f, 96.0f),
-        &memoryTarget);
-
-	memoryTarget.AddRef();
-	return memoryTarget;
-}
 bool FD2DMyStockChart::CreateMemoryView(ID2D1RenderTarget* target, FSizeF sz, ID2D1Bitmap** pview)
 {	
 	ComPTR<IWICBitmap> wicb_bmp;
-	ID2D1RenderTarget* mem_cxt = InitWICImagingType((UINT)sz.width,(UINT)sz.height, &wicb_bmp);
+	ComPTR<ID2D1RenderTarget> mem_cxt = D2DCreateSecondRenderTarget((UINT)sz.width,(UINT)sz.height, &wicb_bmp);
 
 	if ( mem_cxt )
 	{
@@ -180,13 +159,12 @@ bool FD2DMyStockChart::CreateMemoryView(ID2D1RenderTarget* target, FSizeF sz, ID
 		mem_cxt->EndDraw();
 
 		// 	convert IWICBitmap to ID2D1Bitmap
-		ComPTR<ID2D1Bitmap> bmp;
 		auto hr = target->CreateBitmapFromWicBitmap(wicb_bmp, NULL, pview );
 
 		// convert IWICBitmap to stream
 		// WICBitmapSourceToStream(wicb_bmp, &sm_);
 
-		return true;
+		return (S_OK==hr);
 	}
 	return false;
 }

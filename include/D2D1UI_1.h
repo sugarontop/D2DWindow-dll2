@@ -162,4 +162,6 @@ DLLEXPORT ID2D1RenderTarget* WINAPI D2DGetRenderTarget(UIHandle hctrl);
 
 DLLEXPORT void D2DRedraw(UIHandle hctrl);
 DLLEXPORT void D2DGetClientRect(UIHandle hctrl, D2D1_RECT_F* prc);
+
+DLLEXPORT ID2D1RenderTarget* D2DCreateSecondRenderTarget(UINT cx, UINT cy, IWICBitmap** out_bitmap);
 };
