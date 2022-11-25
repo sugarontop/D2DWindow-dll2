@@ -91,9 +91,11 @@ DLLEXPORT UIHandleWin WINAPI D2DCreateMainHWnd( HWND hWnd,  float fontheight, in
 	return r;
 
 }
-DLLEXPORT void WINAPI D2DDestroyWindow(UIHandleWin main  )
+DLLEXPORT void WINAPI D2DDestroyWindow(UIHandleWin main)
 {
 	auto win = (D2DWindow*)main.p;
+
+	win->SendMessage(WM_D2D_DESTROYEX,0,0);
 	delete win;
 }
 
@@ -1441,13 +1443,8 @@ DLLEXPORT void WINAPI D2DForceWndProc(UIHandleWin main, AppBase& app, UINT messa
 DLLEXPORT  void WINAPI D2DDestroyControl(UIHandle h)
 {
 	D2DControl* h2 = D2DCastControl(h);
+
 	h2->DestroyControl();
-
-
-
-
-
-
 }
 DLLEXPORT void WINAPI D2DEventHandler( UIHandle h, D2DEventHandlerDelegate handler)
 {
@@ -1845,4 +1842,20 @@ DLLEXPORT ID2D1RenderTarget* D2DCreateSecondRenderTarget(UINT cx, UINT cy, IWICB
 err:
 	
 	return nullptr;
+}
+
+DLLEXPORT void D2DExportWndHandler(UIHandle hndl, D2DWndProcHandler proc, void* capture)
+{
+	auto func = [capture, proc](UINT message, WPARAM wp, LPARAM lp)->LRESULT
+	{
+		return proc(capture, message, wp, lp);
+	};
+
+	if ( hndl.typ = TYP_TAB_CONTROLS )
+	{
+		D2DTabControls* pc = static_cast<D2DTabControls*>(hndl.p);
+		pc->ExportWndMessage(func);
+			
+
+	}
 }

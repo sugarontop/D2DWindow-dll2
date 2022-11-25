@@ -144,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="chart\StockChart.h" />
+    <ClInclude Include="FD2DFrame.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="FD2DMyControls.h" />
     <ClInclude Include="FD2DMyStockChart.h" />
@@ -157,6 +158,7 @@
     </ClCompile>
     <ClCompile Include="chart\StockChart.cpp" />
     <ClCompile Include="FD2DAppBaseControls.cpp" />
+    <ClCompile Include="FD2DFrame.cpp" />
     <ClCompile Include="FD2DMyStockChart.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FD2DMyControls.cpp" />

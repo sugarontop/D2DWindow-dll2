@@ -45,7 +45,7 @@ struct D2DNMHDR
 
 
 typedef DWORD (*D2DEventHandlerDelegate)(UIHandle sender,LPCWSTR eventName, void* param);
-
+typedef LRESULT (*D2DWndProcHandler)(LPVOID capture_obj, UINT message, WPARAM wp, LPARAM lp);
 
 #define NONAME		(L"__NONAME")
 
@@ -99,7 +99,7 @@ typedef DWORD (*D2DEventHandlerDelegate)(UIHandle sender,LPCWSTR eventName, void
 #define WM_D2D_CB_INSERTSTRING					(WM_APP+1)
 #define WM_D2D_RESOURCES_UPDATE					(WM_APP+2)
 #define WM_D2D_CREATE							(WM_APP+3)
-//#define WM_D2D_DESTROY							(WM_APP+4)
+#define WM_D2D_DESTROYEX						(WM_APP+4)
 
 
 

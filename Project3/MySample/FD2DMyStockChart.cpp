@@ -45,7 +45,7 @@ class ShortBSTR
 };
 
 
-// D2DMyStockChart //////////////////////////////////////////////////////////////////////////
+// FD2DMyStockChart //////////////////////////////////////////////////////////////////////////
 bool FD2DMyStockChart::Draw(ID2D1DeviceContext* cxt)
 {
 	auto stat = D2DGetStat(Get());
@@ -77,7 +77,7 @@ bool FD2DMyStockChart::Draw(ID2D1DeviceContext* cxt)
 	
 		if ( stock_chart_->IsEmpty())
 		{
-			DrawPrimeData(cxt);
+			DrawPrimeChart(cxt);
 
 		}
 		else
@@ -92,7 +92,7 @@ void FD2DMyStockChart::InnerDraw(ID2D1RenderTarget* cxt)
 {
 	stock_chart_->Draw(cxt);
 }
-void FD2DMyStockChart::DrawPrimeData(ID2D1DeviceContext* cxt)
+void FD2DMyStockChart::DrawPrimeChart(ID2D1DeviceContext* cxt)
 {
 	FRectF rc(10,100, FSizeF(200,30));
 
@@ -116,16 +116,21 @@ void FD2DMyStockChart::DrawPrimeData(ID2D1DeviceContext* cxt)
 	}
 
 	int i=0;
-	LPCWSTR cds[] = {L"SPY",L"QQQ",L"MSFT",L"AAPL"};
 	FRectF rcs[]={ FRectF(600,100,FSizeF(500,300)),FRectF(1200,100,FSizeF(500,300)),FRectF(600,500,FSizeF(500,300)),FRectF(1200,500,FSizeF(500,300))};
 	if ( shots_.empty() )
-	{
-		for(i = 0; i <_countof(cds); i++ )
-		{
+	{		
+		for(auto& it : prime_ )
+		{			
+			if ( i++ > 4 )
+				break;
+
+			auto cd = it.first;
+			
 			auto shot = std::make_shared<ChartShot>(stock_chart_.get()); 
-			shot->Load(cds[i], hndl_);
+			shot->Load(cd, hndl_);
 
 			shots_.push_back(shot);
+			
 		}
 	}
 
@@ -254,9 +259,7 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 			prime_[L"QQQ"] = item;
 			prime_[L"VTI"] = item;
 			prime_[L"XLE"] = item;
-			prime_[L"ARKK"] = item;
-
-
+			
 			PrimeStockDataLoad(prime_);
 
 

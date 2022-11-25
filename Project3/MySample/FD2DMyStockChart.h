@@ -32,14 +32,10 @@ class ChartShot
 class FD2DMyStockChart: public FD2DAppBaseControls
 {
 	public :
-			
 
 		std::unique_ptr<StockChart> stock_chart_;
 
-		FD2DMyStockChart(float cx, float cy)
-		{
-			// "rc_" is setted in WM_D2D_CREATE
-		}
+		FD2DMyStockChart(){};
 
 		virtual bool Draw(ID2D1DeviceContext* cxt) override;
 		virtual LRESULT WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam) override;
@@ -57,7 +53,7 @@ class FD2DMyStockChart: public FD2DAppBaseControls
 
 	protected :
 		void InnerDraw(ID2D1RenderTarget* cxt);		
-		void DrawPrimeData(ID2D1DeviceContext* cxt);
+		void DrawPrimeChart(ID2D1DeviceContext* cxt);
 
 		bool CreateMemoryView(ID2D1RenderTarget* target, FSizeF sz, ID2D1Bitmap** pview);
 		void ShowDialog(int n, FRectF rc);
@@ -80,10 +76,7 @@ class FD2DMyStockDataView: public FD2DAppBaseControls
 {
 	public :
 
-		FD2DMyStockDataView(float cx, float cy)
-		{
-			// "rc_" is setted in WM_D2D_CREATE
-		}
+		FD2DMyStockDataView(){};
 
 		virtual bool Draw(ID2D1DeviceContext* cxt) override;
 		virtual LRESULT WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam) override;

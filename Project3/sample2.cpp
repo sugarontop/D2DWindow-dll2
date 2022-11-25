@@ -35,7 +35,7 @@ void Sample2(UIHandle parent, LPCWSTR name, FRectF rc, int id, int nest)
 		return;
 
 	// 1 TAG-------------------------------------------------------------------
-	auto tab = D2DCreateTabControls(parent, rc, STAT_DEFAULT, L"tab1", -1 );
+	auto tab = D2DCreateTabControls(parent, rc, STAT_DEFAULT|STAT_AUTOFIT_CHILDWIN|STAT_AUTOFIT_CHILDWIN, L"tab1", -1 );
 
 	D2DSendMessage(tab, WM_D2D_SET_TAB_POSITION, 0, 0);
 
@@ -50,7 +50,7 @@ void Sample2(UIHandle parent, LPCWSTR name, FRectF rc, int id, int nest)
 
 	// 2 TAG------------------------------------------------------------------
 	auto t2 = D2DAddNewTab(tab, L"2nd");
-	auto t1_2 = D2DCreateEmptyControls(t2, rc, STAT_DEFAULT, NONAME);
+	auto t1_2 = D2DCreateEmptyControls(t2, rc, STAT_DEFAULT|STAT_AUTOFIT_CHILDWIN, NONAME);
 	D2DSendMessage(t1_2, WM_D2D_SET_BKMODE, 2, 0);
 
 	D2DSendMessage(tab, WM_D2D_SET_ACTIVE_CONTROL, 0, 1);
@@ -60,7 +60,7 @@ void Sample2(UIHandle parent, LPCWSTR name, FRectF rc, int id, int nest)
 
 	// 3 TAG-------------------------------------------------------------------
 	auto t3 = D2DAddNewTab(tab, L"3rd-empty");
-	auto t3_1 = D2DCreateEmptyControls(t3, rc, STAT_DEFAULT, NONAME);
+	auto t3_1 = D2DCreateEmptyControls(t3, rc, STAT_DEFAULT|STAT_AUTOFIT_CHILDWIN, NONAME);
 	D2DSendMessage(t3_1, WM_D2D_SET_BKMODE, 2, 0);
 
 	auto tx1 = D2DCreateTextbox(t3_1, FRectF(100,100,FSizeF(200,26)), false, STAT_DEFAULT, L"calc");

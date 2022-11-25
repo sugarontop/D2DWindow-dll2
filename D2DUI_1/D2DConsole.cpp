@@ -421,11 +421,11 @@ void D2DSampleOutput::CreateControl(D2DWindow* parent, D2DControls* pacontrol, c
 LRESULT D2DSampleOutput::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT r = 0;
-	switch( message )
+	/*switch( message )
 	{
 		
 
-	}
+	}*/
 
 	if ( r == 0 )
 		r = InnerWndProc(b,message,wParam,lParam);

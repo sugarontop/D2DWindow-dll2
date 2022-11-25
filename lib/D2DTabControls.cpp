@@ -100,6 +100,19 @@ D2DControl* D2DTabControls::GetControlFromIdx(USHORT idx)
 
 	return nullptr;
 }
+void D2DTabControls::SetRect(const FRectF& rc)
+{
+	rc_ = rc;
+
+	FSizeF sz = rc.Size();
+	sz.height -= tabrects_[0].Height();
+
+	AppBase b={};
+	for(auto& it : controls_)
+		it->WndProc(b,WM_D2D_SET_SIZE_FROM_CHILDWINDOW,0,(LPARAM)&sz);
+
+}
+
 
 LRESULT D2DTabControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -111,8 +124,31 @@ LRESULT D2DTabControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM 
 
 			r = 1;
 		break;
+		case WM_D2D_DESTROYEX:
+
+			r = 0;
+		break;
+		
+		case WM_SIZE:
+		{
+			if ((stat_&STAT_AUTOFIT_CHILDWIN) == STAT_AUTOFIT_CHILDWIN)
+			{
+				auto cx = LOWORD(lParam);
+				auto cy = HIWORD(lParam);
 
 
+				FSizeF sz(cx,cy);
+				rc_.SetSize(sz);
+
+
+				sz.height -= tabrects_[0].Height();
+
+				for(auto& it : controls_)
+					it->WndProc(b,WM_D2D_SET_SIZE_FROM_CHILDWINDOW,wParam,(LPARAM)&sz);
+
+			}
+		}
+		break;
 		case WM_LBUTTONDOWN:
 		{
 			MouseParam& pm = *(MouseParam*)lParam;
@@ -294,6 +330,9 @@ LRESULT D2DTabControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM 
 		}
 	}
 
+	if ( export_wnd_prc_ )
+		export_wnd_prc_(message,wParam,lParam);
+
 	return r;
 }
 
@@ -395,14 +434,14 @@ D2DControls* D2DTabControls::AddNewTab(LPCWSTR tabName)
 	if (BITFLG(CREATE_SIMPLE))
 	{
 		auto page1 = std::make_shared<D2DControls>();
-		page1->CreateControl(parent_window_,this, FRectF(0,0,sz), STAT_DEFAULT, tabnm.c_str() );
+		page1->CreateControl(parent_window_,this, FRectF(0,0,sz), STAT_DEFAULT|STAT_AUTOFIT_CHILDWIN, tabnm.c_str() );
 		Add(page1);
 		ret = page1.get();
 	}
 	else
 	{
 		auto page1 = std::make_shared<D2DControls_with_Scrollbar>();
-		page1->CreateControl(parent_window_,this, FRectF(0,0,sz), STAT_DEFAULT, tabnm.c_str() );
+		page1->CreateControl(parent_window_,this, FRectF(0,0,sz), STAT_DEFAULT|STAT_AUTOFIT_CHILDWIN, tabnm.c_str() );
 		Add(page1);
 		ret = page1.get();
 
