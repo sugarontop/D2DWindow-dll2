@@ -37,6 +37,8 @@ void Sample2(UIHandle parent, LPCWSTR name, FRectF rc, int id, int nest)
 	// 1 TAG-------------------------------------------------------------------
 	auto tab = D2DCreateTabControls(parent, rc, STAT_DEFAULT|STAT_AUTOFIT_CHILDWIN|STAT_AUTOFIT_CHILDWIN, L"tab1", -1 );
 
+	
+
 	D2DSendMessage(tab, WM_D2D_SET_TAB_POSITION, 0, 0);
 
 	D2DSetText(tab, L"0:chart");

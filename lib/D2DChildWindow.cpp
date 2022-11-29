@@ -91,7 +91,7 @@ LRESULT D2DChildWindow::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM 
 
 			//DefWndProc(b,WM_D2D_SET_SIZE_FROM_CHILDWINDOW,0,(LPARAM)&sz);
 
-			InnerWndProc(b,WM_D2D_SET_SIZE_FROM_CHILDWINDOW,0,(LPARAM)&sz);
+			InnerWndProc(b,WM_D2D_SET_SIZE_FROM_OUTER,0,(LPARAM)&sz);
 
 
 			bl = false;

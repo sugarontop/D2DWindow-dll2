@@ -71,7 +71,7 @@ void FD2DFrame::SizeArrange(UINT cx, UINT cy)
 			rc.right = cx;
 
 
-//??		D2DSetRect(it->prc_, rc);
+		D2DSetRect(it->prc_, rc);
 	}
 
 

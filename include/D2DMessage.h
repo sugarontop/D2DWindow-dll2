@@ -111,16 +111,13 @@ typedef LRESULT (*D2DWndProcHandler)(LPVOID capture_obj, UINT message, WPARAM wp
 
 
 #define WM_D2D_ON_DESTROY						(WM_APP+10)
-#define WM_D2D_SET_SIZE							(WM_APP+11)
-#define WM_D2D_SET_COLOR						(WM_APP+12) // w=0:back,1:fore,l=ColorF
+#define WM_D2D_SET_COLOR						(WM_APP+11) // w=0:back,1:fore,l=ColorF
+#define WM_D2D_LISTBOX_ADD_ITEM					(WM_APP+12)
+#define WM_D2D_TAB_CHANGE						(WM_APP+13)
+#define WM_D2D_TABCONTROL_TAB_NAME				(WM_APP+14)
 
-
-#define WM_D2D_LISTBOX_ADD_ITEM					(WM_APP+13)
-#define WM_D2D_TAB_CHANGE						(WM_APP+14)
-#define WM_D2D_TABCONTROL_TAB_NAME				(WM_APP+15)
-
-//#define WM_D2D_SET_SIZE_SIZE					(WM_APP+16) // LPARAM is FSizeF
-#define WM_D2D_SET_SIZE_FROM_CHILDWINDOW		(WM_APP+16) // LPARAM is FSizeF
+#define WM_D2D_SET_SIZE							(WM_APP+15) // LPARAM:0, WPARAM:0  send after SizeChanged
+#define WM_D2D_SET_SIZE_FROM_OUTER				(WM_APP+16) // LPARAM is FSizeF
 
 #define WM_D2D_GET_RESOURCE_BINARY				(WM_APP+17) // LPARAM is IStream**
 #define WM_D2D_SET_RESOURCE						(WM_APP+18) // LPARAM is name

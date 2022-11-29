@@ -5,7 +5,7 @@ using namespace V6;
 
 #define  APP (D2DApp::GetInstance())
 
-#define TEST_COLOR		D2RGB(110,110,110)
+#define TEST_COLOR		D2RGB(205,0,10)
 
 D2DControls_with_Scrollbar::D2DControls_with_Scrollbar()
 {
@@ -14,15 +14,20 @@ D2DControls_with_Scrollbar::D2DControls_with_Scrollbar()
 	backcolor_ = TEST_COLOR;
 }
 
+void D2DControls_with_Scrollbar::SetRect(const FRectF& rc)
+{
+	rc_ = rc;
+
+}
 void D2DControls_with_Scrollbar::Draw(D2DContext& cxt)
 {
 	D2DMatrix mat(*cxt);
 
 	mat_ = mat.PushTransform();
 	
-	D2DRectFilter f(cxt, rc_);
-
-	cxt.DFillRect(rc_, backcolor_);
+	//D2DRectFilter f(cxt, rc_);
+	
+	cxt.DFillRect(rc_,  backcolor_);
 
 	mat.Offset(rc_);
 
@@ -144,9 +149,9 @@ LRESULT D2DControls_with_Scrollbar::WndProc(AppBase& b, UINT message, WPARAM wPa
 			return 0;
 		}
 		break;
-		case WM_D2D_SET_SIZE_FROM_CHILDWINDOW:
+		case WM_D2D_SET_SIZE_FROM_OUTER:
 		{
-			if (BITFLG(STAT_AUTOFIT_CHILDWIN))
+			//if (BITFLG(STAT_AUTOFIT_CHILDWIN))
 			{
 				FSizeF sz = *(FSizeF*)lParam;
 
@@ -154,7 +159,7 @@ LRESULT D2DControls_with_Scrollbar::WndProc(AppBase& b, UINT message, WPARAM wPa
 
 				if ( 2 < controls_.size() )
 				{				
-					this->controls_[2]->WndProc(b,WM_D2D_SET_SIZE_FROM_CHILDWINDOW,wParam,(LPARAM)&sz);
+					this->controls_[2]->WndProc(b,WM_D2D_SET_SIZE_FROM_OUTER,wParam,(LPARAM)&sz);
 
 					auto crc = this->controls_[2]->GetRect(); // 0,1 is scrollbar, 2 is child
 

@@ -28,14 +28,13 @@ DLLEXPORT HANDLE MySample_CreateChartBox( UIHandle parent, D2D1_RECT_F rc, LPCWS
 
 
 
-	// tab page : 1
+	//================= bottom tab page : 1 ======================================================
 	auto obj =  new FD2DMyStockChart();
 	obj->Create(h1, L"sample chart",  rc1, 0);
 	D2DSendMessage(parent, WM_D2D_APP_SETDEFAULT_CD, (WPARAM)obj, (LPARAM)cd);	
 	D2DSetText(tabcontrols, L"0:chart");
 
-
-	// tab page : 2
+	//================= bottom tab page : 2 ======================================================
 	auto h2 = D2DAddNewTab(tabcontrols, L"data view");
 	auto obj2 =  new FD2DMyStockDataView();
 	obj2->Create(h2, L"data view",  rc1, 0);
@@ -52,12 +51,8 @@ DLLEXPORT HANDLE MySample_CreateChartBox( UIHandle parent, D2D1_RECT_F rc, LPCWS
 
 	 
 	FD2DFrame* fd = new FD2DFrame();	
-
-	auto hh = D2DGetParent(parent);
-
-	BSTR nm = D2DGetName(hh);
 	
-	fd->Add(LASTRC,LASTRC, hh ); //&(obj->rc_));
+	fd->Add(LASTRC,LASTRC, h1);
 
 	auto func = [](LPVOID capture, UINT message, WPARAM wParam, LPARAM lParam)->LRESULT
 	{

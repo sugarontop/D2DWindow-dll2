@@ -169,7 +169,7 @@ LRESULT FD2DSampleControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPA
 			}
 		}
 		break;
-		case WM_D2D_SET_SIZE_FROM_CHILDWINDOW:
+		case WM_D2D_SET_SIZE_FROM_OUTER:
 		{
 			int a = 0;
 

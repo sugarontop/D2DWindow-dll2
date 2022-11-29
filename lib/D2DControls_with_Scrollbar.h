@@ -21,6 +21,7 @@ namespace V6 {
 			virtual LRESULT WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam) override;
 			virtual void CreateControl(D2DWindow* parent, D2DControls* pacontrol, const FRectF& rc, DWORD stat, LPCWSTR name, int local_id = -1) override;
 			virtual std::wstring GetTreeTyp(USHORT* typ) override;
+			virtual void SetRect(const FRectF& rc) override;
 
 			D2DControls* GetMainControls();
 			void SetViewMaxSize(FSizeF sz);

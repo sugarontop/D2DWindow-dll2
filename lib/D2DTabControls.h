@@ -35,7 +35,7 @@ class D2DTabControls : public D2DControls
 		bool size_fix_;
 		D2DColor back_,fore_;
 
-		D2DMat mat2_;
+		D2DMat mat2_, mat_tab_;
 		USHORT tab_typ_;
 		std::function<LRESULT(UINT,WPARAM,LPARAM)> export_wnd_prc_;
 

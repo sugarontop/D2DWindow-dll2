@@ -224,7 +224,7 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 			ComPTR<IDWriteTextFormat> wtextformat;
 
 			
-
+			// CreateStockChart
 			stock_chart_ = std::make_unique<StockChart>(FRectF(0,TOPBAR_HEIGHT,sz));
 
 			if ( S_OK == (DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), (IUnknown**) &wf)))
@@ -248,6 +248,9 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 			}
 
 
+
+
+			
 			txtCD_ = t1;
 			txtIntv_ = t3;
 
@@ -413,6 +416,21 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 		{
 			r = 1;
 		}
+		break;		
+		case WM_D2D_SET_SIZE_FROM_OUTER:
+		{
+			FSizeF sz = *(FSizeF*)lParam;
+			
+			
+			rc_.SetSize(sz);
+			
+			
+			
+			stock_chart_->SetSize(sz);
+
+			view_ = nullptr;
+
+		}
 		break;
 	}
 
@@ -544,6 +562,14 @@ LRESULT FD2DMyStockDataView::WndProc(AppBase& b, UINT message, WPARAM wParam, LP
 
 			r = 1;
 
+		}
+		break;
+		case WM_D2D_SET_SIZE_FROM_OUTER:
+		{
+			FSizeF sz = *(FSizeF*)lParam;
+			rc_.SetSize(sz);
+
+			D2DSetRect(hgridview_, rc_);
 		}
 		break;
 	}

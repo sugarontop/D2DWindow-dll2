@@ -51,6 +51,9 @@ void D2DTabControls::Draw(D2DContext& cxt)
 
 		mat_ = mat.Offset(0, sz.height);
 
+		mat.Offset(0,-TAB_HEIGHT);
+//cxt.DDrawRect(FRectF(-50,-10,50,10), ColorF::Red, ColorF::Black);
+
 		auto tab_height = DrawTab(cxt,tab_idx_);
 
 		_ASSERT(TAB_HEIGHT == tab_height);
@@ -63,7 +66,7 @@ void D2DTabControls::Draw(D2DContext& cxt)
 float D2DTabControls::DrawTab(D2DContext& cxt, USHORT tabidx)
 {
 	D2DMatrix mat(*cxt);
-	mat.PushTransform();
+	mat_tab_ = mat.PushTransform();
 
 	float tab_height = tabrects_[0].Height();
 
@@ -109,7 +112,7 @@ void D2DTabControls::SetRect(const FRectF& rc)
 
 	AppBase b={};
 	for(auto& it : controls_)
-		it->WndProc(b,WM_D2D_SET_SIZE_FROM_CHILDWINDOW,0,(LPARAM)&sz);
+		it->WndProc(b,WM_D2D_SET_SIZE_FROM_OUTER,0,(LPARAM)&sz);
 
 }
 
@@ -144,7 +147,7 @@ LRESULT D2DTabControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM 
 				sz.height -= tabrects_[0].Height();
 
 				for(auto& it : controls_)
-					it->WndProc(b,WM_D2D_SET_SIZE_FROM_CHILDWINDOW,wParam,(LPARAM)&sz);
+					it->WndProc(b,WM_D2D_SET_SIZE_FROM_OUTER,wParam,(LPARAM)&sz);
 
 			}
 		}
@@ -166,7 +169,7 @@ LRESULT D2DTabControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM 
 			{
 				int k = 0;
 				auto old = tab_idx_;
-				pt = mat_.DPtoLP(pm.pt);
+				pt = mat_tab_.DPtoLP(pm.pt);
 
 				for(auto& it : tabrects_)
 				{
@@ -219,7 +222,7 @@ LRESULT D2DTabControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM 
 			}
 		}
 		break;
-		case WM_D2D_SET_SIZE_FROM_CHILDWINDOW:
+		case WM_D2D_SET_SIZE_FROM_OUTER:
 		{
 			FSizeF sz = *(FSizeF*)lParam;
 			rc_.SetSize(sz);
@@ -227,7 +230,7 @@ LRESULT D2DTabControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM 
 			sz.height -= tabrects_[0].Height();
 
 			for(auto& it : controls_)
-				it->WndProc(b,WM_D2D_SET_SIZE_FROM_CHILDWINDOW,wParam,(LPARAM)&sz);
+				it->WndProc(b,WM_D2D_SET_SIZE_FROM_OUTER,wParam,(LPARAM)&sz);
 			return 0;
 		}
 		break;

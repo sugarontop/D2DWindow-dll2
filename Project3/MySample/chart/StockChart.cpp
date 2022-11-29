@@ -316,6 +316,7 @@ void StockChart::Draw(ID2D1RenderTarget* cxt)
 	cxt->DrawRectangle(figure_rc, black);
 	cxt->FillRectangle(figure_rc, brw);
 
+
 	DrawCandle(cxt);
 
 	DrawTrimline(cxt);
@@ -331,6 +332,15 @@ void StockChart::DrawCandle(ID2D1RenderTarget* cxt)
 	
 	cxt->CreateSolidColorBrush(D2RGB(8,153,129), &bgreen);
 	cxt->CreateSolidColorBrush(D2RGB(242,54,69), &bred);
+
+
+	//FRectF xr1(-50,-10,50,10 );
+	//FRectF xr2(-10,-50,10,50 );
+	//cxt->FillRectangle(xr1, bred);
+	//cxt->FillRectangle(xr2, bred);
+
+
+
 	
 	FRectF figure_rc = vrect_.ZeroRect();
 	float x=figure_rc.right;
