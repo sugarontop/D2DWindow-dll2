@@ -53,6 +53,7 @@ DLLEXPORT HANDLE MySample_CreateChartBox( UIHandle parent, D2D1_RECT_F rc, LPCWS
 
 	//auto Gedan = D2DCreateButton(h1, FRectF(0,800,1000,1000), STAT_DEFAULT, NONAME, 1000);
 
+	return 0;
 	 
 	FD2DFrame* fd = new FD2DFrame();	
 	

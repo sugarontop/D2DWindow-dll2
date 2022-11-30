@@ -199,7 +199,7 @@ LRESULT  D2DButton::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lPar
 		{
 			FSizeF sz = *(FSizeF*)lParam;
 
-			rc_.SetSize(sz);
+			//rc_.SetSize(sz);
 
 		}
 		break;

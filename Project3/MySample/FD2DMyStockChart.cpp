@@ -256,14 +256,14 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 
 
 
-			/// 
-			/*PrimeStockDataItem item = {};
+			
+			PrimeStockDataItem item = {};
 			prime_[L"SPY"] = item;
 			prime_[L"QQQ"] = item;
 			prime_[L"VTI"] = item;
 			prime_[L"XLE"] = item;
 			
-			PrimeStockDataLoad(prime_);*/
+			PrimeStockDataLoad(prime_);
 
 
 			r =1;
