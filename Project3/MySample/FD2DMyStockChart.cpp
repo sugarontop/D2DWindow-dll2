@@ -257,13 +257,13 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 
 
 			/// 
-			PrimeStockDataItem item = {};
+			/*PrimeStockDataItem item = {};
 			prime_[L"SPY"] = item;
 			prime_[L"QQQ"] = item;
 			prime_[L"VTI"] = item;
 			prime_[L"XLE"] = item;
 			
-			PrimeStockDataLoad(prime_);
+			PrimeStockDataLoad(prime_);*/
 
 
 			r =1;
@@ -417,6 +417,21 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 			r = 1;
 		}
 		break;		
+		case WM_D2D_SET_SIZE:
+		{
+			/*int a = 0;
+
+			FSizeF sz( rc_.Size().width, 800 );
+
+			auto a1 = D2DGetParent(hndl_);
+			
+			D2DSendMessage(a1, WM_D2D_SET_SIZE_FROM_OUTER,0,(LPARAM)&sz);
+
+			rc_.SetSize(sz);
+			stock_chart_->SetSize(sz);
+			view_ = nullptr;*/
+		}
+		break;
 		case WM_D2D_SET_SIZE_FROM_OUTER:
 		{
 			FSizeF sz = *(FSizeF*)lParam;

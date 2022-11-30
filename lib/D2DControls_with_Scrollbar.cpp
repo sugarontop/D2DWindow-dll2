@@ -25,7 +25,7 @@ void D2DControls_with_Scrollbar::Draw(D2DContext& cxt)
 
 	mat_ = mat.PushTransform();
 	
-	//D2DRectFilter f(cxt, rc_);
+	D2DRectFilter f(cxt, rc_);
 	
 	cxt.DFillRect(rc_,  backcolor_);
 

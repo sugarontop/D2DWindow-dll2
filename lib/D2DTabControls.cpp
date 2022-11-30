@@ -38,7 +38,7 @@ void D2DTabControls::Draw(D2DContext& cxt)
 	}
 	else if ( tab_typ_ == TAB_BOTTOM_BAR)
 	{
-		FSizeF sz(rc_.Size().width,rc_.Size().height); //-TAB_HEIGHT);
+		FSizeF sz(rc_.Size()); 
 
 		mat.PushTransform();
 		{

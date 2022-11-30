@@ -187,6 +187,7 @@
     <ClInclude Include="..\lib\D2DDialog.h" />
     <ClInclude Include="..\lib\D2DDropdownListbox.h" />
     <ClInclude Include="..\lib\D2DEmptyControls.h" />
+    <ClInclude Include="..\lib\D2DFrameControls.h" />
     <ClInclude Include="..\lib\D2DImageControl.h" />
     <ClInclude Include="..\lib\D2DInstance.h" />
     <ClInclude Include="..\lib\D2DInterface.h" />
@@ -214,6 +215,7 @@
     <ClCompile Include="..\lib\D2DDropdownListbox.cpp" />
     <ClCompile Include="..\lib\D2DEmptyControls.cpp" />
     <ClCompile Include="..\lib\D2DFileManage.cpp" />
+    <ClCompile Include="..\lib\D2DFrameControls.cpp" />
     <ClCompile Include="..\lib\D2DImageControl.cpp" />
     <ClCompile Include="..\lib\D2DLogin.cpp" />
     <ClCompile Include="..\lib\D2DMDIControls.cpp" />

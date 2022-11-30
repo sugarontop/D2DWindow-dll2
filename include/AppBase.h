@@ -14,10 +14,9 @@ struct AppBase
 {
 	AppBase():hWnd(0),card(0),bRedraw(false){}
 	AppBase(HWND h, void* p): hWnd(h),card(p),bRedraw(false){}
-	HWND hWnd;
-	bool bRedraw;
+	HWND hWnd;	
 	void* card;
-
+	bool bRedraw;
 	void GetClientRect( int* cx, int* cy )
 	{
 		RECT rc;

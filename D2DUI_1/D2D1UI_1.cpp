@@ -27,6 +27,7 @@
 #include "D2DEmptyControls.h"
 #include "D2DConsole.h"
 #include "D2DDialog.h"
+#include "D2DFrameControls.h"
 
 using namespace V6;
 #define  APP (D2DApp::GetInstance())
@@ -1858,4 +1859,35 @@ DLLEXPORT void D2DExportWndHandler(UIHandle hndl, D2DWndProcHandler proc, void* 
 			
 
 	}
+}
+DLLEXPORT UIHandle WINAPI D2DCreateFreameControls(UIHandle hctrl, const D2D1_RECT_F& rc,int rowcnt, int colcnt, DWORD stat, LPCWSTR name, int id )
+{
+	_ASSERT(hctrl.p);
+
+	auto pgtx = new D2DFrameControls(); 
+
+	auto ctrls = (D2DControls*)hctrl.p;
+	auto win = ctrls->GetParent();
+
+	pgtx->CreateControl(win,ctrls, rc, rowcnt,colcnt, stat, name, id );
+	ctrls->Add( std::shared_ptr<D2DFrameControls>(pgtx));	
+
+	UIHandle r;
+	r.p = pgtx;
+	r.typ = TYP_FRAME_CONTROLS;
+	return r;
+}
+DLLEXPORT UIHandle WINAPI D2DGetControls(UIHandle hctrl, int idx)
+{	
+	UIHandle r = {};
+
+	if ( hctrl.typ == TYP_FRAME_CONTROLS)
+	{
+		auto ctrls = (D2DFrameControls*)hctrl.p;
+	
+		r.p = ctrls->Get(idx);
+		r.typ = TYP_CONTROLS;
+	}
+
+	return r;
 }

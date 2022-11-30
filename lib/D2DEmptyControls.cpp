@@ -207,6 +207,14 @@ LRESULT D2DEmptyControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 				LatticeBitmap_ = nullptr;
  		}
 		break;
+		/*case WM_D2D_SET_SIZE_FROM_OUTER:
+		{
+			FSizeF sz = *(FSizeF*)lParam;
+			rc_.SetSize(sz);
+
+
+		}
+		break;*/
 
 	}
 

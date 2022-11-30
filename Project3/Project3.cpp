@@ -177,7 +177,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					else
 					{
 						D2DSwapChain(hwin, hWnd);
-					}
+					}					
             	}
 				EndPaint(hWnd, &ps);
 				return 0;
@@ -250,7 +250,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		r = ::DefWindowProc(hWnd, message, wParam, lParam);
 
     if ( app.bRedraw )
-        InvalidateRect(hWnd, NULL, FALSE);
+	{
+		app.Redraw();
+        app.bRedraw = false;
+	}
 
 
     return r;

@@ -18,7 +18,7 @@ DLLEXPORT HANDLE MySample_CreateFreePainter( UIHandle parent )
 
 DLLEXPORT HANDLE MySample_CreateChartBox( UIHandle parent, D2D1_RECT_F rc, LPCWSTR cd  )
 {
-	
+	//================= bottom tab page ======================================================	
 	UIHandle tabcontrols = D2DCreateTabControls(parent, rc, STAT_DEFAULT|CREATE_SIMPLE, L"TAB1");
 	D2DSendMessage(tabcontrols, WM_D2D_SET_TAB_POSITION, (WPARAM)0, (LPARAM)1);
 	auto h1 = D2DGetTab(tabcontrols,0);
@@ -30,7 +30,11 @@ DLLEXPORT HANDLE MySample_CreateChartBox( UIHandle parent, D2D1_RECT_F rc, LPCWS
 
 	//================= bottom tab page : 1 ======================================================
 	auto obj =  new FD2DMyStockChart();
-	obj->Create(h1, L"sample chart",  rc1, 0);
+
+	FRectF rc2(rc1);
+	rc2.bottom -= 200;
+
+	obj->Create(h1, L"sample chart",  rc2, 0);
 	D2DSendMessage(parent, WM_D2D_APP_SETDEFAULT_CD, (WPARAM)obj, (LPARAM)cd);	
 	D2DSetText(tabcontrols, L"0:chart");
 
@@ -47,12 +51,13 @@ DLLEXPORT HANDLE MySample_CreateChartBox( UIHandle parent, D2D1_RECT_F rc, LPCWS
 	//D2DSendMessage(parent, WM_D2D_APP_SETDEFAULT_CD, (WPARAM)obj3, (LPARAM)cd);	
 	//D2DSetText(tabcontrols, L"2:chart");
 
-	
+	//auto Gedan = D2DCreateButton(h1, FRectF(0,800,1000,1000), STAT_DEFAULT, NONAME, 1000);
 
 	 
 	FD2DFrame* fd = new FD2DFrame();	
 	
 	fd->Add(LASTRC,LASTRC, h1);
+	//fd->Add(LASTRC,LASTRC, Gedan );
 
 	auto func = [](LPVOID capture, UINT message, WPARAM wParam, LPARAM lParam)->LRESULT
 	{

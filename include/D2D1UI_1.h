@@ -165,4 +165,8 @@ DLLEXPORT void D2DGetClientRect(UIHandle hctrl, D2D1_RECT_F* prc);
 
 DLLEXPORT ID2D1RenderTarget* D2DCreateSecondRenderTarget(UINT cx, UINT cy, IWICBitmap** out_bitmap);
 DLLEXPORT void D2DExportWndHandler(UIHandle hndl, D2DWndProcHandler proc, void* capture);
+DLLEXPORT UIHandle WINAPI D2DCreateFreameControls(UIHandle hctrl, const D2D1_RECT_F& rc,int rowcnt, int colcnt, DWORD stat, LPCWSTR name, int id );
+DLLEXPORT UIHandle WINAPI D2DGetControls(UIHandle hctrl, int idx);
+
+
 };

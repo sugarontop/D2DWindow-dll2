@@ -195,6 +195,14 @@ LRESULT  D2DButton::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lPar
 			}
 		}
 		break;
+		case WM_D2D_SET_SIZE_FROM_OUTER:
+		{
+			FSizeF sz = *(FSizeF*)lParam;
+
+			rc_.SetSize(sz);
+
+		}
+		break;
 	}
 	return ret;
 }

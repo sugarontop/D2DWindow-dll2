@@ -72,6 +72,9 @@ void FD2DFrame::SizeArrange(UINT cx, UINT cy)
 
 
 		D2DSetRect(it->prc_, rc);
+
+
+		D2DSendMessage(it->prc_, WM_D2D_SET_SIZE, 0,0);
 	}
 
 
