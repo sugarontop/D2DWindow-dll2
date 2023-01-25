@@ -21,10 +21,15 @@ class ChartShot
 		ChartShot(const StockChart* org);
 
 		void Draw(FRectF rc, ID2D1RenderTarget* cxt);
-
 		void Load(std::wstring cd, UIHandle hdl);
+		FRectF GetRect() const { return rc_; }
+
+		void SetStatus(LPCWSTR param);
 
 		std::shared_ptr<StockChart> stock_chart_;
+
+	protected:
+		FRectF rc_;
 };
 
 

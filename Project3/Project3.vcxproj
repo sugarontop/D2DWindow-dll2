@@ -137,6 +137,7 @@
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="Project3.h" />
+    <ClInclude Include="QLearning.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -146,6 +147,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="Project3.cpp" />
+    <ClCompile Include="QLearning.cpp" />
     <ClCompile Include="sample2.cpp" />
   </ItemGroup>
   <ItemGroup>

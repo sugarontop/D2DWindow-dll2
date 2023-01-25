@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClInclude Include="chart\StockChart.h" />
     <ClInclude Include="FD2DFrame.h" />
+    <ClInclude Include="FD2DRL.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="FD2DMyControls.h" />
     <ClInclude Include="FD2DMyStockChart.h" />
@@ -162,6 +163,7 @@
     <ClCompile Include="FD2DMyStockChart.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FD2DMyControls.cpp" />
+    <ClCompile Include="FD2DRL.cpp" />
     <ClCompile Include="memodb.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

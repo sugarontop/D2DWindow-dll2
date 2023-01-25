@@ -117,11 +117,12 @@ void FD2DMyStockChart::DrawPrimeChart(ID2D1DeviceContext* cxt)
 
 	int i=0;
 	FRectF rcs[]={ FRectF(600,100,FSizeF(500,300)),FRectF(1200,100,FSizeF(500,300)),FRectF(600,500,FSizeF(500,300)),FRectF(1200,500,FSizeF(500,300))};
+	
 	if ( shots_.empty() )
 	{		
 		for(auto& it : prime_ )
 		{			
-			if ( i++ > 4 )
+			if ( i++ > _countof(rcs) )
 				break;
 
 			auto cd = it.first;
@@ -444,6 +445,29 @@ LRESULT FD2DMyStockChart::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARA
 			stock_chart_->SetSize(sz);
 
 			view_ = nullptr;
+
+		}
+		break;
+		case WM_RBUTTONDOWN:
+		{
+			MouseParam* mp = (MouseParam*)lParam;
+			auto pt = mat_.DPtoLP(mp->pt);
+
+			if ( rc_.ZeroPtInRect(pt))
+			{
+				for(auto& it : shots_)
+				{					
+					auto rc = it->GetRect();
+
+					if ( rc.PtInRect(pt))
+					{
+						it->SetStatus(L"test: RButtonDown");						
+
+						r = 1;
+						break;
+					}
+				}
+			}
 
 		}
 		break;
@@ -902,6 +926,8 @@ void ChartShot::Load(std::wstring cd,UIHandle hdl)
 
 void ChartShot::Draw(FRectF rc, ID2D1RenderTarget* cxt)
 {
+	rc_ = rc;
+
 	D2DMatrix mat(cxt);
     mat.PushTransform();       
     mat.Offset(rc);
@@ -911,4 +937,12 @@ void ChartShot::Draw(FRectF rc, ID2D1RenderTarget* cxt)
 	stock_chart_->Draw(cxt);
 
 	mat.PopTransform();
+}
+
+void ChartShot::SetStatus(LPCWSTR param)
+{
+	
+
+
+
 }

@@ -1,5 +1,6 @@
  #include "pch.h"
  #include "D2DFrameControls.h"
+ #include "D2DEmptyControls.h"
  #include "D2D1UI_1.h"
  using namespace V6;
 
@@ -17,8 +18,13 @@
 
 	for(int i =0; i < row_cnt_*col_cnt_;i++)
 	{
-		auto cs = std::make_shared<D2DControls>();		
-		cs->CreateControl(parent, this, rc1, STAT_DEFAULT, NONAME );
+		//auto cs = std::make_shared<D2DControls>();		
+		auto cs = std::make_shared<D2DPlaceHolder>();
+
+		WCHAR ch[2]={};
+		ch[0] = ('A' + i);
+
+		cs->CreateControl(parent, this, rc1, STAT_DEFAULT, ch );
 		controls_.push_back(cs);
 	}
 	AutoResize(1);

@@ -245,3 +245,64 @@ static void test(D2DContext& cxt)
 
 
 }
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void D2DPlaceHolder::D2DPlaceHolder::CreateControl(D2DWindow* parent, D2DControls* pacontrol, const FRectF& rc, DWORD stat, LPCWSTR name, int local_id)
+{
+	InnerCreateWindow(parent,pacontrol,stat,name,local_id);
+	rc_ = rc;
+}
+void D2DPlaceHolder::Draw(D2DContext& cxt)
+{
+	//D2DRectFilter f(cxt, rc_);
+	D2DMatrix mat(*cxt);
+	mat.PushTransform();
+	mat.Offset(rc_);
+
+	if ( controls_.empty())
+	{
+		cxt.DFillRect(rc_, D2RGBA(200,200,200,200));
+
+		WCHAR cb[256];
+		auto nm = this->GetName();
+		(*cxt)->DrawText(nm.c_str(), (UINT32)nm.length(), cxt.textformat_, rc_.ZeroRect(), cxt.black_ );
+
+		StringCbPrintf(cb, 256, L"width=%f, height=%f", rc_.Width(), rc_.Height());
+		(*cxt)->DrawText(cb, (UINT32)wcslen(cb), cxt.textformat_, rc_.ZeroRect().Offset(0,30), cxt.black_ );
+
+		
+
+	}
+
+
+	for(auto& it : controls_)
+		it->Draw(cxt);
+
+
+	mat.PopTransform();
+
+}
+LRESULT D2DPlaceHolder::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	LRESULT r = 0;
+
+	switch (message )
+	{
+		case WM_D2D_CREATE:
+
+		break;
+		case WM_D2D_SET_SIZE_FROM_OUTER:
+		{
+			FSizeF sz = *(FSizeF*)lParam;
+
+			rc_.SetSize(sz);
+		}
+		break;
+
+	}
+
+
+	return r;
+
+}

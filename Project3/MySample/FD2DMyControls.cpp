@@ -44,10 +44,7 @@ bool FD2DSampleControls::Draw(ID2D1DeviceContext* cxt)
 
 				ptold = d.pt;
 			}
-
-
-
-			
+		
 			ComPTR<IDWriteTextFormat> pfmt;
 			
 			if (CreateTextFormat( 80.0f, L"Arial", 800,  &pfmt ))
@@ -64,12 +61,12 @@ bool FD2DSampleControls::Draw(ID2D1DeviceContext* cxt)
 		}
 
 		mat.PopTransform();
+
+
+		
 	}
-
+	
 	return false;
-
-
-
 }
 LRESULT FD2DSampleControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam)
 {	

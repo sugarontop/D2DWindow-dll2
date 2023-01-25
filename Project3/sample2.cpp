@@ -1,14 +1,17 @@
 #include "pch.h"
 #include "appbase.h"
 #include "D2D1UI_1.h"
-
+#include "QLearning.h"
 using namespace V6;
 
 #pragma comment (lib, "MySample")
 
+
+typedef void (*EVENTHANDLER)(UIHandle sender,INT_PTR msg );
+
 DLLEXPORT HANDLE MySample_CreateFreePainter( UIHandle parent );
 DLLEXPORT HANDLE MySample_CreateChartBox( UIHandle parent, D2D1_RECT_F rc, LPCWSTR default_cd );
-
+DLLEXPORT HANDLE MySample_CreateRL( UIHandle parent, D2D1_RECT_F pit_rc, float* Qvalues, int row, int col, EVENTHANDLER handler  );
 
 UIHandle gtx1;
 DWORD MyTest(UIHandle sender, LPCWSTR eventName, void* param)
@@ -27,6 +30,52 @@ DWORD MyTest(UIHandle sender, LPCWSTR eventName, void* param)
 
 	return 0;
 }
+int main_QLearning(Env& env);
+
+static Env env;
+static UIHandle _temp_world;
+
+DWORD CALLBACK testfunc(LPVOID p )
+{
+	INT_PTR msg = *(INT_PTR*)p;
+	
+	env.speed_ = (msg == 101 ? 5 : 0);
+	
+	env.running_ = true;
+	
+	main_QLearning(env);
+
+	D2DPostMessage( _temp_world, WM_D2D_USER_FIRST+500,0,0);
+
+	env.running_ = false;
+
+
+	return 0;
+}
+
+
+void ButtonClick(UIHandle sender,INT_PTR msg)
+{
+	if ( msg == 100 || msg == 101)
+	{
+		
+		DWORD dw;
+		CreateThread(nullptr,0,testfunc, (LPVOID)&msg, 0, &dw );		
+		
+	
+		D2DEnable(sender, false);
+
+
+
+	}
+	else if ( msg == 200  )
+	{
+		if (env.running_ == false)
+			env.clear();
+
+
+	}
+}
 
 
 void Sample2(UIHandle parent, LPCWSTR name, FRectF rc, int id, int nest)
@@ -37,7 +86,7 @@ void Sample2(UIHandle parent, LPCWSTR name, FRectF rc, int id, int nest)
 	// 1 TAG-------------------------------------------------------------------
 	auto tab = D2DCreateTabControls(parent, rc, STAT_DEFAULT|STAT_AUTOFIT_CHILDWIN|STAT_AUTOFIT_CHILDWIN, L"tab1", -1 );
 
-	
+	_temp_world = tab;
 
 	D2DSendMessage(tab, WM_D2D_SET_TAB_POSITION, 0, 0);
 
@@ -51,24 +100,74 @@ void Sample2(UIHandle parent, LPCWSTR name, FRectF rc, int id, int nest)
 
 
 	// 2 TAG------------------------------------------------------------------
-	auto t2 = D2DAddNewTab(tab, L"2nd");
+	auto t2 = D2DAddNewTab(tab, L"from S to G");
 	auto t1_2 = D2DCreateEmptyControls(t2, rc, STAT_DEFAULT|STAT_AUTOFIT_CHILDWIN, NONAME);
 	D2DSendMessage(t1_2, WM_D2D_SET_BKMODE, 2, 0);
 
+	//D2DSendMessage(tab, WM_D2D_SET_ACTIVE_CONTROL, 0, 1);
+
+	//// MySample dll
+	MySample_CreateRL( t1_2, FRectF(0,0,120,120), env.BufferQ, 8,8, ButtonClick );
+
+	// 3 TAG------------------------------------------------------------------
+	auto t3 = D2DAddNewTab(tab, L"free paint");
+	auto t3_2 = D2DCreateEmptyControls(t3, rc, STAT_DEFAULT|STAT_AUTOFIT_CHILDWIN, NONAME);
+	D2DSendMessage(t3_2, WM_D2D_SET_BKMODE, 2, 0);
+
 	D2DSendMessage(tab, WM_D2D_SET_ACTIVE_CONTROL, 0, 1);
 
-	// MySample dll
-	MySample_CreateFreePainter(t1_2);
+	//// MySample dll
+	MySample_CreateFreePainter(t3_2);
+
+
+
+
 
 	// 3 TAG-------------------------------------------------------------------
-	auto t3 = D2DAddNewTab(tab, L"3rd-empty");
+	//auto t3 = D2DAddNewTab(tab, L"3rd-Reinforcement Learning");
 
-	auto t31 = D2DCreateFreameControls(t3, rc, 2,2, STAT_DEFAULT|STAT_AUTOFIT_TOP_WIN, NONAME, 1 );
+	//auto t31 = D2DCreateFreameControls(t3, rc, 1,1, STAT_DEFAULT|STAT_AUTOFIT_TOP_WIN, NONAME, 1 );
 
-	auto t31a = D2DGetControls(t31, 0);
-	auto t31b = D2DGetControls(t31, 3);	
+	//auto t31a = D2DGetControls(t31, 0);
 
-	auto tt = { t31a, t31b };
+
+	//static Env env;
+
+	//MySample_CreateRL( t31a, FRectF(0,0,120,120), env.BufferQ, 8,8 );
+
+	//
+
+	//gRedraw = [t31a](){ D2DRedraw(t31a); };
+
+	//main_QLearning(env);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//auto t31b = D2DGetControls(t31, 3);	
+
+	/*auto tt = { t31a, t31b };
 	
 	for(auto t : tt )
 	{
@@ -88,9 +187,9 @@ void Sample2(UIHandle parent, LPCWSTR name, FRectF rc, int id, int nest)
 
 		D2DEventHandler(ls1, MyTest);
 
-	}
+	}*/
 	
-//MySample_CreateChartBox(t3_1, FRectF(500,0,FSizeF(1000,500)), L"SPY");
+
 	
 
 }

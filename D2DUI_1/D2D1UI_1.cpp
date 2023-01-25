@@ -1501,6 +1501,13 @@ DLLEXPORT UIHandle WINAPI D2DSetTopControl(UIHandle h)
 
 	return ret;
 }
+DLLEXPORT int WINAPI D2DPostMessage(UIHandle h, UINT msg, WPARAM wp, LPARAM lp)
+{
+	auto ctrl = D2DCastControl(h);
+
+	return (int)ctrl->GetParent()->PostMessage(msg,wp,lp);
+}
+
 DLLEXPORT int WINAPI D2DSendMessage(UIHandle h, UINT msg, WPARAM wp, LPARAM lp)
 {
 	auto ctrl = D2DCastControl(h);
@@ -1889,5 +1896,21 @@ DLLEXPORT UIHandle WINAPI D2DGetControls(UIHandle hctrl, int idx)
 		r.typ = TYP_CONTROLS;
 	}
 
+	return r;
+}
+
+DLLEXPORT UIHandle WINAPI D2DCreatePlaceHolderControls(UIHandle hctrl, const D2D1_RECT_F& rc, DWORD stat, LPCWSTR name, int id )
+{
+	auto pgtx = new D2DPlaceHolder(); 
+
+	auto ctrls = (D2DControls*)hctrl.p;
+	auto win = ctrls->GetParent();
+
+	pgtx->CreateControl(win,ctrls, rc, stat, name, id );
+	ctrls->Add( std::shared_ptr<D2DPlaceHolder>(pgtx));	
+
+	UIHandle r;
+	r.p = pgtx;
+	r.typ = TYP_PLACEHOLDER;
 	return r;
 }

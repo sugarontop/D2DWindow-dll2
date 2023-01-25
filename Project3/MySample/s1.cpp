@@ -5,6 +5,7 @@
 #include "FD2DMyControls.h"
 #include "FD2DMyStockChart.h"
 #include "FD2DFrame.h"
+#include "FD2DRL.h"
 using namespace V6;
 
 DLLEXPORT HANDLE MySample_CreateFreePainter( UIHandle parent )
@@ -83,11 +84,33 @@ DLLEXPORT HANDLE MySample_CreateChartBox( UIHandle parent, D2D1_RECT_F rc, LPCWS
 
 			}
 			break;
+			
 		}
 		return 0;
 	};
 
 	D2DExportWndHandler(tabcontrols, func, fd);
+
+	return nullptr;
+}
+
+typedef void (*EVENTHANDLER)(UIHandle sender, int msg );
+
+DLLEXPORT HANDLE MySample_CreateRL( UIHandle parent, D2D1_RECT_F pit_rc, float* Qvalues, int rowcnt, int colcnt, EVENTHANDLER handler  )
+{
+	auto obj =  new FD2DRLeControls();
+
+	obj->Create(parent, L"RLControls",  FRectF(0,0,0,0), 0);
+
+	FRectF rc = pit_rc;
+
+	obj->SetPitRect(rc.Size(), Qvalues, rowcnt, colcnt);
+
+	D2DCreateButton(parent, FRectF(1100,100,FSizeF(200,30)), STAT_DEFAULT, L"Start(fast)", 100 );
+	D2DCreateButton(parent, FRectF(1100,150,FSizeF(200,30)), STAT_DEFAULT, L"Start(slow)", 101 );
+	D2DCreateButton(parent, FRectF(1100,200,FSizeF(200,30)), STAT_DEFAULT, L"Clear", 200 );
+
+	obj->Eventhandler_ = handler;
 
 	return nullptr;
 }

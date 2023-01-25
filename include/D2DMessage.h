@@ -82,6 +82,7 @@ typedef LRESULT (*D2DWndProcHandler)(LPVOID capture_obj, UINT message, WPARAM wp
 #define TYP_DATAGRIDVIEW		24
 #define TYP_DIALOG				25
 #define TYP_FRAME_CONTROLS		26
+#define TYP_PLACEHOLDER			27
 
 
 
