@@ -94,7 +94,7 @@ DLLEXPORT HANDLE MySample_CreateChartBox( UIHandle parent, D2D1_RECT_F rc, LPCWS
 	return nullptr;
 }
 
-typedef void (*EVENTHANDLER)(UIHandle sender, int msg );
+typedef void (*EVENTHANDLER)(UIHandle sender, INT_PTR msg );
 
 DLLEXPORT HANDLE MySample_CreateRL( UIHandle parent, D2D1_RECT_F pit_rc, float* Qvalues, int rowcnt, int colcnt, EVENTHANDLER handler  )
 {
@@ -106,9 +106,12 @@ DLLEXPORT HANDLE MySample_CreateRL( UIHandle parent, D2D1_RECT_F pit_rc, float* 
 
 	obj->SetPitRect(rc.Size(), Qvalues, rowcnt, colcnt);
 
-	D2DCreateButton(parent, FRectF(1100,100,FSizeF(200,30)), STAT_DEFAULT, L"Start(fast)", 100 );
-	D2DCreateButton(parent, FRectF(1100,150,FSizeF(200,30)), STAT_DEFAULT, L"Start(slow)", 101 );
-	D2DCreateButton(parent, FRectF(1100,200,FSizeF(200,30)), STAT_DEFAULT, L"Clear", 200 );
+
+	auto base1 = D2DCreateControls(parent,FRectF(1100,100,FSizeF(500,500)), STAT_DEFAULT, L"Base1" );
+
+	D2DCreateButton(base1, FRectF(0,0,FSizeF(200,30)), STAT_DEFAULT, L"Start(fast)", 100 );
+	D2DCreateButton(base1, FRectF(0,50,FSizeF(200,30)), STAT_DEFAULT, L"Start(slow)", 101 );
+	D2DCreateButton(base1, FRectF(0,150,FSizeF(200,30)), STAT_DEFAULT, L"Clear", 200 );
 
 	obj->Eventhandler_ = handler;
 

@@ -34,12 +34,17 @@ int main_QLearning(Env& env);
 
 static Env env;
 static UIHandle _temp_world;
+static UIHandle _global_layer_handle = {};
+
+
 
 DWORD CALLBACK testfunc(LPVOID p )
 {
-	INT_PTR msg = *(INT_PTR*)p;
+	INT_PTR* msg = (INT_PTR*)p;
 	
-	env.speed_ = (msg == 101 ? 5 : 0);
+	env.speed_ = (*msg == 101 ? 5 : 0);
+
+	delete msg;
 	
 	env.running_ = true;
 	
@@ -49,6 +54,7 @@ DWORD CALLBACK testfunc(LPVOID p )
 
 	env.running_ = false;
 
+	D2DEnable(_global_layer_handle, true);
 
 	return 0;
 }
@@ -60,10 +66,16 @@ void ButtonClick(UIHandle sender,INT_PTR msg)
 	{
 		
 		DWORD dw;
-		CreateThread(nullptr,0,testfunc, (LPVOID)&msg, 0, &dw );		
+
+		INT_PTR* pmsg = new INT_PTR;
+		*pmsg = msg;
+
+		CreateThread(nullptr,0,testfunc, (LPVOID)pmsg, 0, &dw );		
 		
-	
-		D2DEnable(sender, false);
+		
+		_global_layer_handle = D2DGetParent(sender);
+
+		D2DEnable(_global_layer_handle, false);
 
 
 
