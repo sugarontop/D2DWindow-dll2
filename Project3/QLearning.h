@@ -17,9 +17,10 @@ struct RC
 
 	static RC GetRC(int state)
 	{
-		int row = state / FROZEN_LAKE_ROW_COUNT;
-		int col = (state-row*FROZEN_LAKE_ROW_COUNT) % FROZEN_LAKE_COL_COUNT;
+		int row = state / FROZEN_LAKE_COL_COUNT;
+		int col = (state-row*FROZEN_LAKE_COL_COUNT);
 
+		_ASSERT( 0 <= col && col < FROZEN_LAKE_COL_COUNT && row < FROZEN_LAKE_ROW_COUNT );
 		return RC(row,col);
 	}
 };
@@ -73,32 +74,32 @@ class Env
 		}
 		
 
-		void GetMaxQ_Render()
-		{			
-			// 横軸：action
-			// 縦軸：state(pos)
+		//void GetMaxQ_Render()
+		//{			
+		//	// 横軸：action
+		//	// 縦軸：state(pos)
 
-			//std::wcout << L"\n";
-			int j = 0;
-			for(int r=0; r < FROZEN_LAKE_ROW_COUNT; r++ )
-			{
-				for(int c=0; c<FROZEN_LAKE_COL_COUNT; c++)
-				{					
-					WCHAR cb[256];
+		//	//std::wcout << L"\n";
+		//	int j = 0;
+		//	for(int r=0; r < FROZEN_LAKE_ROW_COUNT; r++ )
+		//	{
+		//		for(int c=0; c<FROZEN_LAKE_COL_COUNT; c++)
+		//		{					
+		//			WCHAR cb[256];
 
-					int a = 0;
-					int kouho[] = {0,1,2,3};
-					float q = GetMaxQ(QTable[r][c].Q, kouho,4, &a);
+		//			int a = 0;
+		//			int kouho[] = {0,1,2,3};
+		//			float q = GetMaxQ(QTable[r][c].Q, kouho,4, &a);
 
-					WCHAR ch[] = {L'左',L'上', L'右', L'下'};
+		//			WCHAR ch[] = {L'左',L'上', L'右', L'下'};
 
 
-					//StringCbPrintf(cb,256,L"%c[%d]:%f,", ch[a],j++, q);	
-					StringCbPrintf(cb,256,L"%c:%f,", ch[a], q);	
+		//			//StringCbPrintf(cb,256,L"%c[%d]:%f,", ch[a],j++, q);	
+		//			StringCbPrintf(cb,256,L"%c:%f,", ch[a], q);	
 
-					//std::wcout << cb;
-				}
-				//std::wcout << L"\n";
-			}			
-		}
+		//			//std::wcout << cb;
+		//		}
+		//		//std::wcout << L"\n";
+		//	}			
+		//}
 };

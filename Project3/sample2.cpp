@@ -119,7 +119,7 @@ void Sample2(UIHandle parent, LPCWSTR name, FRectF rc, int id, int nest)
 	//D2DSendMessage(tab, WM_D2D_SET_ACTIVE_CONTROL, 0, 1);
 
 	//// MySample dll
-	MySample_CreateRL( t1_2, FRectF(0,0,120,120), env.BufferQ, 8,8, ButtonClick );
+	MySample_CreateRL( t1_2, FRectF(0,0,120,120), env.BufferQ, FROZEN_LAKE_ROW_COUNT, FROZEN_LAKE_COL_COUNT, ButtonClick );
 
 	// 3 TAG------------------------------------------------------------------
 	auto t3 = D2DAddNewTab(tab, L"free paint");

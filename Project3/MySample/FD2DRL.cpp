@@ -38,7 +38,7 @@ bool FD2DRLeControls::Draw(ID2D1DeviceContext* cxt)
 
 			FPointF pt(0,0);
 
-			float* q = Q_ + 4*(rowcnt_*r + c);
+			float* q = Q_ + 4*(colcnt_*r + c);
 
 			//for(int j=0; j < 4; j++)
 			{

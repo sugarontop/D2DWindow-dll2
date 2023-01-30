@@ -26,14 +26,14 @@
 //};
 
 //int map[] = {
-// S, F, F, H, F, F, F, F,
-// F, F, H, H, F, F, H, F,
-// H, F, F, H, F, H, F, F,
-// F, F, F, H, F, H, H, H,
-// F, H, H, H, F, H, F, F,
-// F, H, F, H, F, F, F, F,
-// F, F, F, F, F, H, H, F,
-// F, H, F, F, F, H, H, G
+// S, F, F, H, F, F, F, F,F, F, F, H, F, F, F, F,
+// F, F, H, H, F, F, H, F,H, F, F, H, F, F, F, F,
+// H, F, F, H, F, H, F, F,H, F, F, H, F, F, F, F,
+// F, F, F, H, F, H, F, H,H, F, F, H, F, F, F, F,
+// F, H, H, H, F, H, F, F,H, F, F, H, F, F, F, F,
+// F, H, F, H, F, H, F, F,H, F, F, H, F, F, F, F,
+// F, F, F, F, F, H, H, F,H, F, F, H, H, H, H, H,
+// F, H, F, F, F, H, H, F,H, F, F, F, F, F, F, G
 //};
 
 
@@ -87,7 +87,7 @@ void Env::clear()
 	{
 		for(int c=0; c<FROZEN_LAKE_COL_COUNT; c++)
 		{
-			QTable[r][c].Q = &BufferQ[(FROZEN_LAKE_ROW_COUNT*r+c)*4];
+			QTable[r][c].Q = &BufferQ[(FROZEN_LAKE_COL_COUNT*r+c)*4];
 
 			QTable[r][c].rc = RC(r,c);
 
@@ -195,7 +195,7 @@ int get_s_next(Env& env,int* state, int action)
 		}
 		if ( action == 1 && range(rc.row,1,FROZEN_LAKE_ROW_COUNT-1)) // top 1行上
 		{
-			*state += -FROZEN_LAKE_ROW_COUNT; 
+			*state += -FROZEN_LAKE_COL_COUNT;
 			return 0;
 		}
 		if ( action == 2 && range(rc.col,0,FROZEN_LAKE_COL_COUNT-2))// right
@@ -205,7 +205,7 @@ int get_s_next(Env& env,int* state, int action)
 		}
 		if ( action == 3 && range(rc.row,0,FROZEN_LAKE_ROW_COUNT-2)) // down 1行下
 		{
-			*state += FROZEN_LAKE_ROW_COUNT;
+			*state += FROZEN_LAKE_COL_COUNT; 
 			return 0;
 		}
 	}
@@ -240,7 +240,7 @@ int goal_maze_ret_s_a_Q(Env& env,float epsilon, float eta, float gamma)
 			s_next = ss;
 		}
 
-		reward = (xa == GOAL ? 1 : 0);
+		reward = (xa == GOAL ? 1.0f : 0.0f);
 
 		a_next = get_action(env, s_next, epsilon, -1); // 次の場所での次のアクション
 	
@@ -269,7 +269,7 @@ int goal_maze_ret_s_a_Q(Env& env,float epsilon, float eta, float gamma)
 			else if ( xa == HOLE )
 			{
 				xxx = 0; 
-				_ASSERT( 0 == gamma * env.Q(s_next,a_next) - env.Q(s,a));
+				//_ASSERT( 0 == gamma * env.Q(s_next,a_next) - env.Q(s,a));
 			}
 
 			Sleep( env.speed_ );
