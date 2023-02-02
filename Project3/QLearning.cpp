@@ -15,38 +15,39 @@
 #define G 1
 
 #define GOAL 1
+#define TEST 2
 #define HOLE 9
 #define KABE  -1
 
-//int map[] = 
-//{ S,F,F,F,
-//  F,H,F,H,
-//  F,F,F,H,
-//  H,F,F,G 
-//};
 
-//int map[] = {
-// S, F, F, H, F, F, F, F,F, F, F, H, F, F, F, F,
-// F, F, H, H, F, F, H, F,H, F, F, H, F, F, F, F,
-// H, F, F, H, F, H, F, F,H, F, F, H, F, F, F, F,
-// F, F, F, H, F, H, F, H,H, F, F, H, F, F, F, F,
-// F, H, H, H, F, H, F, F,H, F, F, H, F, F, F, F,
-// F, H, F, H, F, H, F, F,H, F, F, H, F, F, F, F,
-// F, F, F, F, F, H, H, F,H, F, F, H, H, H, H, H,
-// F, H, F, F, F, H, H, F,H, F, F, F, F, F, F, G
-//};
+int map8_12[] = {
+ S, F, F, H, F, F, F, F,F, F, F, H, 
+ F, F, H, H, F, F, H, F,H, F, F, F, 
+ H, F, F, H, F, H, F, F,H, F, F, H, 
+ F, F, F, H, F, H, F, H,H, H, F, H, 
+ F, H, H, H, F, H, F, F,H, F, F, H, 
+ F, H, F, H, F, H, F, F,H, F, H, H, 
+ F, F, F, F, F, H, H, F,H, F, H, H, 
+ F, H, F, F, F, H, H, F,H, F, F, G
+};
 
-
-int map[] = {
- S, H, H, F, H, F, H, F,
- F, H, H, F, H, F, F, F,
- F, H, F, F, H, F, H, F,
- F, H, H, F, H, F, H, F,
+int map8_8[] = {
+ S, H, H, F, F, F, H, F,
+ F, H, H, F, F, F, H, F,
+ F, H, F, F, F, F, H, F,
+ F, H, H, F, F, F, F, F,
  F, H, F, F, F, F, H, F,
  F, H, F, H, F, F, H, F,
  F, F, F, H, F, H, H, F,
  F, H, F, H, F, H, F, G
 };
+
+#ifdef _EIGHT_EIGHT
+int* map = map8_8;
+#endif
+#ifdef _EIGHT_12
+int* map = map8_12;
+#endif
 
 
 #undef S
@@ -180,7 +181,7 @@ bool range( int xx, int s, int e )
 	return ( s <= xx && xx <= e);
 }
 
-int get_s_next(Env& env,int* state, int action)
+int get_s_next1(Env& env,int* state, int action)
 {
 	RC rc =RC::GetRC(*state);
 	
@@ -208,7 +209,7 @@ int get_s_next(Env& env,int* state, int action)
 			*state += FROZEN_LAKE_COL_COUNT; 
 			return 0;
 		}
-	}
+	}	
 	else if ( map_ == 1 )
 		return GOAL;
 	else if (map_ == -1)
@@ -228,14 +229,15 @@ int goal_maze_ret_s_a_Q(Env& env,float epsilon, float eta, float gamma)
 	float reward = 0;
 	int cnt = 1;
 
+	
 
 	while(1)
 	{		
 		int ss = s;
-		int xa = get_s_next(env,&ss, a);
+		int xa = get_s_next1(env,&ss, a);
 
 
-		if (xa == 0 || xa == KABE || xa == HOLE)
+		if (xa == 0 || xa == KABE || xa == HOLE || xa == TEST)
 		{
 			s_next = ss;
 		}
@@ -249,13 +251,8 @@ int goal_maze_ret_s_a_Q(Env& env,float epsilon, float eta, float gamma)
 		if (xa == GOAL)
 		{
 			auto xxx = reward - env.Q(s,a);
-
-
-			env.Q(s,a) += eta * xxx; //(reward - env.Q(s,a));
-
-
-			TRACE( L"goal [xxx=%f]\n", eta*xxx );
-		}
+			env.Q(s,a) += eta * xxx; 
+		}		
 		else
 		{
 			//env.Q(s_next) のQmax値の場合 Q学習
@@ -271,8 +268,6 @@ int goal_maze_ret_s_a_Q(Env& env,float epsilon, float eta, float gamma)
 				xxx = 0; 
 				//_ASSERT( 0 == gamma * env.Q(s_next,a_next) - env.Q(s,a));
 			}
-
-			Sleep( env.speed_ );
 			
 			//新しいQ推定値(s,a)　←　古いQ推定値(s,a) + 学習率*[ 時間割引率*移動先のQデータ(s_next,a_next) - 古いQ推定値(s,a) ]
 			//env.Q(s,a) += eta * (reward + gamma * env.Q(s_next,a_next) - env.Q(s,a));
@@ -304,6 +299,10 @@ int goal_maze_ret_s_a_Q(Env& env,float epsilon, float eta, float gamma)
 
 		s = s_next;
 		a = a_next;
+
+		if ( cnt%10 == 0 )
+			Sleep( env.speed_ );
+
 		cnt++;
 	}
 

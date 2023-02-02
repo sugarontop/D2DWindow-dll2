@@ -1,7 +1,19 @@
 #pragma once
 
+#define _EIGHT_12
+
+
+
+#ifdef _EIGHT_EIGHT
 #define FROZEN_LAKE_ROW_COUNT	8
 #define FROZEN_LAKE_COL_COUNT	8
+#endif
+
+#ifdef _EIGHT_12
+#define FROZEN_LAKE_ROW_COUNT	8
+#define FROZEN_LAKE_COL_COUNT	12
+#endif
+
 
 
 float Random();

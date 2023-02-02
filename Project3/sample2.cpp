@@ -42,7 +42,7 @@ DWORD CALLBACK testfunc(LPVOID p )
 {
 	INT_PTR* msg = (INT_PTR*)p;
 	
-	env.speed_ = (*msg == 101 ? 5 : 0);
+	env.speed_ = (*msg == 101 ? 10 : 0);
 
 	delete msg;
 	

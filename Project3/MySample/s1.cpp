@@ -107,11 +107,16 @@ DLLEXPORT HANDLE MySample_CreateRL( UIHandle parent, D2D1_RECT_F pit_rc, float* 
 	obj->SetPitRect(rc.Size(), Qvalues, rowcnt, colcnt);
 
 
-	auto base1 = D2DCreateControls(parent,FRectF(1100,100,FSizeF(500,500)), STAT_DEFAULT, L"Base1" );
+	//auto base1 = D2DCreateControls(parent,FRectF(1100,100,FSizeF(500,500)), STAT_DEFAULT, L"Base1" );
+	auto base1 = D2DCreateChildWindow(parent,FRectF(1200,100,FSizeF(300,500)), STAT_DEFAULT, L"Base1" );	
+	{
+		D2DCreateButton(base1, FRectF(10,10,FSizeF(200,30)), STAT_DEFAULT, L"Start(fast)", 100 );
+		D2DCreateButton(base1, FRectF(10,60,FSizeF(200,30)), STAT_DEFAULT, L"Start(slow)", 101 );
+		D2DCreateButton(base1, FRectF(10,160,FSizeF(200,30)), STAT_DEFAULT, L"Clear", 200 );
 
-	D2DCreateButton(base1, FRectF(0,0,FSizeF(200,30)), STAT_DEFAULT, L"Start(fast)", 100 );
-	D2DCreateButton(base1, FRectF(0,50,FSizeF(200,30)), STAT_DEFAULT, L"Start(slow)", 101 );
-	D2DCreateButton(base1, FRectF(0,150,FSizeF(200,30)), STAT_DEFAULT, L"Clear", 200 );
+		D2DSendMessage(base1, WM_D2D_SET_TEXT, 0, (LPARAM)L"control" );
+	}
+
 
 	obj->Eventhandler_ = handler;
 
