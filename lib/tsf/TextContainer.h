@@ -35,9 +35,9 @@ class CTextContainer
 		CTextContainer(); 
 		virtual ~CTextContainer();
 
-		BOOL InsertText(int nPos, const WCHAR *psz, UINT nCnt, UINT& nResultCnt, bool undo_process=true);
-		BOOL RemoveText(int nPos, UINT nCnt, bool undo_process=true);
-		UINT GetText(int nPos, WCHAR *psz, UINT nBuffSize);
+		BOOL InsertText(UINT nPos, const WCHAR *psz, UINT nCnt, UINT& nResultCnt, bool undo_process=true);
+		BOOL RemoveText(UINT nPos, UINT nCnt, bool undo_process=true);
+		UINT GetText(UINT nPos, WCHAR *psz, UINT nBuffSize);
 		UINT GetTextLength() const {return nTextSize_;}
 		const WCHAR *GetTextBuffer() const {return psz_;}
 		void Clear();

@@ -58,7 +58,7 @@ class CTextEditor
 		void OnComposition( int msg, int len );
 
 		BOOL InitTSF(HWND hWnd, ITfThreadMgr2* tmgr, TfClientId clientid);
-		BOOL UninitTSF( );
+		BOOL UninitTSF();
 
 		RECT ClientToScreen(RECT rc) const;
 		void SetFocus(D2DMat* pmat);
@@ -70,7 +70,7 @@ class CTextEditor
 		int CurrentCaretPos();
 		void ClearCompositionRenderInfo();
 		BOOL AddCompositionRenderInfo(int nStart, int nEnd, TF_DISPLAYATTRIBUTE *pda);
-		int GetTextLength(){ return ct_->GetTextLength(); }
+		UINT GetTextLength() const { return ct_->GetTextLength(); }
 
 		RECT CandidateRect( RECT rc) const;
 		int GetRowText( std::wstring* pstr);

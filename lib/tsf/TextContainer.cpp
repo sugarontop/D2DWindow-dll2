@@ -33,7 +33,7 @@ UndoTextEditor::BInfo CTextContainer::Undo()
 	return undo_->Undo();
 }
 
-BOOL CTextContainer::InsertText(int nPos, const WCHAR *psz, UINT nCnt, UINT& nResultCnt, bool undo_process)
+BOOL CTextContainer::InsertText(UINT nPos, const WCHAR *psz, UINT nCnt, UINT& nResultCnt, bool undo_process)
 { 	
 	if ( LimitCharCnt_ < GetTextLength() + nCnt )
 	{
@@ -86,7 +86,7 @@ std::wstring CTextContainer::GetRowText(int pos)
 	return std::wstring(psz_+a, len);
 }
 
-BOOL CTextContainer::RemoveText(int nPos, UINT nCnt, bool undo_process)
+BOOL CTextContainer::RemoveText(UINT nPos, UINT nCnt, bool undo_process)
 { 
 	if (!nCnt)
 		return TRUE;
@@ -114,7 +114,7 @@ BOOL CTextContainer::RemoveText(int nPos, UINT nCnt, bool undo_process)
 	return TRUE;
 }
 
-UINT CTextContainer::GetText(int nPos, WCHAR *psz, UINT nCnt)
+UINT CTextContainer::GetText(UINT nPos, WCHAR *psz, UINT nCnt)
 { 
 	if (!nCnt)
 		return 0;

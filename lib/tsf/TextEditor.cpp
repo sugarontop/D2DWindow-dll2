@@ -10,6 +10,9 @@ using namespace Windows::UI;
 using namespace Windows::UI::Core;
 #endif
 
+#define TES_INVALID_COOKIE  ((DWORD)(-1))
+#define WM_D2D_ONIME_ONOFF (WM_APP+20)
+
 
 CTextEditor::CTextEditor() 
 {
@@ -600,9 +603,10 @@ RECT CTextEditor::CandidateRect(RECT rclog) const
      if (pmat_) 
 	 {
 		FRectF xrc = pmat_->LPtoDP(rclog);
+        
 		RECT ret = this->ClientToScreen( xrc.GetRECT());
 
-		//TRACE( L"CTextEditor::CandidateRec %f %f\n", xrc.top, xrc.bottom);
+        TRACE( L"CTextEditor::CandidateRec (%f %f)->(%f %f)->(%d %d)\n", rclog.left,rclog.top, xrc.left, xrc.top, ret.left, ret.top);
 		return ret;
      }
 
@@ -739,7 +743,7 @@ void CTextEditor::OnComposition( int msg, int len )
 
 void CTextEditor::OnChangeIME(bool bOn)
 {
-	#define WM_D2D_ONIME_ONOFF (WM_APP+20)
+	
 
 	SendMessage(GetWnd(),WM_D2D_ONIME_ONOFF, (bOn?1:0), 0);
 
@@ -747,29 +751,22 @@ void CTextEditor::OnChangeIME(bool bOn)
 
 RECT CTextEditor::ClientToScreen(RECT rc) const
 {    
+    auto logicdpi = GetDpiFromDpiAwarenessContext(DPI_AWARENESS_CONTEXT_SYSTEM_AWARE); // 150% is 144.
 
-#ifdef _WINDOWS
-    ::ClientToScreen(GetWnd(), (POINT *)&rc.left);
-    ::ClientToScreen(GetWnd(), (POINT *)&rc.right);
-    return rc;
-#else
+    HWND hWnd = GetWnd();
 
+    ::ClientToScreen(hWnd, (POINT *)&rc.left);
+    ::ClientToScreen(hWnd, (POINT *)&rc.right);
+   
     //DIP value = (physical pixel x 96) / DPI
     //physical pixel value = (DIP x DPI) / 96
+ 
+//    auto bnd = CoreWindow::GetForCurrentThread().Bounds(); // DIP
+//    auto view = Windows::Graphics::Display::DisplayInformation::GetForCurrentView();
 
-    auto bnd = CoreWindow::GetForCurrentThread().Bounds(); // DIP
-
-    auto view = Windows::Graphics::Display::DisplayInformation::GetForCurrentView();
-
-
-    rc.left += (LONG)bnd.X;
-    rc.top += (LONG)bnd.Y;
-    rc.right += (LONG)(bnd.X);
-    rc.bottom += (LONG)(bnd.Y);
-
-    auto f = [view](LONG a)->LONG
+    auto f = [logicdpi](LONG dip)->LONG
     {
-        return (LONG)(a * view.LogicalDpi() / 96.0f);
+        return static_cast<LONG>(dip * logicdpi / 96.0f);
     };
 
     rc.left = f(rc.left);
@@ -778,8 +775,6 @@ RECT CTextEditor::ClientToScreen(RECT rc) const
     rc.bottom = f(rc.bottom);
 
     return rc; // physical pixel
-#endif
-
 }
 //----------------------------------------------------------------
 //
@@ -1354,7 +1349,6 @@ STDAPI_(ULONG) CTextEditSink::Release()
 // ctor
 //
 //----------------------------------------------------------------------------
-#define TES_INVALID_COOKIE  ((DWORD)(-1))
 
 CTextEditSink::CTextEditSink(CTextEditor *pEditor)
 {
