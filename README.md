@@ -6,7 +6,7 @@
 
 # DLLの内容  
 D2D1UI_1.hの通り  
-com型のDLLではないのでレジストリは不要  
+com型のDLLではないのでレジストリは不要  2024test
 
 # Project1
 Textboxを表示
