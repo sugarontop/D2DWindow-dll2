@@ -9,9 +9,6 @@ class D2DTabControls : public D2DControls
 {
 	public :
 		D2DTabControls(){};	
-
-
-
 		virtual void Draw(D2DContext& cxt) override;
 		virtual LRESULT WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM lParam) override;
 		virtual void CreateControl(D2DWindow* parent, D2DControls* pacontrol, const FRectF& rc, DWORD stat, LPCWSTR name, int local_id = -1) override;
@@ -24,9 +21,7 @@ class D2DTabControls : public D2DControls
 
 		D2DControls* AddNewTab(LPCWSTR tabnm);
 		void DelTab(USHORT idx);
-
 		void SizeFix(){ size_fix_ = true;};
-
 		void ExportWndMessage(std::function<LRESULT(UINT,WPARAM,LPARAM)> fn){export_wnd_prc_ = fn;}
 	protected :
 		
@@ -40,5 +35,8 @@ class D2DTabControls : public D2DControls
 		std::function<LRESULT(UINT,WPARAM,LPARAM)> export_wnd_prc_;
 
 };
+
+
+
 
 };

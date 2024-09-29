@@ -108,7 +108,7 @@ void D2DTabControls::SetRect(const FRectF& rc)
 	rc_ = rc;
 
 	FSizeF sz = rc.Size();
-	sz.height -= tabrects_[0].Height();
+	sz.height -= tabrects_[0].Height();// TAB Height
 
 	AppBase b={};
 	for(auto& it : controls_)
@@ -134,22 +134,20 @@ LRESULT D2DTabControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM 
 		
 		case WM_SIZE:
 		{
-			if ((stat_&STAT_AUTOFIT_CHILDWIN) == STAT_AUTOFIT_CHILDWIN)
+			if (stat_&STAT_AUTOFIT_CHILDWIN)
 			{
-				auto cx = LOWORD(lParam);
-				auto cy = HIWORD(lParam);
-
-
-				FSizeF sz(cx,cy);
+				FSizeF sz(lParam);
 				rc_.SetSize(sz);
 
-
-				sz.height -= tabrects_[0].Height();
+				sz.height -= tabrects_[0].Height();// TAB Height
 
 				for(auto& it : controls_)
 					it->WndProc(b,WM_D2D_SET_SIZE_FROM_OUTER,wParam,(LPARAM)&sz);
 
+				return 0; // TABÇÃä÷åWÇ≈Ç±Ç±Ç≈èIóπÇ≥ÇπÇÈ
+
 			}
+
 		}
 		break;
 		case WM_LBUTTONDOWN:
@@ -335,6 +333,10 @@ LRESULT D2DTabControls::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM 
 
 	if ( export_wnd_prc_ )
 		export_wnd_prc_(message,wParam,lParam);
+
+
+	if ( r == 0 )
+		r = D2DControls::WndProc(b, message, wParam, lParam);
 
 	return r;
 }

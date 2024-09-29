@@ -177,13 +177,18 @@ LRESULT D2DFileManage::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM l
 				else if (typ_ == TYP::TREE)
 					root_->OnClick(pm.pt);
 				
-
+				
 				UINT cnt = root_->ChildCount();
 				root_->height_ = ROWHEIGHT * cnt;
 				rc_.SetHeight(root_->height_);
 				rc_.SetWidth(600);
 
-				parent_control_->SendMesage(WM_D2D_SET_SIZE,1,0);
+				
+				auto xrc = GetParentControls()->GetRect();
+				auto lp = MAKELPARAM((int)xrc.Width(), (int)xrc.Height());
+				
+
+				parent_control_->SendMesage(WM_D2D_SET_SIZE,1,lp);
 				r = 1;
 			}
 		}
@@ -227,8 +232,11 @@ LRESULT D2DFileManage::WndProc(AppBase& b, UINT message, WPARAM wParam, LPARAM l
 		break;
 		case WM_D2D_SET_SIZE_FROM_OUTER:
 		{
-			FSizeF& sz = *(FSizeF*)lParam;
-			//rc_.SetSize(sz);
+			FSizeF sz = *(FSizeF*)lParam;
+			
+			
+			
+			rc_.SetSize(sz);
 
 			
 			return 0;

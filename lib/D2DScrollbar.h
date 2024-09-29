@@ -3,6 +3,9 @@
 #include "D2DApp.h"
 #include "D2DCapture.h"
 #include "D2DWindowControl.h"
+
+#define SCROLLBAR_COLOR	D2RGB(50,50,50)
+
 namespace V6 {
 
 	class D2DScrollbar : public D2DControl

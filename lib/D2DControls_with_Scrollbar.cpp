@@ -5,12 +5,13 @@ using namespace V6;
 
 #define  APP (D2DApp::GetInstance())
 
-#define TEST_COLOR		D2RGB(205,0,10)
+#define TEST_COLOR		D2RGB(200,200,200)
 
 D2DControls_with_Scrollbar::D2DControls_with_Scrollbar()
 {
 	vscroll_x_ = 0;
 	hscroll_x_ = 0;
+	
 	backcolor_ = TEST_COLOR;
 }
 
@@ -32,45 +33,51 @@ void D2DControls_with_Scrollbar::Draw(D2DContext& cxt)
 	mat.Offset(rc_);
 
 	{
-		mat.PushTransform();	
-	
+		mat.PushTransform();		
 			mat.Offset(-sch_->LogicalOffset(), -scv_->LogicalOffset());
-
 			InnerDraw(cxt);
-
 		mat.PopTransform();
 
+
+		// Draw scrollbar Vert
 		mat.PushTransform();	
 			mat.Offset(vscroll_x_, 0 );
 			scv_->Draw2(cxt);
 		mat.PopTransform();
 
+		// Draw scrollbar Horz
 		mat.PushTransform();	
-			mat.Offset(hscroll_x_, rc_.Height()-BARW );
+			mat.Offset(hscroll_x_, rc_.Height()-BARW);
 			sch_->Draw2(cxt);
 		mat.PopTransform();
 	}
 
 	mat.PopTransform();
 }
-void D2DControls_with_Scrollbar::SetViewMaxSize(FSizeF sz)
-{				
-	_ASSERT((0 < sz.width) && (0 < sz.height));
 
-	vscroll_x_ = rc_.Width()-BARW;
+
+// Control内のChild Viewとスクロールバーの設定
+void D2DControls_with_Scrollbar::SetViewMaxSize(FSizeF inner_view_sz, FSizeF scrollbar_sz)
+{				
+	_ASSERT((0 < inner_view_sz.width) && (0 < inner_view_sz.height));
+
+	rc_.SetSize(inner_view_sz);
+
+	vscroll_x_ = inner_view_sz.width-BARW;
 	hscroll_x_ = 0;
+
 
 	scv_->SetStat(STAT_DEFAULT);
 	sch_->SetStat(STAT_DEFAULT);
 
-	scv_->SetMaxSize( sz.height );
-	sch_->SetMaxSize( sz.width );
-	sch_->SetSize(rc_.Size());
-	scv_->SetSize(rc_.Size());
+	scv_->SetMaxSize(scrollbar_sz.height );
+	sch_->SetMaxSize(scrollbar_sz.width );
+	sch_->SetSize(inner_view_sz);
+	scv_->SetSize(inner_view_sz);
 
-	if (sz.width <= rc_.Size().width)
+	if (scrollbar_sz.width <= inner_view_sz.width)
 		sch_->SetStat(0);
-	if (sz.height <= rc_.Size().height)
+	if (scrollbar_sz.height <= inner_view_sz.height)
 		scv_->SetStat(0);
 	
 }
@@ -89,51 +96,68 @@ LRESULT D2DControls_with_Scrollbar::WndProc(AppBase& b, UINT message, WPARAM wPa
 	switch( message )
 	{
 		case WM_SIZE:
+		{			
+			FSizeF veiw_sz(lParam);
+			
+			if (controls_.size() >= 2 && rc_.left == 0 && rc_.top == 0)
+			{
+				auto client = this->controls_[2];
+				auto rc = client->GetRect();
+
+				_ASSERT(rc.left == 0 && rc.top == 0);
+				
+				auto scroll_size = rc.Size();
+				
+				SetViewMaxSize(veiw_sz, scroll_size);
+
+				
+
+				client->WndProc(b, message, 1, (LPARAM)&rc);
+
+				return 0;
+			}
+		}
+		break;
+		//case WM_SIZE:
 		case WM_D2D_SET_SIZE:
 		{
 			if (controls_.size() == 3)
 			{
+				FSizeF veiw_sz(lParam);
 				if (wParam == 0 || wParam == 1)
 				{
-					FRectF& rc = *(FRectF*)(lParam);
-
-					// ここで落ちたら　STAT_IGNORE_SIZEをつける
-
-					if ( wParam == 0 )
+					if (controls_.size() >= 2 && rc_.left == 0 && rc_.top == 0)
 					{
-						if (BITFLG(STAT_IGNORE_HSIZE) == false )
-						{
-							rc_.SetWidth(rc.Width() - rc_.left);
-						}
-						if (BITFLG(STAT_IGNORE_VSIZE) == false )
-						{
-							rc_.SetHeight(rc.Height() - rc_.top);
-						}
-					}
-					else if ( wParam == 1 )
-					{
-						int a = 0;
-					}
-				
-					auto crc = this->controls_[2]->GetRect(); // 0,1 is scrollbar, 2 is child
+						auto client = this->controls_[2];
+						auto rc = client->GetRect();
 
-					SetViewMaxSize(crc.Size());
-					
+						_ASSERT(rc.left == 0 && rc.top == 0);
 
-					crc = rc_.ZeroRect();
-					this->controls_[2]->WndProc(b,message,1,(LPARAM)&crc);
+						auto scroll_size = rc.Size();
+
+						SetViewMaxSize(veiw_sz, scroll_size);
+
+
+
+						client->WndProc(b, message, 1, (LPARAM)&rc);
+
+						return 0;
+					}					
 				}	
-				else if ( wParam == 3 )
+				/*else if ( wParam == 3 )
 				{
 					auto crc = this->controls_[2]->GetRect(); // 0,1 is scrollbar, 2 is child				
-					SetViewMaxSize(crc.Size());
+
+					SetViewMaxSize2(rc_.Size(), crc.Size());
+					//SetViewMaxSize(crc.Size());
 				}
 				else if ( wParam == 4 )
 				{
 					auto crc = this->controls_[2]->GetRect(); // 0,1 is scrollbar, 2 is child
 					rc_.SetSize(crc.Size());
 
-					SetViewMaxSize(crc.Size());
+					SetViewMaxSize2(rc_.Size(), crc.Size());
+					//SetViewMaxSize(crc.Size());
 				}
 				else if ( wParam == 5 )
 				{
@@ -142,8 +166,12 @@ LRESULT D2DControls_with_Scrollbar::WndProc(AppBase& b, UINT message, WPARAM wPa
 					rc_.SetSize( this->parent_control_->GetRect().Size());
 					
 					auto crc = this->controls_[2]->GetRect(); // 0,1 is scrollbar, 2 is child
-					SetViewMaxSize(crc.Size());
+
+
+					SetViewMaxSize2(rc_.Size(), crc.Size());
+					//SetViewMaxSize(crc.Size());
 				}
+				*/
 			}
 
 			return 0;
@@ -162,8 +190,8 @@ LRESULT D2DControls_with_Scrollbar::WndProc(AppBase& b, UINT message, WPARAM wPa
 					this->controls_[2]->WndProc(b,WM_D2D_SET_SIZE_FROM_OUTER,wParam,(LPARAM)&sz);
 
 					auto crc = this->controls_[2]->GetRect(); // 0,1 is scrollbar, 2 is child
-
-					SetViewMaxSize(crc.Size());
+					
+					SetViewMaxSize( rc_.Size(), crc.Size());
 				}
 			}
 			return 0;
@@ -314,10 +342,12 @@ LRESULT D2DControls_with_Scrollbar::WndProc(AppBase& b, UINT message, WPARAM wPa
 	return r;
 
 }
-void D2DControls_with_Scrollbar::CreateControl(D2DWindow* parent, D2DControls* pacontrol, const FRectF& rc, DWORD stat, LPCWSTR name, int local_id)
+void D2DControls_with_Scrollbar::CreateControl(D2DWindow* parent, D2DControls* pacontrol, const FRectF& rc_width_scbar, DWORD stat, LPCWSTR name, int local_id)
 {
 	InnerCreateWindow(parent,pacontrol,stat,name,local_id);
-	rc_ = rc;
+
+	rc_ = pacontrol->GetRect().ZeroRect();
+		
 
 	vscroll_x_ = 0;
 	hscroll_x_ = 0;
@@ -337,8 +367,8 @@ void D2DControls_with_Scrollbar::CreateControl(D2DWindow* parent, D2DControls* p
 
 
 
-	scV->SetMaxSize(rc_.Height());
-	scH->SetMaxSize(rc_.Width());
+	scV->SetMaxSize(rc_width_scbar.Height());
+	scH->SetMaxSize(rc_width_scbar.Width());
 }
 
 D2DControls* D2DControls_with_Scrollbar::GetMainControls()

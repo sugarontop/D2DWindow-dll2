@@ -88,6 +88,7 @@ FRectF& D2DScrollbar::GetRectSmooth()
 }
 
 
+
 void D2DScrollbar::Draw(D2DContext& cxt)
 {
 	// through
@@ -105,7 +106,7 @@ void D2DScrollbar::Draw2(D2DContext& cxt)
 
 		if (bVertical_)
 		{
-			cxt.DFillRect(rc, D2RGB(50,50,50) );
+			cxt.DFillRect(rc, SCROLLBAR_COLOR);
 
 			FRectF thum(0,offset_, BARW, offset_+Thumheight());
 
@@ -114,7 +115,7 @@ void D2DScrollbar::Draw2(D2DContext& cxt)
 		else
 		{
 
-			cxt.DFillRect(rc, D2RGB(50,50,50) );
+			cxt.DFillRect(rc, SCROLLBAR_COLOR);
 
 			FRectF thum(offset_,0, offset_+Thumheight(), BARW);
 

@@ -24,9 +24,11 @@ namespace V6 {
 			virtual void SetRect(const FRectF& rc) override;
 
 			D2DControls* GetMainControls();
-			void SetViewMaxSize(FSizeF sz);
+
+			void SetViewMaxSize(FSizeF sz, FSizeF scbar_sz);
+
 		protected :
-			float vscroll_x_,hscroll_x_;
+			float vscroll_x_,hscroll_x_, hscroll_y_;
 			std::shared_ptr<D2DScrollbar> scv_, sch_;
 			D2DColor backcolor_;
 
