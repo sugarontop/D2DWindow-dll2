@@ -1,8 +1,8 @@
 # D2DWindow-dll2
 このプロジェクトのメインはDLLの作成  
->D2DUI_1はDLLのプロジェクト  
->lib は
->Project1,,,ProjectNはDLLの使い方のサンプル(exe) 
+D2DUI_1はDLLのプロジェクト  
+lib は
+Project1,,,ProjectNはDLLの使い方のサンプル(exe)  
 DLL内のオブジェクトの継承による機能拡張はMySample.dll(project3)内で実装する
 
 # DLLの内容  
