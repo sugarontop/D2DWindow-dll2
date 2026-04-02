@@ -704,15 +704,16 @@ void CTextEditor::ClearCompositionRenderInfo()
 //
 //
 //----------------------------------------------------------------
-void CTextEditor::OnComposition( int msg, int len )
+void CTextEditor::OnComposition( int msg, int )
 {
-	TRACE( L"void CTextEditor::OnComposition( %d, %d )\n", msg,len);
+	//TRACE( L"void CTextEditor::OnComposition( %d, %d )\n", msg,len);
 
     switch( msg ) 
     {
         case 1:
         {
             ti_.decoration_typ = 1;
+			CompositionRenderInfo_.clear();
 
             ti_.decoration_start_pos = GetSelectionStart();
             ti_.decoration_end_pos = GetSelectionEnd();
@@ -722,8 +723,27 @@ void CTextEditor::OnComposition( int msg, int len )
         break;
         case 2:
         {            
-            ti_.decoration_start_pos = max(0, GetSelectionEnd() - len);
-            ti_.decoration_end_pos =GetSelectionEnd();
+			
+			for (auto& a : CompositionRenderInfo_)
+			{
+				if (a.da.bAttr == TF_ATTR_CONVERTED)
+				{
+					ti_.decoration_start_pos = a.nStart;
+					ti_.decoration_end_pos = a.nStart + a.nEnd;
+				}
+				else if (a.da.bAttr == TF_ATTR_TARGET_CONVERTED)
+				{
+					ti_.test_s = a.nStart;
+					ti_.test_e = a.nStart + a.nEnd;
+
+				}
+				else if (a.da.bAttr == TF_ATTR_INPUT)
+				{
+					ti_.test2_s = a.nStart;
+					ti_.test2_e = a.nStart + a.nEnd;
+
+				}
+			}
 			ct_->ime_stat_ = 2;
         }
         break;
@@ -732,7 +752,10 @@ void CTextEditor::OnComposition( int msg, int len )
             ti_.decoration_typ = 0;
             ti_.decoration_end_pos = 0;
             ti_.decoration_start_pos = 0;
-			
+			ti_.test_s = 0;
+			ti_.test_e = 0;
+			ti_.test2_s = 0;
+			ti_.test2_e = 0;
 			
 			ct_->ime_stat_ = 3;
 			ct_->UndoAdjust();
@@ -784,27 +807,11 @@ RECT CTextEditor::ClientToScreen(RECT rc) const
 
 BOOL CTextEditor::AddCompositionRenderInfo(int nStart, int nEnd, TF_DISPLAYATTRIBUTE *pda)
 {
-    if (pCompositionRenderInfo_)
-    {
-        void *pvNew = LocalReAlloc(pCompositionRenderInfo_, 
-                                   (nCompositionRenderInfo_ + 1) * sizeof(COMPOSITIONRENDERINFO),
-                                   LMEM_MOVEABLE | LMEM_ZEROINIT);
-        if (!pvNew)
-            return FALSE;
-
-        pCompositionRenderInfo_ = (COMPOSITIONRENDERINFO *)pvNew;
-    }
-    else
-    {
-        pCompositionRenderInfo_ = (COMPOSITIONRENDERINFO *)LocalAlloc(LPTR,
-                                   (nCompositionRenderInfo_ + 1) * sizeof(COMPOSITIONRENDERINFO));
-        if (!pCompositionRenderInfo_)
-            return FALSE;
-    }
-    pCompositionRenderInfo_[nCompositionRenderInfo_].nStart = nStart;
-    pCompositionRenderInfo_[nCompositionRenderInfo_].nEnd = nEnd;
-    pCompositionRenderInfo_[nCompositionRenderInfo_].da = *pda;
-    nCompositionRenderInfo_++;
+ 	COMPOSITIONRENDERINFO a;
+	a.nStart = nStart;
+	a.nEnd = nEnd;
+	a.da = *pda;
+	CompositionRenderInfo_.push_back(a);
 
     return TRUE;
 }
@@ -1355,6 +1362,13 @@ CTextEditSink::CTextEditSink(CTextEditor *pEditor)
     _cRef = 1;
     _dwEditCookie = TES_INVALID_COOKIE;
     _pEditor = pEditor;
+
+	
+	auto hr = CoCreateInstance(CLSID_TF_CategoryMgr, nullptr, CLSCTX_INPROC_SERVER, IID_ITfCategoryMgr, reinterpret_cast<void**>(&pCategoryMgr));	
+	_ASSERT(hr == S_OK);
+	hr = CoCreateInstance(CLSID_TF_DisplayAttributeMgr, nullptr, CLSCTX_INPROC_SERVER, IID_ITfDisplayAttributeMgr, reinterpret_cast<void**>(&pDispAttrMgr));
+	_ASSERT(hr == S_OK);
+
 }
 
 //+---------------------------------------------------------------------------
@@ -1363,85 +1377,85 @@ CTextEditSink::CTextEditSink(CTextEditor *pEditor)
 //
 //----------------------------------------------------------------------------
 
-STDAPI CTextEditSink::OnEndEdit(ITfContext *pic, TfEditCookie ecReadOnly, ITfEditRecord *pEditRecord)
+STDAPI CTextEditSink::OnEndEdit(ITfContext* pic, TfEditCookie ecReadOnly, ITfEditRecord* pEditRecord)
 {
-#ifdef _WINDOWS
-    CDispAttrProps *pDispAttrProps = GetDispAttrProps();
-    if (pDispAttrProps)
-    {
-        IEnumTfRanges *pEnum;
-        if (SUCCEEDED(pEditRecord->GetTextAndPropertyUpdates(TF_GTP_INCL_TEXT,
-                                                             pDispAttrProps->GetPropTablePointer(),
-                                                             pDispAttrProps->Count(),
-                                                             &pEnum)) && pEnum)
-        {
-            ITfRange *pRange;
-            if (pEnum->Next(1, &pRange, NULL) == S_OK)
-            {
-                // We check if there is a range to be changed.
-                pRange->Release();
+	ComPTR<ITfContextComposition> pCtxComp;
+	if (FAILED(pic->QueryInterface(&pCtxComp)))
+		return S_OK;
 
-                _pEditor->ClearCompositionRenderInfo();
+	// 変換中のCompositionを列挙
+	ComPTR<IEnumITfCompositionView> pEnum;
+	if (SUCCEEDED(pCtxComp->EnumCompositions(&pEnum)))
+		{
+		ComPTR<ITfCompositionView> pView;
+		ULONG dumy = 0;
+		while (pEnum->Next(1, &pView, &dumy) == S_OK)
+			{
+			ComPTR<ITfRange> pRange;
+			if (SUCCEEDED(pView->GetRange(&pRange)))
+				{
+				// ★ 現在アクティブな変換対象セグメントを特定
+				CheckActiveSegment(pic, ecReadOnly, pRange, pCategoryMgr, pDispAttrMgr);
 
-                // We read the display attribute for entire range.
-                // It could be optimized by filtering the only delta with ITfEditRecord interface. 
-                ITfRange *pRangeEntire = NULL;
-                ITfRange *pRangeEnd = NULL;
-                if (SUCCEEDED(pic->GetStart(ecReadOnly, &pRangeEntire)) &&
-                    SUCCEEDED(pic->GetEnd(ecReadOnly, &pRangeEnd)) &&
-                    SUCCEEDED(pRangeEntire->ShiftEndToRange(ecReadOnly, pRangeEnd, TF_ANCHOR_END)))
-                {
-                    IEnumTfRanges *pEnumRanges;
-                    ITfReadOnlyProperty *pProp = NULL;
-
-                    GetDisplayAttributeTrackPropertyRange(ecReadOnly, pic, pRangeEntire, &pProp, pDispAttrProps);
-
-                    if (SUCCEEDED(pProp->EnumRanges(ecReadOnly, &pEnumRanges, pRangeEntire)))
-                    {
-                        while (pEnumRanges->Next(1, &pRange, NULL) == S_OK)
-                        {
-                            TF_DISPLAYATTRIBUTE da;
-                            TfGuidAtom guid;
-                            if (GetDisplayAttributeData(ecReadOnly, pProp, pRange, &da, &guid) == S_OK)
-                            {
-                                ITfRangeACP *pRangeACP;
-                                if (pRange->QueryInterface(IID_ITfRangeACP, (void **)&pRangeACP) == S_OK)
-                                {
-                                    LONG nStart;
-                                    LONG nEnd;
-                                    pRangeACP->GetExtent(&nStart, &nEnd);
-                                    
-									
-									_pEditor->AddCompositionRenderInfo(nStart, nStart + nEnd, &da);
+				}
+			pView = nullptr;
+			}
+		}
 
 
-                                    pRangeACP->Release();
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (pRangeEntire)
-                    pRangeEntire->Release();
-                if (pRangeEnd)
-                    pRangeEnd->Release();
- 
-            }
-            pEnum->Release();
-        }
-
-        delete pDispAttrProps;
-    }
-#endif
-	if ( OnChanged_ )
+	if (OnChanged_)
 		OnChanged_();
-
-	
-
-    return S_OK;
+	return S_OK;
 }
 
+void CTextEditSink::CheckActiveSegment(ITfContext* pContext, TfEditCookie ec, ITfRange* pCompositionRange,
+	ITfCategoryMgr* pCategoryMgr, ITfDisplayAttributeMgr* pDispAttrMgr)
+{
+	ComPTR<ITfProperty> pProp;
+	if (FAILED(pContext->GetProperty(GUID_PROP_ATTRIBUTE, &pProp)))
+		return;
+
+	ComPTR<IEnumTfRanges> pEnum;
+	if (SUCCEEDED(pProp->EnumRanges(ec, &pEnum, pCompositionRange)))
+	{
+		ComPTR<ITfRange> pSeg;
+		ULONG dumy = 0;
+		while (pEnum->Next(1, &pSeg, &dumy) == S_OK)
+		{
+			VARIANT var = {};
+			if (SUCCEEDED(pProp->GetValue(ec, pSeg, &var)) && var.vt == VT_I4)
+			{
+				// ★ TfGuidAtom → GUID に変換
+				GUID guid = GUID_NULL;
+				pCategoryMgr->GetGUID((TfGuidAtom)var.lVal, &guid);
+
+				// ★ GUIDからディスプレイアトリビュートを取得
+				ComPTR<ITfDisplayAttributeInfo> pInfo;
+
+				pDispAttrMgr->GetDisplayAttributeInfo(guid, &pInfo, nullptr);
+
+				if (pInfo)
+				{
+					TF_DISPLAYATTRIBUTE da = {};
+					pInfo->GetAttributeInfo(&da);
+
+					ComPTR<ITfRangeACP> pRangeACP1;
+					pSeg->QueryInterface(&pRangeACP1);
+
+					LONG nStart = 0, nLen = 0;
+					pRangeACP1->GetExtent(&nStart, &nLen);
+
+					_pEditor->AddCompositionRenderInfo(nStart, nLen, &da);
+					_pEditor->OnComposition(2, 0);
+
+
+				}
+			}
+			VariantClear(&var);
+			pSeg = nullptr;
+		}
+	}
+}
 #pragma region Advise_Unadvice
 //+---------------------------------------------------------------------------
 //

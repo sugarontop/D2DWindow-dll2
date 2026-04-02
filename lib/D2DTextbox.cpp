@@ -129,7 +129,47 @@ void D2DTextbox::Draw(D2DContext& cxt)
 				ctrl()->Render(cxt, &tm_, fore, fmt_);
 
 				
-			
+				// •ÏŠ·“r’†‚Ì•¶Žš				
+				{
+					auto info = ctrl()->GetTextInfo();
+
+					int len=0;
+					const FRectF* rects_ = ctrl()->layout_.GetCharRects2(&len);
+
+					int es = info.decoration_start_pos;
+					int ee = info.decoration_end_pos;
+					ComPTR<ID2D1SolidColorBrush> br = mk_color(D2RGB(0, 250, 255));
+					for (int i = i = es; i < ee; i++)
+					{
+						auto rc = rects_[i];
+						rc.top = rc.bottom - 2;
+						(*cxt)->FillRectangle(rc, br);
+					}
+
+					es = info.test_s;
+					ee = info.test_e;
+					{
+						ComPTR<ID2D1SolidColorBrush> brs1 = mk_color(D2RGB(0, 0, 255));						 
+						for (int i = es; i < ee; i++)
+						{
+							auto rc = rects_[i];
+							rc.top = rc.bottom - 3;
+							(*cxt)->FillRectangle(rc, brs1);
+						}
+					}
+					es = info.test2_s;
+					ee = info.test2_e;
+					{
+						ComPTR<ID2D1SolidColorBrush> brs1 = mk_color(D2RGB(120, 120, 120));
+						
+						for (int i = es; i < ee; i++)
+						{
+							auto rc = rects_[i];
+							rc.top = rc.bottom - 1;
+							(*cxt)->FillRectangle(rc, brs1);
+						}
+					}
+				}
 	#ifdef DRAW_CHAR_RECT
 				// char RECT‚Ì•\Ž¦
 				int pos = 0;
@@ -142,6 +182,8 @@ void D2DTextbox::Draw(D2DContext& cxt)
 					cxt.DrawBlackLine(rc);
 					pos++;
 				}
+
+				
 	#endif
 				// draw caret
 				{
@@ -156,7 +198,7 @@ void D2DTextbox::Draw(D2DContext& cxt)
 						if (bMultiline)
 						{
 							(*cxt)->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
-							(*cxt)->DrawLine(FPointF(0,rc.bottom), FPointF(rctext.Width(),rc.bottom),cxt.black_ );
+							//(*cxt)->DrawLine(FPointF(0,rc.bottom), FPointF(rctext.Width(),rc.bottom),cxt.black_ );
 							(*cxt)->SetAntialiasMode(D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
 						}
 					}

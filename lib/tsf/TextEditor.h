@@ -23,6 +23,11 @@ struct TextInfo
 	int decoration_start_pos;
 	int decoration_end_pos;
 	int decoration_typ;
+
+	int test_s;
+	int test_e;
+	int test2_s;
+	int test2_e;
 };
 
 class CTextEditor 
@@ -79,6 +84,7 @@ class CTextEditor
 		void OnChangeIME(bool bOn);
 		BOOL SelectionTab(BOOL bIns);
 		void Undo();
+		TextInfo GetTextInfo() const { return ti_; }
 	public :
 		CTextLayout layout_;
 		CTextContainer* ct_;
@@ -99,6 +105,7 @@ class CTextEditor
 		TfEditCookie ecTextStore_;
 		ITfDocumentMgr* pDocumentMgr_;
 		ITfContext* pInputContext_;
+		std::vector<COMPOSITIONRENDERINFO> CompositionRenderInfo_;
 };
 
 
@@ -124,12 +131,17 @@ class CTextEditSink : public ITfTextEditSink
 
 
 		std::function<void()> OnChanged_;
-
+		void CheckActiveSegment(ITfContext* pContext, TfEditCookie ec, ITfRange* pCompositionRange,
+			ITfCategoryMgr* pCategoryMgr, ITfDisplayAttributeMgr* pDispAttrMgr);
 	private:
 		long _cRef;
 		ITfContext *_pic;
 		DWORD _dwEditCookie;
 		CTextEditor *_pEditor;
+
+		ComPTR<ITfCategoryMgr> pCategoryMgr;
+		ComPTR<ITfDisplayAttributeMgr> pDispAttrMgr;
+
 };
 
 #ifdef _WINDOWS
